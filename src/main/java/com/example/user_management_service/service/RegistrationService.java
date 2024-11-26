@@ -178,8 +178,7 @@ public class RegistrationService {
 
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
-        // Initialize Twilio
-//        Twilio.init(accountSid, authToken);
+
 //
 //        // Create SMS content
 //        String messageBody = "Your verification code is: " + verificationCode;
