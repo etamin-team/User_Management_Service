@@ -28,8 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -53,14 +52,7 @@ public class RegistrationService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
 
-    @Value("${twilio.account.sid}")
-    private String accountSid;
 
-    @Value("${twilio.auth.token}")
-    private String authToken;
-
-    @Value("${twilio.phone.number}")
-    private String twilioPhoneNumber;
 
     private final VerificationNumberRepository verificationNumberRepository;
 
@@ -187,17 +179,17 @@ public class RegistrationService {
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
         // Initialize Twilio
-        Twilio.init(accountSid, authToken);
-
-        // Create SMS content
-        String messageBody = "Your verification code is: " + verificationCode;
-
-        // Send SMS
-        Message.creator(
-                new com.twilio.type.PhoneNumber(toPhoneNumber), // To
-                new com.twilio.type.PhoneNumber(twilioPhoneNumber), // From
-                messageBody
-        ).create();
+//        Twilio.init(accountSid, authToken);
+//
+//        // Create SMS content
+//        String messageBody = "Your verification code is: " + verificationCode;
+//
+//        // Send SMS
+//        Message.creator(
+//                new com.twilio.type.PhoneNumber(toPhoneNumber), // To
+//                new com.twilio.type.PhoneNumber(twilioPhoneNumber), // From
+//                messageBody
+//        ).create();
 
         System.out.println("SMS sent successfully!");
     }
