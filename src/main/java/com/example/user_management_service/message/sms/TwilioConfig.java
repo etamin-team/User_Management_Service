@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "twilio")
+//@ConfigurationProperties(prefix = "twilio")
 public class TwilioConfig {
-    private String accountSid;
-    private String authToken;
-    private String phoneNumber;
+//    private String accountSid;
+//    private String authToken;
+//    private String phoneNumber;
 }
