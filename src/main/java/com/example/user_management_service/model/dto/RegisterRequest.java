@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.model.dto;
 
 import com.example.user_management_service.role.Role;
 import lombok.*;
@@ -24,4 +24,5 @@ public class RegisterRequest {
     private String phoneNumber;
     private String phonePrefix;
     private String number;
+    private String creatorId;
 }

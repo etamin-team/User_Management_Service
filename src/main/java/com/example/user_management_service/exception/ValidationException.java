@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.exception;
 
 
 import com.example.user_management_service.auth.ErrorMessage;

@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.model.dto;
 
 import lombok.*;
 
@@ -14,5 +14,7 @@ import lombok.*;
 @NoArgsConstructor
 public class AuthRequest {
     private String number;
+    private String email;
+    private Boolean isNumber;
     private String password;
 }

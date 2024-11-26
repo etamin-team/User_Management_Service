@@ -54,11 +54,20 @@ public class User implements UserDetails {
     @Column(name = "number", unique = true)
     private String number;
 
+    @Column(name = "email", unique = true)
+    private String email;
+
     @Column(name = "phone_prefix")
     private String phonePrefix;
 
     @Column(name = "profile_picture_id")
     private String profilePictureId;
+
+    @Column(name = "creator_id")
+    private String creatorId;
+
+    @Column(name = "reset_token")
+    private String resetToken;
 
     @ManyToOne
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")

@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.exception;
 
 /**
  * Custom exception thrown when a user attempts to perform an unauthorized action.

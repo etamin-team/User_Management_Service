@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.role;
 
 /**
  * Date-11/25/2024

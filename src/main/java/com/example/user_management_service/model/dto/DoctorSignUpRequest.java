@@ -1,6 +1,5 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.model.dto;
 
-import com.example.user_management_service.role.Role;
 import lombok.*;
 
 /**
@@ -23,5 +22,7 @@ public class DoctorSignUpRequest {
     private String password;
     private String region;
     private String country;
+    private Boolean isNumber;
+    private String email;
     private Integer verificationNumber;
 }

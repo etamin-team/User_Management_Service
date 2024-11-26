@@ -1,4 +1,4 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.service;
 
 import com.example.user_management_service.role.Role;
 import org.springframework.security.core.GrantedAuthority;

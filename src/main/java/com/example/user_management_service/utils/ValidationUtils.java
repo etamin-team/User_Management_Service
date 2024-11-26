@@ -1,4 +1,6 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.utils;
+
+import com.example.user_management_service.model.dto.DoctorSignUpRequest;
 
 /**
  * Date-11/25/2024

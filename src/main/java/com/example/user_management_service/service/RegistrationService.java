@@ -1,26 +1,35 @@
-package com.example.user_management_service.auth;
+package com.example.user_management_service.service;
 
 
+import com.example.user_management_service.auth.*;
+import com.example.user_management_service.exception.ValidationException;
 import com.example.user_management_service.config.JwtService;
+import com.example.user_management_service.message.sms.TwilioConfig;
 import com.example.user_management_service.model.Country;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.VerificationNumber;
+import com.example.user_management_service.model.dto.AuthRequest;
+import com.example.user_management_service.model.dto.DoctorSignUpRequest;
+import com.example.user_management_service.model.dto.RegisterRequest;
 import com.example.user_management_service.repository.TokenRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.VerificationNumberRepository;
+import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
-import com.example.user_management_service.service.CountryRegionService;
 import com.example.user_management_service.token.Token;
+import com.example.user_management_service.utils.ValidationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +52,15 @@ public class RegistrationService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+
+    @Value("${twilio.account.sid}")
+    private String accountSid;
+
+    @Value("${twilio.auth.token}")
+    private String authToken;
+
+    @Value("${twilio.phone.number}")
+    private String twilioPhoneNumber;
 
     private final VerificationNumberRepository verificationNumberRepository;
 
@@ -67,10 +85,12 @@ public class RegistrationService {
                             request.getCountry(),
                             request.getPhoneNumber(),
                             request.getPhonePrefix(),
-                            request.getNumber()
+                            request.getNumber(),
+                            null
                     )
             );
             user.setUserId(UUID.randomUUID());
+            user.setCreatorId(String.valueOf(user.getUserId()));
             user.setPassword(passwordEncoder.encode(request.getPassword()));
             userRepository.save(user);
             return AuthRandomNumberResponse.SUCCESS;
@@ -116,6 +136,7 @@ public class RegistrationService {
         newUser.setRegion(region);
         newUser.setCountry(country);
         newUser.setPassword(request.getPassword());
+        newUser.setCreatorId(request.getCreatorId());
         return newUser;
     }
 
@@ -135,6 +156,9 @@ public class RegistrationService {
         }
 
         return missingFields.toString();
+    }
+    public boolean isUserWithEmailExists(String email){
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public boolean isUserWithNumberExists(String number){
@@ -160,7 +184,24 @@ public class RegistrationService {
         }
     }
 
-    public boolean getNewVerificationNumber(String number) {
+
+    public void sendSMS(String toPhoneNumber, int verificationCode) {
+        // Initialize Twilio
+        Twilio.init(accountSid, authToken);
+
+        // Create SMS content
+        String messageBody = "Your verification code is: " + verificationCode;
+
+        // Send SMS
+        Message.creator(
+                new com.twilio.type.PhoneNumber(toPhoneNumber), // To
+                new com.twilio.type.PhoneNumber(twilioPhoneNumber), // From
+                messageBody
+        ).create();
+
+        System.out.println("SMS sent successfully!");
+    }
+    public boolean getNewVerificationNumber(String number, boolean isEmail) {
         if (verificationNumberRepository.findByNumber(number).isPresent()) {
             VerificationNumber verificationNumber = verificationNumberRepository.findByNumber(number).get();
             if (ChronoUnit.MINUTES.between(LocalDateTime.now(), verificationNumber.getExpirationDate()) > 0 && verificationNumber.getAttempts() > 6)
@@ -169,23 +210,28 @@ public class RegistrationService {
         }
         int randomNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
         LocalDateTime expirationDate = LocalDateTime.now().plus(15, ChronoUnit.MINUTES);
-//        CompletableFuture.runAsync(() -> {
-//            try {
-//        sendVerificationEmailAsync(email, randomNumber);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
 
+//        if (isEmail){
+//            //here should send number to email
+//        }else {
+        sendSMS(number, randomNumber);
+
+//        }
         VerificationNumber verificationNumber = new VerificationNumber(number, randomNumber, expirationDate);
         verificationNumberRepository.save(verificationNumber);
         return true;
     }
+
     public boolean canCreateRole(Role currentUserRole, Role targetRole) {
         return currentUserRole.getRank() > targetRole.getRank();
     }
     public AuthResponse authenticate(AuthRequest request) {
-        User user = userRepository.findByNumber(request.getNumber()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        User user;
+        if (request.getIsNumber()){
+            user=userRepository.findByNumber(request.getNumber()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        }else {
+            user=userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        }
         boolean checkPassword = userPasswordChecker(user, request.getPassword());
         if (checkPassword)
             return createToken(user);

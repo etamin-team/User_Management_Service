@@ -37,3 +37,13 @@ application:
       expiration: 86400000
       refresh-token:
         expiration: 604800000
+
+
+
+twilio:
+  account:
+    sid: AC956447b61a993810caeb423a566c9e7c
+  auth:
+    token: 1c853ffe5a2a6727bad00b6d00d4ae2b
+  phone:
+    number: +16814335640
