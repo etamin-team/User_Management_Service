@@ -178,18 +178,6 @@ public class RegistrationService {
 
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
-
-//
-//        // Create SMS content
-//        String messageBody = "Your verification code is: " + verificationCode;
-//
-//        // Send SMS
-//        Message.creator(
-//                new com.twilio.type.PhoneNumber(toPhoneNumber), // To
-//                new com.twilio.type.PhoneNumber(twilioPhoneNumber), // From
-//                messageBody
-//        ).create();
-
         System.out.println("SMS sent successfully!");
     }
     public boolean getNewVerificationNumber(String number, boolean isEmail) {
