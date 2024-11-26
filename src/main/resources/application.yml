@@ -1,0 +1,39 @@
+logging:
+  level:
+    org:
+    springframework: info
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/world_medicine
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+    defer-datasource-initialization: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+springdoc:
+  swagger-ui:
+    operationsSorter: method
+    path: /swagger-ui-custom.html
+
+server:
+  port: 8080
+
+application:
+  security:
+    jwt:
+      secret-key: bGbWqUxYztvCj8FzNO8GuJYY/YzkrU9wGx9+gaGwBo+Dmw0c70GFGZhtp2vw+1uq
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
