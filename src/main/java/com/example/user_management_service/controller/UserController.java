@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Date-11/27/2024
  * By Sardor Tokhirov
@@ -35,4 +37,27 @@ public class UserController {
         }
     }
 
+    @GetMapping("/doctors")
+    public ResponseEntity<List<User>> getDoctors(
+            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery
+    ) {
+        List<User> doctors = userService.getDoctors(creatorId, countryId, regionId, workplaceId, nameQuery);
+        return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping("/managers")
+    public ResponseEntity<List<User>> getManagers(
+            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String query) {
+
+        List<User> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, query);
+        return users.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(users);
+    }
 }

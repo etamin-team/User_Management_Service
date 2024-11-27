@@ -25,4 +25,5 @@ public class RegisterRequest {
     private String phonePrefix;
     private String number;
     private String creatorId;
+    private Long workPlaceId;
 }

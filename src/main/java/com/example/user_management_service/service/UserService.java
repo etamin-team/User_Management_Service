@@ -3,10 +3,12 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.repository.UserRepository;
+import com.example.user_management_service.role.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,5 +39,29 @@ public class UserService {
             }
         }
         return false;
+    }
+
+
+    public List<User> getDoctors(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+        if (nameQuery != null && !nameQuery.isEmpty()) {
+            return userRepository.searchDoctorsByName(Role.DOCTOR, nameQuery);
+        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+                    Role.DOCTOR, creatorId, countryId, regionId, workplaceId);
+        } else if (creatorId != null) {
+            return userRepository.findByCreatorId(creatorId);
+        } else {
+            return userRepository.findDoctors();
+        }
+    }
+    // Fetch all managers
+    public List<User> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String query) {
+        if (query != null && !query.isEmpty()) {
+            return userRepository.searchManagersByName(Role.MANAGER, query);
+        } else {
+            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+                    Role.MANAGER, creatorId, countryId, regionId, workplaceId
+            );
+        }
     }
 }

@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -69,6 +69,9 @@ public class User implements UserDetails {
     @Column(name = "reset_token")
     private String resetToken;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
     @ManyToOne
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
     private Gender gender;
@@ -81,9 +84,14 @@ public class User implements UserDetails {
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
+    private WorkPlace workplace;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
+        return Collections.singletonList(authority);
     }
 
     @Override

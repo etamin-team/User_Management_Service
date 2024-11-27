@@ -5,16 +5,14 @@ import com.example.user_management_service.auth.*;
 import com.example.user_management_service.exception.ValidationException;
 import com.example.user_management_service.config.JwtService;
 import com.example.user_management_service.message.sms.TwilioConfig;
-import com.example.user_management_service.model.Country;
-import com.example.user_management_service.model.Region;
-import com.example.user_management_service.model.User;
-import com.example.user_management_service.model.VerificationNumber;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.AuthRequest;
 import com.example.user_management_service.model.dto.DoctorSignUpRequest;
 import com.example.user_management_service.model.dto.RegisterRequest;
 import com.example.user_management_service.repository.TokenRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.VerificationNumberRepository;
+import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.token.Token;
@@ -51,8 +49,7 @@ public class RegistrationService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-
-
+    private final WorkPlaceRepository workPlaceRepository;
 
     private final VerificationNumberRepository verificationNumberRepository;
 
@@ -78,6 +75,7 @@ public class RegistrationService {
                             request.getPhoneNumber(),
                             request.getPhonePrefix(),
                             request.getNumber(),
+                            null,
                             null
                     )
             );
@@ -129,6 +127,11 @@ public class RegistrationService {
         newUser.setCountry(country);
         newUser.setPassword(request.getPassword());
         newUser.setCreatorId(request.getCreatorId());
+        newUser.setCreatedDate(LocalDateTime.now());
+        if (request.getRole().equals(Role.DOCTOR)) {
+            WorkPlace workPlace =workPlaceRepository.findById(request.getWorkPlaceId()).get();
+            newUser.setWorkplace(workPlace);
+        }
         return newUser;
     }
 
