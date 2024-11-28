@@ -27,8 +27,8 @@ public class SwaggerConfiguration {
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache License").url("https://apache.co")))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Falcon server")
-//                        new Server().url("https://falcon-api.etamin.agency").description("Falcon server")
+//                        new Server().url("http://localhost:8080").description("Falcon server")
+                        new Server().url("https://falcon-api.etamin.agency:8080").description("Falcon server")
                 ));
     }
 }
