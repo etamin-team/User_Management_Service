@@ -3,8 +3,6 @@ package com.example.user_management_service;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.role.Role;
-import com.example.user_management_service.service.RegistrationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
