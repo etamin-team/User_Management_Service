@@ -62,11 +62,11 @@ public class AuthController {
         }
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(String.valueOf(authService.authenticate(request)));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(authService.authenticate(request));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("INCORRECT_NUMBER_OR_PASSWORD");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
