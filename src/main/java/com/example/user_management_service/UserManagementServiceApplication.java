@@ -23,7 +23,7 @@ public class UserManagementServiceApplication {
     @Bean
     CommandLineRunner createChiefUser(UserRepository userRepository) {
         return args -> {
-
+            try {
                 User chiefUser = new User();
                 chiefUser.setFirstName("Samandar");
                 chiefUser.setLastName("Gaybullayev");
@@ -36,10 +36,12 @@ public class UserManagementServiceApplication {
                 chiefUser.setPhoneNumber("930530732");
                 chiefUser.setNumber("+998930530732");
                 chiefUser.setPhonePrefix("+998");
-                // Save the user
-               String userId= String.valueOf(userRepository.save(chiefUser).getUserId());
+                String userId= String.valueOf(userRepository.save(chiefUser).getUserId());
 
                 System.out.println("Chief user created successfully! chiefId: "+userId);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
         };
     }
