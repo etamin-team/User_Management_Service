@@ -38,7 +38,4 @@ application:
       refresh-token:
         expiration: 604800000
 
-messagebird:
-  api-key: YOUR_MESSAGEBIRD_API_KEY
-  originator: YOUR_SENDER_ID_OR_NUMBER
-  url: https://rest.messagebird.com
+
