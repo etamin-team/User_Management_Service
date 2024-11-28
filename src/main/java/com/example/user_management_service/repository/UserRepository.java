@@ -35,6 +35,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
             Role role, String creatorId, Long countryId, Long regionId, Long workplaceId);
 
+    boolean existsByRole(Role role);
+
     // Search doctors by name (first or last name)
     @Query("SELECT u FROM User u WHERE u.role = :role AND (u.firstName LIKE %:query% OR u.lastName LIKE %:query%)")
     List<User> searchDoctorsByName(Role role, String query);

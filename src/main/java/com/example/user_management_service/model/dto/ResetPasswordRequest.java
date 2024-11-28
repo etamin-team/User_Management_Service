@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResetPasswordRequest {
-    private String resetToken;  // The token sent to the user
-    private String newPassword; // The new password the user wants to set
+    private String phoneNumber;
+    private Integer code;
+    private String newPassword;
 }

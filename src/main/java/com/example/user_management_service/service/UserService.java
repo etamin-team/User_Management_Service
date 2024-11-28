@@ -54,14 +54,16 @@ public class UserService {
             return userRepository.findDoctors();
         }
     }
-    // Fetch all managers
-    public List<User> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String query) {
-        if (query != null && !query.isEmpty()) {
-            return userRepository.searchManagersByName(Role.MANAGER, query);
-        } else {
+    public List<User> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+        if (nameQuery != null && !nameQuery.isEmpty()) {
+            return userRepository.searchManagersByName(Role.MANAGER, nameQuery);
+        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
             return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-                    Role.MANAGER, creatorId, countryId, regionId, workplaceId
-            );
+                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
+        } else if (creatorId != null) {
+            return userRepository.findByCreatorId(creatorId);
+        } else {
+            return userRepository.findManagers();
         }
     }
 }

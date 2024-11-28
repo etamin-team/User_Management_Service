@@ -10,7 +10,7 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -37,3 +37,8 @@ application:
       expiration: 86400000
       refresh-token:
         expiration: 604800000
+
+messagebird:
+  api-key: YOUR_MESSAGEBIRD_API_KEY
+  originator: YOUR_SENDER_ID_OR_NUMBER
+  url: https://rest.messagebird.com

@@ -47,6 +47,9 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(name = "role_rank")
+    private int roleRank;  // Store the numeric rank if needed
+
 
     @Column(name = "phone_number")
     private String phoneNumber;
@@ -67,7 +70,7 @@ public class User implements UserDetails {
     private String creatorId;
 
     @Column(name = "reset_token")
-    private String resetToken;
+    private Integer resetToken;
 
     @Column(name = "created_date")
     private LocalDateTime createdDate;
@@ -90,7 +93,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.name());
         return Collections.singletonList(authority);
     }
 
@@ -112,5 +115,15 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return UserDetails.super.isCredentialsNonExpired();
+    }
+    public Role getRole() {
+        return role;
+    }
+    public void setRoleRank(int roleRank) {
+        this.roleRank = roleRank;
+    }
+    public void setRole(Role role) {
+        this.role = role;
+        this.roleRank = role.getRank();  // Store the rank as well
     }
 }

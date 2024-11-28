@@ -4,9 +4,13 @@ import com.example.user_management_service.service.UserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
 
 /**
  * Date-11/19/2024
@@ -30,4 +34,10 @@ public class ApplicationConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate(Collections.singletonList(new FormHttpMessageConverter()));
+    }
+
 }

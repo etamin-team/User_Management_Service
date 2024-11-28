@@ -4,7 +4,7 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.auth.*;
 import com.example.user_management_service.exception.ValidationException;
 import com.example.user_management_service.config.JwtService;
-import com.example.user_management_service.message.sms.TwilioConfig;
+import com.example.user_management_service.message.sms.SmsService;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.AuthRequest;
 import com.example.user_management_service.model.dto.DoctorSignUpRequest;
@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -51,6 +50,8 @@ public class RegistrationService {
     private final TokenRepository tokenRepository;
     private final WorkPlaceRepository workPlaceRepository;
 
+    private final SmsService smsService;
+
     private final VerificationNumberRepository verificationNumberRepository;
 
     public AuthRandomNumberResponse signUpDoctor(DoctorSignUpRequest request) {
@@ -63,22 +64,16 @@ public class RegistrationService {
             return AuthRandomNumberResponse.TOO_MANY_ATTEMPTS;
         } else if (ChronoUnit.MINUTES.between(LocalDateTime.now(), verificationNumber.getExpirationDate()) > 0 && request.getVerificationNumber().equals(verificationNumber.getRandomNumber())) {
             verificationNumberRepository.deleteByUser(request.getNumber());
-         User user=   createUserRequest(
-                    new RegisterRequest(
-                            request.getFirstName(),
-                            request.getLastName(),
-                            null,
-                            Role.DOCTOR,
-                            request.getPassword(),
-                            request.getRegion(),
-                            request.getCountry(),
-                            request.getPhoneNumber(),
-                            request.getPhonePrefix(),
-                            request.getNumber(),
-                            null,
-                            null
-                    )
-            );
+            RegisterRequest registerRequest = new RegisterRequest();
+            registerRequest.setFirstName(request.getFirstName());
+            registerRequest.setLastName(request.getLastName());
+            registerRequest.setPassword(request.getPassword());
+            registerRequest.setRegion(request.getRegion());
+            registerRequest.setCountry(request.getCountry());
+            registerRequest.setPhoneNumber(request.getPhoneNumber());
+            registerRequest.setNumber(request.getNumber());
+            registerRequest.setPhonePrefix(request.getPhonePrefix());
+            User user = createUserRequest(registerRequest,Role.DOCTOR);
             user.setUserId(UUID.randomUUID());
             user.setCreatorId(String.valueOf(user.getUserId()));
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -107,15 +102,15 @@ public class RegistrationService {
         return AuthRandomNumberResponse.INCORRECT_NUMBER;
     }
 
-    public boolean register(RegisterRequest request){
-           User user=createUserRequest(request);
-           user.setUserId(UUID.randomUUID());
-           user.setPassword(passwordEncoder.encode(request.getPassword()));
-           userRepository.save(user);
-           return true;
+    public boolean register(RegisterRequest request,Role role) {
+        User user = createUserRequest(request,role);
+        user.setUserId(UUID.randomUUID());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+        return true;
     }
 
-    private User createUserRequest(RegisterRequest request) {
+    private User createUserRequest(RegisterRequest request,Role role) {
         User newUser = new User();
         Country country = countryRegionService.getCountryByName(request.getCountry());
         Region region = countryRegionService.getRegionByName(request.getRegion());
@@ -123,15 +118,17 @@ public class RegistrationService {
         newUser.setLastName(request.getLastName());
         newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.setPhonePrefix(request.getPhonePrefix());
+        newUser.setNumber(request.getNumber());
         newUser.setRegion(region);
         newUser.setCountry(country);
         newUser.setPassword(request.getPassword());
         newUser.setCreatorId(request.getCreatorId());
         newUser.setCreatedDate(LocalDateTime.now());
-        if (request.getRole().equals(Role.DOCTOR)) {
-            WorkPlace workPlace =workPlaceRepository.findById(request.getWorkPlaceId()).get();
-            newUser.setWorkplace(workPlace);
-        }
+        newUser.setRole(role);
+//        if (request.getRole().equals(Role.DOCTOR)) {
+//            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
+//            newUser.setWorkplace(workPlace);
+//        }
         return newUser;
     }
 
@@ -152,13 +149,15 @@ public class RegistrationService {
 
         return missingFields.toString();
     }
-    public boolean isUserWithEmailExists(String email){
+
+    public boolean isUserWithEmailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
-    public boolean isUserWithNumberExists(String number){
+    public boolean isUserWithNumberExists(String number) {
         return userRepository.findByNumber(number).isPresent();
     }
+
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
@@ -181,8 +180,9 @@ public class RegistrationService {
 
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
-        System.out.println("SMS sent successfully!");
+        smsService.sendSMS(toPhoneNumber, String.valueOf(verificationCode));
     }
+
     public boolean getNewVerificationNumber(String number, boolean isEmail) {
         if (verificationNumberRepository.findByNumber(number).isPresent()) {
             VerificationNumber verificationNumber = verificationNumberRepository.findByNumber(number).get();
@@ -192,13 +192,10 @@ public class RegistrationService {
         }
         int randomNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
         LocalDateTime expirationDate = LocalDateTime.now().plus(15, ChronoUnit.MINUTES);
-
-//        if (isEmail){
-//            //here should send number to email
-//        }else {
+        System.out.println("randomNumber: "+randomNumber);
         sendSMS(number, randomNumber);
 
-//        }
+
         VerificationNumber verificationNumber = new VerificationNumber(number, randomNumber, expirationDate);
         verificationNumberRepository.save(verificationNumber);
         return true;
@@ -207,12 +204,13 @@ public class RegistrationService {
     public boolean canCreateRole(Role currentUserRole, Role targetRole) {
         return currentUserRole.getRank() > targetRole.getRank();
     }
+
     public AuthResponse authenticate(AuthRequest request) {
         User user;
-        if (request.getIsNumber()){
-            user=userRepository.findByNumber(request.getNumber()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
-        }else {
-            user=userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        if (request.getIsNumber()) {
+            user = userRepository.findByNumber(request.getNumber()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+        } else {
+            user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
         }
         boolean checkPassword = userPasswordChecker(user, request.getPassword());
         if (checkPassword)
@@ -221,9 +219,11 @@ public class RegistrationService {
             throw new UsernameNotFoundException("Password Incorrect");
 
     }
+
     public boolean userPasswordChecker(User user, String password) {
         return passwordEncoder.matches(password.trim(), user.getPassword());
     }
+
     public AuthResponse createToken(User user) {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);

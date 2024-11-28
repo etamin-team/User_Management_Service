@@ -31,7 +31,6 @@ import java.io.IOException;
 public class AuthController {
 
     private final RegistrationService authService;
-    private final RoleService roleService;
     private final PasswordResetService passwordResetService;
 
     @PostMapping("/forgot-password")
@@ -80,29 +79,7 @@ public class AuthController {
         return ResponseEntity.status(status).body(response.name());
     }
 
-    @PostMapping("/register-doctor")
-    public ResponseEntity<Void> registerDoctor(@RequestBody RegisterRequest request) {
-        boolean isRegistered = authService.register(request);
-        return ResponseEntity.status(isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED).build();
-    }
 
-    @PostMapping("/register-admin")
-    public ResponseEntity<String> registerAdmin(@RequestBody RegisterRequest request) {
-        validateRoleAssignment(Role.ADMIN);
-        return registerUser(request, "Admin");
-    }
-
-    @PostMapping("/register-manager")
-    public ResponseEntity<String> registerManager(@RequestBody RegisterRequest request) {
-        validateRoleAssignment(Role.MANAGER);
-        return registerUser(request, "Manager");
-    }
-
-    @PostMapping("/register-superadmin")
-    public ResponseEntity<String> registerSuperAdmin(@RequestBody RegisterRequest request) {
-        validateRoleAssignment(Role.SUPERADMIN);
-        return registerUser(request, "SuperAdmin");
-    }
 
     @GetMapping("/is-number-exist")
     public ResponseEntity<Boolean> isNumberExists(@RequestParam("number") String number) {
@@ -133,19 +110,6 @@ public class AuthController {
         authService.refreshToken(request, response);
     }
 
-    private void validateRoleAssignment(Role targetRole) {
-        Role currentUserRole = roleService.getCurrentUserRole();
-        if (!authService.canCreateRole(currentUserRole, targetRole)) {
-            throw new UnauthorizedAccessException("You cannot assign the '" + targetRole.name() + "' role.");
-        }
-    }
-
-
-    private ResponseEntity<String> registerUser(RegisterRequest request, String roleName) {
-        boolean isRegistered = authService.register(request);
-        HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
-        return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
-    }
 
 
 
