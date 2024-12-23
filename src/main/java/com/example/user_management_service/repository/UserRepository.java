@@ -2,7 +2,11 @@ package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.role.Role;
+import com.example.user_management_service.role.UserStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -59,4 +63,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Search managers by name (first or last name)
     @Query("SELECT u FROM User u WHERE u.role = :role AND (u.firstName LIKE %:query% OR u.lastName LIKE %:query%)")
     List<User> searchManagersByName(Role role, String query);
+
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status")
+    Page<User> findDoctorsByStatus(@Param("role") Role role, @Param("status") UserStatus status, Pageable pageable);
+
+
 }

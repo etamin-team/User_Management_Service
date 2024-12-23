@@ -15,6 +15,7 @@ import com.example.user_management_service.repository.VerificationNumberReposito
 import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
+import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.token.Token;
 import com.example.user_management_service.utils.ValidationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +54,19 @@ public class RegistrationService {
     private final SmsService smsService;
 
     private final VerificationNumberRepository verificationNumberRepository;
+    public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request){
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setFirstName(request.getFirstName());
+        registerRequest.setLastName(request.getLastName());
+        registerRequest.setPassword(request.getPassword());
+        registerRequest.setRegion(request.getRegion());
+        registerRequest.setCountry(request.getCountry());
+        registerRequest.setPhoneNumber(request.getPhoneNumber());
+        registerRequest.setNumber(request.getNumber());
+        registerRequest.setPhonePrefix(request.getPhonePrefix());
+        register(registerRequest,Role.DOCTOR,UserStatus.PENDING);
+        return AuthRandomNumberResponse.SUCCESS;
+    }
 
     public AuthRandomNumberResponse signUpDoctor(DoctorSignUpRequest request) {
         VerificationNumber verificationNumber;
@@ -102,10 +116,11 @@ public class RegistrationService {
         return AuthRandomNumberResponse.INCORRECT_NUMBER;
     }
 
-    public boolean register(RegisterRequest request,Role role) {
+    public boolean register(RegisterRequest request, Role role, UserStatus userStatus) {
         User user = createUserRequest(request,role);
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(userStatus);
         userRepository.save(user);
         return true;
     }

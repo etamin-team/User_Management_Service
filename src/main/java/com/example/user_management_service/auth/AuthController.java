@@ -72,7 +72,7 @@ public class AuthController {
 
     @PostMapping("/signup-doctor")
     public ResponseEntity<String> signUpDoctor(@RequestBody DoctorSignUpRequest request) {
-        AuthRandomNumberResponse response = authService.signUpDoctor(request);
+        AuthRandomNumberResponse response = authService.signUpDoctorWithOutConfirmation(request);
         HttpStatus status = response.equals(AuthRandomNumberResponse.SUCCESS)
                 ? HttpStatus.ACCEPTED
                 : HttpStatus.UNAUTHORIZED;

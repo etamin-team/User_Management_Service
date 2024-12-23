@@ -88,7 +88,7 @@ public class JwtService {
 
     private String buildToken(Map<String, Object> extractClaims, User user, long expiration) {
         extractClaims.put("role", user.getRole());
-        extractClaims.put("enabled", user.isEnabled());
+        extractClaims.put("status", user.getStatus().name());
         return Jwts.builder()
                 .setClaims(extractClaims)
                 .setSubject(String.valueOf(user.getUserId()))

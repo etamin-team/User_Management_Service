@@ -5,10 +5,12 @@ import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.model.dto.RegisterRequest;
 import com.example.user_management_service.role.Role;
+import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.service.RegistrationService;
 import com.example.user_management_service.service.RoleService;
 import com.example.user_management_service.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +24,23 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/v1/user")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
     private final RegistrationService authService;
     private final RoleService roleService;
 
+    @Autowired
+    public UserController(UserService userService, RegistrationService authService, RoleService roleService) {
+        this.userService = userService;
+        this.authService = authService;
+        this.roleService = roleService;
+    }
+
     @PostMapping("/register-doctor")
     public ResponseEntity<Void> registerDoctor(@RequestBody RegisterRequest request) {
-        boolean isRegistered = authService.register(request, Role.DOCTOR);
+        boolean isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED);
         return ResponseEntity.status(isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -104,7 +112,7 @@ public class UserController {
 
 
     private ResponseEntity<String> registerUser(RegisterRequest request, String roleName, Role role) {
-        boolean isRegistered = authService.register(request, role);
+        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED);
         HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }
