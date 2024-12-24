@@ -14,7 +14,7 @@ public class ValidationUtils {
                 request.getPhonePrefix() == null ||
                 request.getLastName() == null ||
                 request.getPassword() == null ||
-                request.getRegion() == null ||
-                request.getCountry() == null;
+                request.getRegion() == null;
+//                request.getCountry() == null;
     }
 }

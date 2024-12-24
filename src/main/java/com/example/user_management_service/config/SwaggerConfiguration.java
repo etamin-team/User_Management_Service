@@ -30,8 +30,8 @@ public class SwaggerConfiguration implements WebMvcConfigurer{
                         .termsOfService("http://swagger.io/terms/")
                         .license(new License().name("Apache License").url("https://apache.co")))
                 .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Falcon server")
-//                        new Server().url("http://192.168.23.100:8080").description("Falcon server")
+//                        new Server().url("http://localhost:8080").description("Falcon server")
+                        new Server().url("http://192.168.23.100:8080").description("Falcon server")
                 ))
                 .security(List.of(new SecurityRequirement().addList("bearer-key"))); // Global security requirement
     }

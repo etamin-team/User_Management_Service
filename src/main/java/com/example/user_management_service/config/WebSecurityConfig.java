@@ -26,18 +26,14 @@ public class WebSecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(
-                        "/v2/api-docs",
-                        "/v3/api-docs",
                         "/v3/api-docs/**",
-                        "/swagger-resources",
-                        "/swagger-resources/**",
-                        "/configuration/ui",
-                        "/configuration/security",
                         "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
                         "/webjars/**",
-                        "/swagger-ui.html"
-                )
-                .permitAll()
+                        "/swagger-ui-custom.html"
+                ).permitAll()
+                .requestMatchers("/api/v*/auth/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

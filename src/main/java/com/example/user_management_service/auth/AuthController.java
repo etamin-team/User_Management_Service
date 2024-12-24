@@ -1,6 +1,8 @@
 package com.example.user_management_service.auth;
 
 import com.example.user_management_service.exception.UnauthorizedAccessException;
+import com.example.user_management_service.model.Region;
+import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * AuthController
@@ -110,6 +113,17 @@ public class AuthController {
         authService.refreshToken(request, response);
     }
 
+    @GetMapping("/workplaces")
+    public  ResponseEntity<List<WorkPlace>> getAllWorkPlaces(){
+      List<WorkPlace>  workPlaceList= authService.getAllWorkPlaces();
+        return ResponseEntity.ok(workPlaceList);
+    }
+
+    @GetMapping("/regions")
+    public  ResponseEntity<List<Region>> getAllRegions(){
+        List<Region>  regionList= authService.getAllRegions();
+        return ResponseEntity.ok(regionList);
+    }
 
 
 

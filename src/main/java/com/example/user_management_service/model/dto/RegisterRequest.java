@@ -1,7 +1,10 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Gender;
 import com.example.user_management_service.role.Role;
 import lombok.*;
+
+import java.time.LocalDate;
 
 /**
  * Date-11/20/2024
@@ -26,4 +29,9 @@ public class RegisterRequest {
     private String number;
     private String creatorId;
     private Long workPlaceId;
+    private LocalDate birthDate;
+    private Gender gender;
+
+    private String fieldName;
+    private String position;
 }

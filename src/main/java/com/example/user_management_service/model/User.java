@@ -77,6 +77,16 @@ public class User implements UserDetails {
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
+    @Column(name = "last_update_date")
+    private LocalDateTime lastUpdateDate;
+
+    @Column(name = "position")
+    private String position;
+
+    @Column(name = "fieldName")
+    private String fieldName;
+
+
     @ManyToOne
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
     private Gender gender;
@@ -92,6 +102,8 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
     private WorkPlace workplace;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -121,7 +133,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 
     public Role getRole() {

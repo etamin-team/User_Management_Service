@@ -1,6 +1,9 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Gender;
 import lombok.*;
+
+import java.time.LocalDate;
 
 /**
  * Date-11/25/2024
@@ -15,14 +18,28 @@ import lombok.*;
 @NoArgsConstructor
 public class DoctorSignUpRequest {
     private String firstName;
+    private String lastName;
+    private String middleName;
+
     private String phoneNumber;
     private String phonePrefix;
     private String number;
-    private String lastName;
+
     private String password;
     private String region;
-    private String country;
-    private Boolean isNumber;
-    private String email;
-    private Integer verificationNumber;
+
+    private LocalDate birthDate;
+
+    private Gender gender;
+
+    private Long workPlaceId;
+
+    private String fieldName;
+
+    private String position;
+
+//    private Boolean isNumber;
+//    private String email;
+
+//    private Integer verificationNumber;
 }
