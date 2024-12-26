@@ -2,7 +2,6 @@ package com.example.user_management_service.service;
 
 
 import com.example.user_management_service.auth.*;
-import com.example.user_management_service.exception.ValidationException;
 import com.example.user_management_service.config.JwtService;
 import com.example.user_management_service.message.sms.SmsService;
 import com.example.user_management_service.model.*;
@@ -14,7 +13,6 @@ import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.token.Token;
-import com.example.user_management_service.utils.ValidationUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,7 +40,7 @@ import static com.example.user_management_service.token.TokenType.BEARER;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-    private final CountryRegionService countryRegionService;
+    private final CityRegionService cityRegionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -142,13 +140,13 @@ public class RegistrationService {
 
     private User createUserRequest(RegisterRequest request,Role role) {
         User newUser = new User();
-        if (request.getCountry() != null&&request.getCountry().length()>0) {
-            Country country = countryRegionService.getCountryByName(request.getCountry());
-            newUser.setCountry(country);
-        }
         if (request.getRegion() != null&&request.getRegion().length()>0) {
-            Region region = countryRegionService.getRegionByName(request.getRegion());
+            Region region = cityRegionService.getRegionByName(request.getRegion());
             newUser.setRegion(region);
+        }
+        if (request.getCity() != null&&request.getCity().length()>0) {
+            City city = cityRegionService.getCityByName(request.getCity());
+            newUser.setCity(city);
         }
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());

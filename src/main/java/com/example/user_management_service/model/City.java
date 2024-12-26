@@ -3,12 +3,14 @@ package com.example.user_management_service.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Table(name = "countries")
+@Table(name = "cities")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Country {
+public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,4 +22,7 @@ public class Country {
     @ManyToOne
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
+
+    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Region> countries;
 }

@@ -20,13 +20,19 @@ public class RegisterRequest {
     private String firstName;
     private String lastName;
     private String middleName;
+    private String email;
+
     private Role role;
+
     private String password;
+
     private String region;
-    private String country;
+    private String city;
+
     private String phoneNumber;
     private String phonePrefix;
     private String number;
+
     private String creatorId;
     private Long workPlaceId;
     private LocalDate birthDate;

@@ -3,8 +3,6 @@ package com.example.user_management_service.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "regions")
 @Data
@@ -20,9 +18,7 @@ public class Region {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "country_id", nullable = false)
-    private Country country;
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Country> countries;
 }

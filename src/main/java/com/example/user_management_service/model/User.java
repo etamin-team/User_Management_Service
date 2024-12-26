@@ -92,12 +92,12 @@ public class User implements UserDetails {
     private Gender gender;
 
     @ManyToOne
-    @JoinColumn(name = "region_id", referencedColumnName = "id")
-    private Region region;
+    @JoinColumn(name = "city_id", referencedColumnName = "id")
+    private City city;
 
     @ManyToOne
-    @JoinColumn(name = "country_id", referencedColumnName = "id")
-    private Country country;
+    @JoinColumn(name = "region_id", referencedColumnName = "id")
+    private Region region;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
@@ -144,6 +144,6 @@ public class User implements UserDetails {
     }
     public void setRole(Role role) {
         this.role = role;
-        this.roleRank = role.getRank();  // Store the rank as well
+        this.roleRank = role.getRank();
     }
 }
