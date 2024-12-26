@@ -1,7 +1,8 @@
 package com.example.user_management_service.auth;
 
 import com.example.user_management_service.exception.UnauthorizedAccessException;
-import com.example.user_management_service.model.Region;
+//import com.example.user_management_service.model.City;
+//import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
@@ -119,12 +120,16 @@ public class AuthController {
         return ResponseEntity.ok(workPlaceList);
     }
 
-    @GetMapping("/regions")
-    public  ResponseEntity<List<Region>> getAllRegions(){
-        List<Region>  regionList= authService.getAllRegions();
-        return ResponseEntity.ok(regionList);
-    }
-
+//    @GetMapping("/regions")
+//    public  ResponseEntity<List<Region>> getAllRegions(){
+//        List<Region>  regionList= authService.getAllRegions();
+//        return ResponseEntity.ok(regionList);
+//    }
+//    @GetMapping("/citis")
+//    public  ResponseEntity<List<Region>> getAllCitiesByRegionName(@RequestParam("region") String region){
+//        List<City>  cityList= authService.getAllCitiesByRegionName(region);
+//        return ResponseEntity.ok(city);
+//    }
 
 
 }

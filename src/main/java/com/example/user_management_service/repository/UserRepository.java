@@ -35,9 +35,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Get users by role
     List<User> findByRole(Role role);
 
-    // Get users with multiple filters including role
-    List<User> findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-            Role role, String creatorId, Long countryId, Long regionId, Long workplaceId);
+//    // Get users with multiple filters including role
+//    List<User> findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//            Role role, String creatorId, Long countryId, Long regionId, Long workplaceId);
 
     boolean existsByRole(Role role);
 

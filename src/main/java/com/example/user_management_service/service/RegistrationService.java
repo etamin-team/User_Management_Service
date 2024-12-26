@@ -40,13 +40,13 @@ import static com.example.user_management_service.token.TokenType.BEARER;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-    private final CityRegionService cityRegionService;
+//    private final CityRegionService cityRegionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final WorkPlaceRepository workPlaceRepository;
-    private final RegionRepository regionRepository;
+//    private final RegionRepository regionRepository;
     private final SmsService smsService;
 
     private final VerificationNumberRepository verificationNumberRepository;
@@ -54,9 +54,12 @@ public class RegistrationService {
     public List<WorkPlace> getAllWorkPlaces(){
         return workPlaceRepository.findAll();
     }
-    public List<Region> getAllRegions(){
-        return regionRepository.findAll();
-    }
+//    public List<Region> getAllRegions(){
+//        return regionRepository.findAll();
+//    }
+//    public List<City> getAllCitiesByRegionName(String regionName){
+//        return cityRegionService.getCityByName(regionName);
+//    }
     public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request){
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setFirstName(request.getFirstName());
@@ -140,14 +143,14 @@ public class RegistrationService {
 
     private User createUserRequest(RegisterRequest request,Role role) {
         User newUser = new User();
-        if (request.getRegion() != null&&request.getRegion().length()>0) {
-            Region region = cityRegionService.getRegionByName(request.getRegion());
-            newUser.setRegion(region);
-        }
-        if (request.getCity() != null&&request.getCity().length()>0) {
-            City city = cityRegionService.getCityByName(request.getCity());
-            newUser.setCity(city);
-        }
+//        if (request.getRegion() != null&&request.getRegion().length()>0) {
+//            Region region = cityRegionService.getRegionByName(request.getRegion());
+//            newUser.setRegion(region);
+//        }
+//        if (request.getCity() != null&&request.getCity().length()>0) {
+//            City city = cityRegionService.getCityByName(request.getCity());
+//            newUser.setCity(city);
+//        }
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
         newUser.setPhoneNumber(request.getPhoneNumber());
@@ -177,7 +180,7 @@ public class RegistrationService {
         if (request.getPhonePrefix() == null) missingFields.append("phonePrefix, ");
         if (request.getLastName() == null) missingFields.append("lastName, ");
         if (request.getPassword() == null) missingFields.append("password, ");
-        if (request.getRegion() == null) missingFields.append("region, ");
+//        if (request.getRegion() == null) missingFields.append("region, ");
 
         if (missingFields.length() > 0) {
             missingFields.setLength(missingFields.length() - 2);

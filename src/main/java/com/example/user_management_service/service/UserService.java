@@ -45,9 +45,9 @@ public class UserService {
     public List<User> getDoctors(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
         if (nameQuery != null && !nameQuery.isEmpty()) {
             return userRepository.searchDoctorsByName(Role.DOCTOR, nameQuery);
-        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-                    Role.DOCTOR, creatorId, countryId, regionId, workplaceId);
+//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//                    Role.DOCTOR, creatorId, countryId, regionId, workplaceId);
         } else if (creatorId != null) {
             return userRepository.findByCreatorId(creatorId);
         } else {
@@ -57,9 +57,9 @@ public class UserService {
     public List<User> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
         if (nameQuery != null && !nameQuery.isEmpty()) {
             return userRepository.searchManagersByName(Role.MANAGER, nameQuery);
-        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
+//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
         } else if (creatorId != null) {
             return userRepository.findByCreatorId(creatorId);
         } else {
