@@ -1,9 +1,6 @@
 package com.example.user_management_service.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +32,10 @@ public class Preparation {
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private PreparationType type;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "medicine_id", referencedColumnName = "id")
+    private Medicine medicine;
 }
 
 enum PreparationType {

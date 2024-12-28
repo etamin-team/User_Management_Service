@@ -50,6 +50,9 @@ public class Recipe {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "date_creation")
+    private LocalDate dateCreation;
+
     @Column(name = "telegram_id")
     private Long telegramId;
 

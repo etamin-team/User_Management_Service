@@ -65,8 +65,8 @@ public class User implements UserDetails {
     @Column(name = "phone_prefix")
     private String phonePrefix;
 
-    @Column(name = "profile_picture_id")
-    private String profilePictureId;
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
 
     @Column(name = "creator_id")
     private String creatorId;
