@@ -91,13 +91,10 @@ public class User implements UserDetails {
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
     private Gender gender;
 
-//    @ManyToOne
-//    @JoinColumn(name = "city_id", referencedColumnName = "id")
-//    private City city;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "region_id", referencedColumnName = "id")
-//    private Region region;
+    @ManyToOne
+    @JoinColumn(name = "city_id", referencedColumnName = "id")
+    private City city;
+
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")

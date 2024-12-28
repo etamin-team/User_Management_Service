@@ -27,7 +27,7 @@ public class DoctorSignUpRequest {
 
     private String password;
     private String region;
-    private String city;
+    private Long cityId;
 
     private LocalDate birthDate;
 

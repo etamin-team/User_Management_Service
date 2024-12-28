@@ -40,34 +40,28 @@ import static com.example.user_management_service.token.TokenType.BEARER;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-//    private final CityRegionService cityRegionService;
+    private final CityRegionService cityRegionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final WorkPlaceRepository workPlaceRepository;
-//    private final RegionRepository regionRepository;
     private final SmsService smsService;
 
     private final VerificationNumberRepository verificationNumberRepository;
 
-    public List<WorkPlace> getAllWorkPlaces(){
+    public List<WorkPlace> getAllWorkPlaces() {
         return workPlaceRepository.findAll();
     }
-//    public List<Region> getAllRegions(){
-//        return regionRepository.findAll();
-//    }
-//    public List<City> getAllCitiesByRegionName(String regionName){
-//        return cityRegionService.getCityByName(regionName);
-//    }
-    public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request){
+
+    public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setFirstName(request.getFirstName());
         registerRequest.setLastName(request.getLastName());
         registerRequest.setMiddleName(request.getMiddleName());
 
         registerRequest.setPassword(request.getPassword());
-        registerRequest.setRegion(request.getRegion());
+        registerRequest.setCityId(request.getCityId());
 
         registerRequest.setPhoneNumber(request.getPhoneNumber());
         registerRequest.setNumber(request.getNumber());
@@ -80,60 +74,13 @@ public class RegistrationService {
         registerRequest.setPosition(request.getPosition());
         registerRequest.setGender(request.getGender());
 
-        register(registerRequest,Role.DOCTOR,UserStatus.PENDING);
+        register(registerRequest, Role.DOCTOR, UserStatus.PENDING);
         return AuthRandomNumberResponse.SUCCESS;
     }
 
-//    public AuthRandomNumberResponse signUpDoctor(DoctorSignUpRequest request) {
-//        VerificationNumber verificationNumber;
-//        if (!verificationNumberRepository.findByNumber(request.getNumber()).isPresent()) {
-//            return AuthRandomNumberResponse.WRONG_NUMBER;
-//        }
-//        verificationNumber = verificationNumberRepository.findByNumber(request.getNumber()).get();
-//        if (verificationNumber.getAttempts() > 6) {
-//            return AuthRandomNumberResponse.TOO_MANY_ATTEMPTS;
-//        } else if (ChronoUnit.MINUTES.between(LocalDateTime.now(), verificationNumber.getExpirationDate()) > 0 && request.getVerificationNumber().equals(verificationNumber.getRandomNumber())) {
-//            verificationNumberRepository.deleteByUser(request.getNumber());
-//            RegisterRequest registerRequest = new RegisterRequest();
-//            registerRequest.setFirstName(request.getFirstName());
-//            registerRequest.setLastName(request.getLastName());
-//            registerRequest.setPassword(request.getPassword());
-//            registerRequest.setRegion(request.getRegion());
-////            registerRequest.setCountry(request.getCountry());
-//            registerRequest.setPhoneNumber(request.getPhoneNumber());
-//            registerRequest.setNumber(request.getNumber());
-//            registerRequest.setPhonePrefix(request.getPhonePrefix());
-//            User user = createUserRequest(registerRequest,Role.DOCTOR);
-//            user.setUserId(UUID.randomUUID());
-//            user.setCreatorId(String.valueOf(user.getUserId()));
-//            user.setPassword(passwordEncoder.encode(request.getPassword()));
-//            userRepository.save(user);
-//            return AuthRandomNumberResponse.SUCCESS;
-//        }
-//        if (ValidationUtils.hasNullFields(request)) {
-//            ErrorMessage errorMessage = new ErrorMessage(
-//                    "Error",
-//                    "One or more required fields are missing: " + getMissingFields(request),
-//                    request
-//            );
-//            throw new ValidationException(errorMessage);
-//        }
-//        boolean isNumberPresent = userRepository.findByNumber(request.getNumber()).isPresent();
-//        if (isNumberPresent) {
-//            ErrorMessage errorMessage = new ErrorMessage(
-//                    "Error",
-//                    "Number is already taken: " + request.getNumber(),
-//                    request
-//            );
-//            throw new ValidationException(errorMessage);
-//        }
-//        verificationNumber.setAttempts(verificationNumber.getAttempts() + 1);
-//        verificationNumberRepository.save(verificationNumber);
-//        return AuthRandomNumberResponse.INCORRECT_NUMBER;
-//    }
 
     public boolean register(RegisterRequest request, Role role, UserStatus userStatus) {
-        User user = createUserRequest(request,role);
+        User user = createUserRequest(request, role);
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
@@ -141,16 +88,13 @@ public class RegistrationService {
         return true;
     }
 
-    private User createUserRequest(RegisterRequest request,Role role) {
+    private User createUserRequest(RegisterRequest request, Role role) {
         User newUser = new User();
-//        if (request.getRegion() != null&&request.getRegion().length()>0) {
-//            Region region = cityRegionService.getRegionByName(request.getRegion());
-//            newUser.setRegion(region);
-//        }
-//        if (request.getCity() != null&&request.getCity().length()>0) {
-//            City city = cityRegionService.getCityByName(request.getCity());
-//            newUser.setCity(city);
-//        }
+
+        if (request.getCityId() != null ) {
+            City city = cityRegionService.getCity(request.getCityId());
+            newUser.setCity(city);
+        }
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
         newUser.setPhoneNumber(request.getPhoneNumber());
@@ -180,7 +124,7 @@ public class RegistrationService {
         if (request.getPhonePrefix() == null) missingFields.append("phonePrefix, ");
         if (request.getLastName() == null) missingFields.append("lastName, ");
         if (request.getPassword() == null) missingFields.append("password, ");
-//        if (request.getRegion() == null) missingFields.append("region, ");
+        if (request.getCityId() == null) missingFields.append("city, ");
 
         if (missingFields.length() > 0) {
             missingFields.setLength(missingFields.length() - 2);
@@ -231,7 +175,7 @@ public class RegistrationService {
         }
         int randomNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
         LocalDateTime expirationDate = LocalDateTime.now().plus(15, ChronoUnit.MINUTES);
-        System.out.println("randomNumber: "+randomNumber);
+        System.out.println("randomNumber: " + randomNumber);
         sendSMS(number, randomNumber);
 
 

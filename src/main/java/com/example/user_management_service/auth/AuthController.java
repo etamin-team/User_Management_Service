@@ -3,10 +3,13 @@ package com.example.user_management_service.auth;
 import com.example.user_management_service.exception.UnauthorizedAccessException;
 //import com.example.user_management_service.model.City;
 //import com.example.user_management_service.model.Region;
+import com.example.user_management_service.model.City;
+import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
+import com.example.user_management_service.service.CityRegionService;
 import com.example.user_management_service.service.PasswordResetService;
 import com.example.user_management_service.service.RegistrationService;
 import com.example.user_management_service.service.RoleService;
@@ -36,6 +39,8 @@ public class AuthController {
 
     private final RegistrationService authService;
     private final PasswordResetService passwordResetService;
+
+    private final CityRegionService cityRegionService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -120,16 +125,17 @@ public class AuthController {
         return ResponseEntity.ok(workPlaceList);
     }
 
-//    @GetMapping("/regions")
-//    public  ResponseEntity<List<Region>> getAllRegions(){
-//        List<Region>  regionList= authService.getAllRegions();
-//        return ResponseEntity.ok(regionList);
-//    }
-//    @GetMapping("/citis")
-//    public  ResponseEntity<List<Region>> getAllCitiesByRegionName(@RequestParam("region") String region){
-//        List<City>  cityList= authService.getAllCitiesByRegionName(region);
-//        return ResponseEntity.ok(city);
-//    }
+    @GetMapping("/regions")
+    public  ResponseEntity<List<Region>> getAllRegions(){
+        List<Region>  regionList= cityRegionService.getRegions();
+        return ResponseEntity.ok(regionList);
+    }
+
+    @GetMapping("/citis")
+    public  ResponseEntity<List<City>> getAllCitiesByRegionName(@RequestParam("regionId") Long regionId){
+        List<City>  cityList=cityRegionService.getCitiesByRegionId(regionId);
+        return ResponseEntity.ok(cityList);
+    }
 
 
 }

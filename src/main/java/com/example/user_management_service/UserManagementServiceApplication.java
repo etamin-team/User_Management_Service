@@ -32,15 +32,13 @@ public class UserManagementServiceApplication {
                 chiefUser.setMiddleName("");
                 chiefUser.setDateOfBirth(LocalDate.of(1980, 1, 1));
                 chiefUser.setStatus(UserStatus.ENABLED);
-                chiefUser.setPassword(new BCryptPasswordEncoder().encode("sardor22")); // Replace with your password logic
+                chiefUser.setPassword(new BCryptPasswordEncoder().encode("sardor22"));
                 chiefUser.setRole(Role.CHIEF);
                 chiefUser.setRoleRank(Role.CHIEF.getRank());
                 chiefUser.setPhoneNumber("930530732");
-                chiefUser.setNumber("+998930530732");
+                chiefUser.setNumber("998930530732");
                 chiefUser.setPhonePrefix("+998");
-
                 String userId= String.valueOf(userRepository.save(chiefUser).getUserId());
-
                 System.out.println("Chief user created successfully! chiefId: "+userId);
             }catch (Exception e){
                 e.printStackTrace();
