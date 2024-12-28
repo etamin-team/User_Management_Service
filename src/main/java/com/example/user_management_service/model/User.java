@@ -87,11 +87,11 @@ public class User implements UserDetails {
     private String fieldName;
 
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
     private Gender gender;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "city_id", referencedColumnName = "id")
     private City city;
 

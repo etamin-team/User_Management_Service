@@ -25,11 +25,13 @@ public class WorkPlace {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    private String name; // Name of the hospital, clinic, etc.
+    private String name;
 
     @Column(name = "address")
-    private String address; // Address of the workplace
+    private String address;
 
     @Column(name = "description")
     private String description;
+
+
 }

@@ -27,4 +27,24 @@ public class Medicine {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    private Long price;
+
+    private Integer quantity;
+
+    private Integer prescription;
+
+    private String volume;
+
+    private Double limit;
+    private Integer score;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private MedicineQuantity type;
 }
+
+enum MedicineQuantity {
+    ITEM, ML, GR
+}
+

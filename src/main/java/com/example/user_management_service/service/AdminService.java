@@ -1,6 +1,7 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
@@ -40,5 +41,9 @@ public class AdminService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         user.setStatus(UserStatus.DECLINED);
         userRepository.save(user);
+    }
+
+    public void createWorkPlace(WorkPlace workPlace) {
+
     }
 }
