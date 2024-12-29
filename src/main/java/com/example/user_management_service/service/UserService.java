@@ -94,8 +94,8 @@ public class UserService {
         }
         return false;
     }
-    public List<WorkPlace> getAllWorkplaces() {
-        return workPlaceRepository.findAll();
-    }
+//    public List<WorkPlace> getAllWorkplaces() {
+//        return workPlaceRepository.findAll();
+//    }
 
 }

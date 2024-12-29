@@ -1,6 +1,9 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.model.Medicine;
+import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.repository.MedicineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,11 +18,12 @@ import java.util.Optional;
  */
 @Service
 public class DataBaseService {
-
+    private final ContractRepository contractRepository;
     private final MedicineRepository medicineRepository;
 
     @Autowired
-    public DataBaseService(MedicineRepository medicineRepository) {
+    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository) {
+        this.contractRepository = contractRepository;
         this.medicineRepository = medicineRepository;
     }
 
@@ -38,8 +42,34 @@ public class DataBaseService {
         return medicineRepository.findById(id);
     }
 
-    // List all Medicines
     public List<Medicine> findAllMedicines() {
         return medicineRepository.findAll();
+    }
+
+
+    public Contract getContractById(Long contractId) {
+        return contractRepository.findById(contractId)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
+    }
+    public List<Contract> getAllContracts() {
+        return contractRepository.findAll();
+    }
+
+    public void deleteContract(Long contractId) {
+        contractRepository.deleteById(contractId);
+    }
+
+    public Contract saveContractFromDTO(ContractDTO contractDTO) {
+        Contract contract = new Contract();
+
+        contract.setContractDate(contractDTO.getContractDate());
+        contract.setContractType(contractDTO.getContractType());
+        contract.setContractStatus(contractDTO.getContractStatus());
+        contract.setTotalAmount(contractDTO.getTotalAmount());
+
+        List<Medicine> medicines = medicineRepository.findAllById(contractDTO.getMedicineIds());
+        contract.setMedicines(medicines);
+
+        return contractRepository.save(contract);
     }
 }

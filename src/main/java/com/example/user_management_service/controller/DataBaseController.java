@@ -1,6 +1,8 @@
 package com.example.user_management_service.controller;
 
+import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.Medicine;
+import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.service.DataBaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,21 +30,18 @@ public class DataBaseController {
         this.dataBaseService = dataBaseService;
     }
 
-    // Create a new Medicine or update an existing one
     @PostMapping("/medicine")
     public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody Medicine medicine) {
         Medicine savedMedicine = dataBaseService.saveOrUpdateMedicine(medicine);
         return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED);
     }
 
-    // Delete a Medicine by ID
     @DeleteMapping("/medicine/{id}")
     public ResponseEntity<Void> deleteMedicine(@PathVariable Long id) {
         dataBaseService.deleteMedicine(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // Get a Medicine by ID
     @GetMapping("/medicine/{id}")
     public ResponseEntity<Medicine> getMedicine(@PathVariable Long id) {
         Optional<Medicine> medicine = dataBaseService.findMedicineById(id);
@@ -53,10 +52,33 @@ public class DataBaseController {
         }
     }
 
-    // Get all Medicines
     @GetMapping("/medicines")
     public ResponseEntity<List<Medicine>> getAllMedicines() {
         List<Medicine> medicines = dataBaseService.findAllMedicines();
         return new ResponseEntity<>(medicines, HttpStatus.OK);
+    }
+
+    @PostMapping("/contracts")
+    public ResponseEntity<Contract> createContract(@RequestBody ContractDTO contractDTO) {
+
+        Contract savedContract = dataBaseService.saveContractFromDTO(contractDTO);
+        return ResponseEntity.ok(savedContract);
+    }
+    @GetMapping("/contracts/{contractId}")
+    public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
+        Contract contract = dataBaseService.getContractById(contractId);
+        return ResponseEntity.ok(contract);
+    }
+
+    @GetMapping("/contracts")
+    public ResponseEntity<List<Contract>> getAllContracts() {
+        List<Contract> contracts = dataBaseService.getAllContracts();
+        return ResponseEntity.ok(contracts);
+    }
+
+    @DeleteMapping("/contracts/{contractId}")
+    public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
+        dataBaseService.deleteContract(contractId);
+        return ResponseEntity.noContent().build();
     }
 }

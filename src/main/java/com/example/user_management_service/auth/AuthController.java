@@ -133,12 +133,12 @@ public class AuthController {
         return ResponseEntity.ok(cityList);
     }
 
-    @GetMapping("/workplaces")
-    public ResponseEntity<List<WorkPlace>> getAllWorkplaces() {
-        List<WorkPlace> workplaces = userService.getAllWorkplaces();
-        return workplaces.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(workplaces);
-    }
+//    @GetMapping("/workplaces")
+//    public ResponseEntity<List<WorkPlace>> getAllWorkplaces() {
+//        List<WorkPlace> workplaces = userService.getAllWorkplaces();
+//        return workplaces.isEmpty()
+//                ? ResponseEntity.noContent().build()
+//                : ResponseEntity.ok(workplaces);
+//    }
 
 }
