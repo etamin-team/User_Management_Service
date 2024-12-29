@@ -26,4 +26,5 @@ public class Contract {
     private Long id;
 
 
+
 }

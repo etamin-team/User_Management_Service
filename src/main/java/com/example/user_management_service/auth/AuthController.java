@@ -9,10 +9,7 @@ import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
-import com.example.user_management_service.service.CityRegionService;
-import com.example.user_management_service.service.PasswordResetService;
-import com.example.user_management_service.service.RegistrationService;
-import com.example.user_management_service.service.RoleService;
+import com.example.user_management_service.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +36,8 @@ public class AuthController {
 
     private final RegistrationService authService;
     private final PasswordResetService passwordResetService;
-
     private final CityRegionService cityRegionService;
+    private final UserService userService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -56,7 +53,6 @@ public class AuthController {
         }
     }
 
-    // Reset password endpoint (step 2: user submits the token and new password)
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
@@ -137,5 +133,12 @@ public class AuthController {
         return ResponseEntity.ok(cityList);
     }
 
+    @GetMapping("/workplaces")
+    public ResponseEntity<List<WorkPlace>> getAllWorkplaces() {
+        List<WorkPlace> workplaces = userService.getAllWorkplaces();
+        return workplaces.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(workplaces);
+    }
 
 }

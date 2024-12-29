@@ -1,8 +1,10 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.repository.UserRepository;
+import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final WorkPlaceRepository workPlaceRepository;
     public User getUserById(String userId) {
         return userRepository.findById(UUID.fromString(userId)).orElse(null);
     }
@@ -91,6 +94,8 @@ public class UserService {
         }
         return false;
     }
-
+    public List<WorkPlace> getAllWorkplaces() {
+        return workPlaceRepository.findAll();
+    }
 
 }
