@@ -87,8 +87,8 @@ public class User implements UserDetails {
     private String fieldName;
 
 
-    @OneToOne
-    @JoinColumn(name = "gender_id", referencedColumnName = "gender_id")
+    @Enumerated(EnumType.STRING) // Store enum as a string in the database
+    @Column(name = "gender")
     private Gender gender;
 
     @OneToOne
