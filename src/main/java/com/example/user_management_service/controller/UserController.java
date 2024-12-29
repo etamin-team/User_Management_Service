@@ -117,4 +117,21 @@ public class UserController {
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable("id") String userId,
+            @RequestBody User updatedUser
+    ) {
+        User user = userService.updateUser(userId, updatedUser);
+        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") String userId) {
+        boolean isDeleted = userService.deleteUser(userId);
+        return isDeleted
+                ? ResponseEntity.ok("User successfully deleted.")
+                : ResponseEntity.notFound().build();
+    }
+
 }

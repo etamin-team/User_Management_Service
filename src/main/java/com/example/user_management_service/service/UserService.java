@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -66,4 +69,28 @@ public class UserService {
             return userRepository.findManagers();
         }
     }
+    public User updateUser(String userId, User updatedUser) {
+        return userRepository.findById(UUID.fromString(userId))
+                .map(existingUser -> {
+                    existingUser.setFirstName(updatedUser.getFirstName());
+                    existingUser.setLastName(updatedUser.getLastName());
+                    existingUser.setMiddleName(updatedUser.getMiddleName());
+                    existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+                    existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+                    existingUser.setLastUpdateDate(LocalDateTime.now());
+                    return userRepository.save(existingUser);
+                })
+                .orElse(null);
+    }
+
+    public boolean deleteUser(String userId) {
+        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+        if (user.isPresent()) {
+            userRepository.deleteById(UUID.fromString(userId));
+            return true;
+        }
+        return false;
+    }
+
+
 }

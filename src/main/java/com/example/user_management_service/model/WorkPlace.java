@@ -33,5 +33,8 @@ public class WorkPlace {
     @Column(name = "description")
     private String description;
 
+    @OneToOne
+    @JoinColumn(name = "city_id", referencedColumnName = "id")
+    private City city;
 
 }

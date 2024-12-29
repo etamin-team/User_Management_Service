@@ -14,4 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/db")
 @CrossOrigin(origins = "*")
 public class DataBaseController {
+
+
 }

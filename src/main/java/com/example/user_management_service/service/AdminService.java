@@ -1,8 +1,11 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.City;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.repository.UserRepository;
+import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +28,8 @@ public class AdminService {
 
     private final UserRepository userRepository;
 
+    private final WorkPlaceRepository workPlaceRepository;
+
     public Page<User> getDoctorsNotDeclinedAndNotEnabled(Pageable pageable) {
         return userRepository.findDoctorsByStatus(Role.DOCTOR,UserStatus.PENDING, pageable);
     }
@@ -43,7 +48,44 @@ public class AdminService {
         userRepository.save(user);
     }
 
-    public void createWorkPlace(WorkPlace workPlace) {
-
+    public void createWorkPlace(WorkPlaceDTO workPlaceDTO) {
+        WorkPlace workPlace= convertToEntity(workPlaceDTO) ;
+        workPlaceRepository.save(workPlace);
     }
+    private WorkPlace convertToEntity(WorkPlaceDTO workPlaceDTO) {
+        WorkPlace workPlace = new WorkPlace();
+        workPlace.setId(workPlaceDTO.getId());
+        workPlace.setName(workPlaceDTO.getName());
+        workPlace.setAddress(workPlaceDTO.getAddress());
+        workPlace.setDescription(workPlaceDTO.getDescription());
+
+        City city = new City();
+        city.setId(workPlaceDTO.getCityId());
+        workPlace.setCity(city);
+
+        return workPlace;
+    }
+    public void updateWorkPlace(Long id, WorkPlaceDTO workPlaceDTO) {
+        WorkPlace existingWorkPlace = workPlaceRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("WorkPlace not found with id: " + id));
+
+
+        existingWorkPlace.setName(workPlaceDTO.getName());
+        existingWorkPlace.setAddress(workPlaceDTO.getAddress());
+        existingWorkPlace.setDescription(workPlaceDTO.getDescription());
+
+        if (workPlaceDTO.getCityId() != null) {
+            City city = new City();
+            city.setId(workPlaceDTO.getCityId());
+            existingWorkPlace.setCity(city);
+        }
+
+        workPlaceRepository.save(existingWorkPlace);
+    }
+
+    public void deleteWorkPlace(Long id) {
+        workPlaceRepository.deleteById(id);
+    }
+
+
 }

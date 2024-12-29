@@ -1,12 +1,15 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +52,22 @@ public class AdminController {
         return ResponseEntity.ok("User has been declined successfully.");
     }
 
+    @PostMapping
+    public ResponseEntity<String> createWorkPlace(@RequestBody WorkPlaceDTO workPlaceDTO) {
+        adminService.createWorkPlace(workPlaceDTO);
+        return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
+    }
 
+    @PutMapping("/workplaces/{id}")
+    public ResponseEntity<String> updateWorkPlace(@PathVariable Long id, @RequestBody WorkPlaceDTO workPlaceDTO) {
+        adminService.updateWorkPlace(id, workPlaceDTO);
+        return ResponseEntity.ok("Workplace updated successfully!");
+    }
+    @DeleteMapping("/workplaces/{id}")
+    public ResponseEntity<String> deleteWorkPlace(@PathVariable Long id) {
+        adminService.deleteWorkPlace(id);
+        return ResponseEntity.ok("Workplace deleted successfully!");
+    }
 
 
 }
