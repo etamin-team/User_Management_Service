@@ -78,6 +78,4 @@ public class Medicine {
     private Integer kbBall;
 }
 
-enum MedicineQuantity {
-    ITEM, ML, GR
-}
+

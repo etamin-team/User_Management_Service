@@ -2,6 +2,7 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
+import com.example.user_management_service.model.dto.RecipeDto;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class DoctorController {
     }
 
     @PostMapping("/save-recipe")
-    public void saveRecipe(@RequestBody Recipe recipe) {
+    public void saveRecipe(@RequestBody RecipeDto recipe) {
         recipeService.saveRecipe(recipe);
     }
 }

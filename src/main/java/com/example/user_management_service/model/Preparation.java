@@ -38,6 +38,3 @@ public class Preparation {
     private Medicine medicine;
 }
 
-enum PreparationType {
-    PILLS, TYPE2, TYPE3
-}
