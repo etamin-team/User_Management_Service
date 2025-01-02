@@ -26,6 +26,8 @@ public class Template {
     @Column(name = "template_id")
     private Long id;
 
+    private String name;
+
     private String diagnosis;
 
     @ElementCollection

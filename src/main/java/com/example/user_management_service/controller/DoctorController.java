@@ -3,6 +3,7 @@ package com.example.user_management_service.controller;
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
 import com.example.user_management_service.model.dto.RecipeDto;
+import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class DoctorController {
 
 
     private final DoctorService doctorService;
-    private final RecipeService recipeService; // Injecting RecipeService
+    private final RecipeService recipeService;
 
     @Autowired
     public DoctorController(DoctorService doctorService, RecipeService recipeService) {
@@ -31,13 +32,13 @@ public class DoctorController {
     }
 
     @PostMapping("/create-template")
-    public void createTemplate(@RequestBody Template template, @RequestParam(defaultValue = "false") boolean save) {
-        doctorService.saveTemplate(template,save);
+    public void createTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
+        doctorService.saveTemplate(templateDto, save);
     }
 
     @PostMapping("/save-template/{id}")
     public void saveTemplate(@PathVariable Long id, @RequestParam boolean save) {
-         doctorService.saveTemplate(id, save);
+        doctorService.saveTemplate(id, save);
     }
 
     @GetMapping("/templates")

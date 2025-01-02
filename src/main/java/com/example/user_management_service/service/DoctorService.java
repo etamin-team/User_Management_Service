@@ -1,13 +1,20 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.Medicine;
+import com.example.user_management_service.model.Preparation;
 import com.example.user_management_service.model.Template;
+import com.example.user_management_service.model.dto.PreparationDto;
+import com.example.user_management_service.model.dto.TemplateDto;
+import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.TemplateRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Date-12/24/2024
@@ -22,20 +29,23 @@ public class DoctorService {
 
     private final TemplateRepository templateRepository;
 
+    private final MedicineRepository medicineRepository;
+
 
     public void saveTemplate(Long id, boolean save) {
         Template template = templateRepository.findById(id).orElse(null);
-        if (template != null && save != template.isSaved()){
+        if (template != null && save != template.isSaved()) {
             template.setSaved(save);
             templateRepository.save(template);
         }
     }
 
-    public void saveTemplate(Template template, boolean save) {
-        Template template1 = templateRepository.findById(template.getId()).orElse(null);
-        if (template != null && save != template.isSaved()){
-            template1.setSaved(save);
-            templateRepository.save(template1);
+    public void saveTemplate(TemplateDto templateDto, boolean save) {
+        Template template = convertToEntity(templateDto);
+        Template existingTemplate = templateRepository.findById(template.getId()).orElse(null);
+        if (existingTemplate != null && save != existingTemplate.isSaved()) {
+            existingTemplate.setSaved(save);
+            templateRepository.save(existingTemplate);
         }
     }
 
@@ -61,5 +71,28 @@ public class DoctorService {
         }
     }
 
+    private Template convertToEntity(TemplateDto templateDto) {
+        Template template = new Template();
+        template.setId(templateDto.getId());
+        template.setName(templateDto.getName());
+        template.setDiagnosis(templateDto.getDiagnosis());
+        template.setPreparations(templateDto.getPreparations().stream().map(preparationDto -> {
+            Preparation preparation = new Preparation();
+            preparation.setName(preparationDto.getName());
+            preparation.setAmount(preparationDto.getAmount());
+            preparation.setQuantity(preparationDto.getQuantity());
+            preparation.setTimesInDay(preparationDto.getTimesInDay());
+            preparation.setDays(preparationDto.getDays());
+            preparation.setType(preparationDto.getType());
+            Medicine medicine = medicineRepository.findById(preparationDto.getMedicineId())
+                    .orElseThrow(() -> new EntityNotFoundException("Medicine not found with ID: " + preparationDto.getMedicineId()));
+            preparation.setMedicine(medicine);
+
+            return preparation;
+        }).collect(Collectors.toList()));
+        template.setNote(templateDto.getNote());
+        template.setSaved(templateDto.isSaved());
+        return template;
+    }
 
 }
