@@ -13,6 +13,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResetPasswordRequest {
     private String phoneNumber;
-    private Integer code;
     private String newPassword;
 }

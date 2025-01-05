@@ -8,6 +8,7 @@ import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.exception.ValidationException;
 import com.example.user_management_service.utils.ValidationUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 //import org.springframework.mail.SimpleMailMessage;
 //import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class PasswordResetService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private final RegistrationService registrationService;
     public boolean sendResetToken(ForgotPasswordRequest request) {
@@ -43,11 +45,7 @@ public class PasswordResetService {
 
     public boolean resetPassword(ResetPasswordRequest request) {
         User user = userRepository.findByNumber(request.getPhoneNumber()).get();
-        if (user.getResetToken()==request.getCode()) {
-            throw new ValidationException(new ErrorMessage("401","Invalid Code",null));
-        }
-
-        user.setPassword(request.getNewPassword());
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.setResetToken(null);
         userRepository.save(user);
         return true;

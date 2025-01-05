@@ -37,7 +37,6 @@ public class AuthController {
     private final RegistrationService authService;
     private final PasswordResetService passwordResetService;
     private final CityRegionService cityRegionService;
-    private final UserService userService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -53,19 +52,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        try {
-            boolean success = passwordResetService.resetPassword(request);
-            if (success) {
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password reset successfully");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid reset token");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error resetting password");
-        }
-    }
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         try {

@@ -2,8 +2,10 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.dto.ResetPasswordRequest;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.service.AdminService;
+import com.example.user_management_service.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,10 +29,12 @@ import java.util.UUID;
 public class AdminController {
 
     private final AdminService adminService;
+    private final PasswordResetService passwordResetService;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, PasswordResetService passwordResetService) {
         this.adminService = adminService;
+        this.passwordResetService = passwordResetService;
     }
 
     @GetMapping("/doctors/not-declined-not-enabled")
@@ -69,5 +73,17 @@ public class AdminController {
         return ResponseEntity.ok("Workplace deleted successfully!");
     }
 
-
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            boolean success = passwordResetService.resetPassword(request);
+            if (success) {
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password reset successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid reset token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error resetting password");
+        }
+    }
 }
