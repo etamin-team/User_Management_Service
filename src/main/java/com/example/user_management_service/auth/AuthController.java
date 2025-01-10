@@ -1,6 +1,5 @@
 package com.example.user_management_service.auth;
 
-import com.example.user_management_service.exception.UnauthorizedAccessException;
 //import com.example.user_management_service.model.District;
 //import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.District;
@@ -8,8 +7,7 @@ import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
-import com.example.user_management_service.role.Role;
-import com.example.user_management_service.service.*;
+        import com.example.user_management_service.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +34,7 @@ public class AuthController {
 
     private final RegistrationService authService;
     private final PasswordResetService passwordResetService;
-    private final DistrictRegionService DistrictRegionService;
+    private final DistrictRegionService districtRegionService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -109,13 +107,13 @@ public class AuthController {
 
     @GetMapping("/regions")
     public  ResponseEntity<List<Region>> getAllRegions(){
-        List<Region>  regionList= DistrictRegionService.getRegions();
+        List<Region>  regionList= districtRegionService.getRegions();
         return ResponseEntity.ok(regionList);
     }
 
     @GetMapping("/districts")
     public  ResponseEntity<List<District>> getAllDistrictsByRegionName(@RequestParam("regionId") Long regionId){
-        List<District>  DistrictList=DistrictRegionService.getDistrictsByRegionId(regionId);
+        List<District>  DistrictList= districtRegionService.getDistrictsByRegionId(regionId);
         return ResponseEntity.ok(DistrictList);
     }
 
