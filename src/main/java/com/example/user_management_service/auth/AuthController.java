@@ -1,9 +1,9 @@
 package com.example.user_management_service.auth;
 
 import com.example.user_management_service.exception.UnauthorizedAccessException;
-//import com.example.user_management_service.model.City;
+//import com.example.user_management_service.model.District;
 //import com.example.user_management_service.model.Region;
-import com.example.user_management_service.model.City;
+import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
@@ -36,7 +36,7 @@ public class AuthController {
 
     private final RegistrationService authService;
     private final PasswordResetService passwordResetService;
-    private final CityRegionService cityRegionService;
+    private final DistrictRegionService DistrictRegionService;
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) {
@@ -109,14 +109,14 @@ public class AuthController {
 
     @GetMapping("/regions")
     public  ResponseEntity<List<Region>> getAllRegions(){
-        List<Region>  regionList= cityRegionService.getRegions();
+        List<Region>  regionList= DistrictRegionService.getRegions();
         return ResponseEntity.ok(regionList);
     }
 
-    @GetMapping("/citis")
-    public  ResponseEntity<List<City>> getAllCitiesByRegionName(@RequestParam("regionId") Long regionId){
-        List<City>  cityList=cityRegionService.getCitiesByRegionId(regionId);
-        return ResponseEntity.ok(cityList);
+    @GetMapping("/districts")
+    public  ResponseEntity<List<District>> getAllDistrictsByRegionName(@RequestParam("regionId") Long regionId){
+        List<District>  DistrictList=DistrictRegionService.getDistrictsByRegionId(regionId);
+        return ResponseEntity.ok(DistrictList);
     }
 
 //    @GetMapping("/workplaces")

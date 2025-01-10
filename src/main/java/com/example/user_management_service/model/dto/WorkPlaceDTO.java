@@ -18,5 +18,5 @@ public class WorkPlaceDTO {
     private String name;
     private String address;
     private String description;
-    private Long cityId;
+    private Long districtId;
 }

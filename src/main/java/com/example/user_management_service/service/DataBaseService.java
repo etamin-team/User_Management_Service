@@ -67,6 +67,15 @@ public class DataBaseService {
         contract.setContractStatus(contractDTO.getContractStatus());
         contract.setTotalAmount(contractDTO.getTotalAmount());
 
+        // Set the additional fields
+        contract.setQuota_60(contractDTO.getQuota_60());
+        contract.setQuota_75_90(contractDTO.getQuota_75_90());
+        contract.setSb(contractDTO.getSb());
+        contract.setSu(contractDTO.getSu());
+        contract.setGz(contractDTO.getGz());
+        contract.setKb(contractDTO.getKb());
+
+        // Set medicines
         List<Medicine> medicines = medicineRepository.findAllById(contractDTO.getMedicineIds());
         contract.setMedicines(medicines);
 

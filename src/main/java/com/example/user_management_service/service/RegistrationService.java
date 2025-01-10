@@ -40,7 +40,7 @@ import static com.example.user_management_service.token.TokenType.BEARER;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-    private final CityRegionService cityRegionService;
+    private final DistrictRegionService DistrictRegionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -61,7 +61,7 @@ public class RegistrationService {
         registerRequest.setMiddleName(request.getMiddleName());
 
         registerRequest.setPassword(request.getPassword());
-        registerRequest.setCityId(request.getCityId());
+        registerRequest.setDistrictId(request.getDistrictId());
 
         registerRequest.setPhoneNumber(request.getPhoneNumber());
         registerRequest.setNumber(request.getNumber());
@@ -91,9 +91,9 @@ public class RegistrationService {
     private User createUserRequest(RegisterRequest request, Role role) {
         User newUser = new User();
 
-        if (request.getCityId() != null ) {
-            City city = cityRegionService.getCity(request.getCityId());
-            newUser.setCity(city);
+        if (request.getDistrictId() != null ) {
+            District District = DistrictRegionService.getDistrict(request.getDistrictId());
+            newUser.setDistrict(District);
         }
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());
@@ -124,7 +124,7 @@ public class RegistrationService {
         if (request.getPhonePrefix() == null) missingFields.append("phonePrefix, ");
         if (request.getLastName() == null) missingFields.append("lastName, ");
         if (request.getPassword() == null) missingFields.append("password, ");
-        if (request.getCityId() == null) missingFields.append("city, ");
+        if (request.getDistrictId() == null) missingFields.append("District, ");
 
         if (missingFields.length() > 0) {
             missingFields.setLength(missingFields.length() - 2);

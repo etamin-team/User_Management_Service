@@ -18,11 +18,18 @@ import java.util.List;
 @Setter
 public class ContractDTO {
 
-    private Long id; // Contract ID (if updating an existing contract)
-    private List<Long> medicineIds;  // List of medicine IDs for the contract
-    private String contractDate; // Date of the contract
-    private String contractType; // Type of the contract (e.g., short-term, long-term)
-    private String contractStatus; // Status of the contract (e.g., active, expired)
-    private Double totalAmount; // Total amount for the contract
+    private Long id;
+    private List<Long> medicineIds;
+    private String contractDate;
+    private String contractType;
+    private String contractStatus;
+    private Double totalAmount;
+
+    private Double quota_60;
+    private Double quota_75_90;
+    private Double sb;
+    private Double su;
+    private Double gz;
+    private Double kb;
 
 }

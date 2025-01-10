@@ -1,6 +1,6 @@
 package com.example.user_management_service.repository;
 
-import com.example.user_management_service.model.City;
+import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -4,6 +4,7 @@ import com.example.user_management_service.exception.UnauthorizedAccessException
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.model.dto.RegisterRequest;
+import com.example.user_management_service.model.dto.UserDTO;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.service.RegistrationService;
@@ -120,7 +121,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable("id") String userId,
-            @RequestBody User updatedUser
+            @RequestBody UserDTO updatedUser
     ) {
         User user = userService.updateUser(userId, updatedUser);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();

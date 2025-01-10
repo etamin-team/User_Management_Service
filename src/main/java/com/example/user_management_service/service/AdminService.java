@@ -1,6 +1,6 @@
 package com.example.user_management_service.service;
 
-import com.example.user_management_service.model.City;
+import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -59,9 +58,9 @@ public class AdminService {
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());
 
-        City city = new City();
-        city.setId(workPlaceDTO.getCityId());
-        workPlace.setCity(city);
+        District District = new District();
+        District.setId(workPlaceDTO.getDistrictId());
+        workPlace.setDistrict(District);
 
         return workPlace;
     }
@@ -74,10 +73,10 @@ public class AdminService {
         existingWorkPlace.setAddress(workPlaceDTO.getAddress());
         existingWorkPlace.setDescription(workPlaceDTO.getDescription());
 
-        if (workPlaceDTO.getCityId() != null) {
-            City city = new City();
-            city.setId(workPlaceDTO.getCityId());
-            existingWorkPlace.setCity(city);
+        if (workPlaceDTO.getDistrictId() != null) {
+            District District = new District();
+            District.setId(workPlaceDTO.getDistrictId());
+            existingWorkPlace.setDistrict(District);
         }
 
         workPlaceRepository.save(existingWorkPlace);

@@ -3,6 +3,8 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
+import com.example.user_management_service.model.dto.UserDTO;
+import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.Role;
@@ -27,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final WorkPlaceRepository workPlaceRepository;
+    private final DistrictRepository districtRepository;
     public User getUserById(String userId) {
         return userRepository.findById(UUID.fromString(userId)).orElse(null);
     }
@@ -72,19 +75,37 @@ public class UserService {
             return userRepository.findManagers();
         }
     }
-    public User updateUser(String userId, User updatedUser) {
+    public User updateUser(String userId, UserDTO updatedUser) {
         return userRepository.findById(UUID.fromString(userId))
                 .map(existingUser -> {
+                    // Update the fields of the existing user from the UserDTO
                     existingUser.setFirstName(updatedUser.getFirstName());
                     existingUser.setLastName(updatedUser.getLastName());
                     existingUser.setMiddleName(updatedUser.getMiddleName());
                     existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
                     existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+                    // Assuming other fields like position, fieldName, etc., can be set similarly
+                    existingUser.setPosition(updatedUser.getPosition());
+                    existingUser.setFieldName(updatedUser.getFieldName());
+                    existingUser.setGender(updatedUser.getGender());
+
+                    // Update the District and WorkPlace if the IDs are provided in the DTO
+                    if (updatedUser.getDistrictId() != null) {
+                        existingUser.setDistrict(districtRepository.findById(updatedUser.getDistrictId()).orElse(null));
+                    }
+                    if (updatedUser.getWorkplaceId() != null) {
+                        existingUser.setWorkplace(workPlaceRepository.findById(updatedUser.getWorkplaceId()).orElse(null));
+                    }
+
+                    // Set the last update timestamp
                     existingUser.setLastUpdateDate(LocalDateTime.now());
+
+                    // Save and return the updated user
                     return userRepository.save(existingUser);
                 })
                 .orElse(null);
     }
+
 
     public boolean deleteUser(String userId) {
         Optional<User> user = userRepository.findById(UUID.fromString(userId));

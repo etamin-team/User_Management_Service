@@ -1,5 +1,5 @@
 package com.example.user_management_service.repository;
-import com.example.user_management_service.model.City;
+import com.example.user_management_service.model.District;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +12,6 @@ import java.util.List;
  */
 
 @Repository
-public interface CityRepository extends JpaRepository<City, Long> {
-    List<City> findByRegionId(Long regionId);
+public interface DistrictRepository extends JpaRepository<District, Long> {
+    List<District> findByRegionId(Long regionId);
 }

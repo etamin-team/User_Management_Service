@@ -5,9 +5,10 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/world_medicine
+    url: jdbc:postgresql://localhost:5433/world_medicine
     username: postgres
     password: postgres
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -21,7 +22,10 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
-
+  sql:
+    init:
+      mode: always
+      schema-locations:  classpath:sql/*.sql
 springdoc:
   swagger-ui:
     operationsSorter: method

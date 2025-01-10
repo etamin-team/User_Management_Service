@@ -92,8 +92,8 @@ public class User implements UserDetails {
     private Gender gender;
 
     @OneToOne
-    @JoinColumn(name = "city_id", referencedColumnName = "id")
-    private City city;
+    @JoinColumn(name = "District_id", referencedColumnName = "id")
+    private District District;
 
 
     @OneToOne(cascade = CascadeType.ALL)
