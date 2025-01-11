@@ -1,11 +1,15 @@
 package com.example.user_management_service.controller;
 
+import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.model.dto.ResetPasswordRequest;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.service.AdminService;
+import com.example.user_management_service.service.DataBaseService;
 import com.example.user_management_service.service.PasswordResetService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,16 +30,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/admin")
 @CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class AdminController {
 
     private final AdminService adminService;
     private final PasswordResetService passwordResetService;
-
-    @Autowired
-    public AdminController(AdminService adminService, PasswordResetService passwordResetService) {
-        this.adminService = adminService;
-        this.passwordResetService = passwordResetService;
-    }
+    private final DataBaseService dataBaseService;
 
     @GetMapping("/doctors/not-declined-not-enabled")
     public Page<User> getDoctorsNotDeclinedAndNotEnabled(
@@ -86,4 +86,12 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error resetting password");
         }
     }
+
+
+    @PostMapping("/contracts")
+    public ResponseEntity<Contract> createContract(@RequestBody ContractDTO contractDTO) {
+        Contract savedContract = dataBaseService.saveContractFromDTO(contractDTO);
+        return ResponseEntity.ok(savedContract);
+    }
+
 }

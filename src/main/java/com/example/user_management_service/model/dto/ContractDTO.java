@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,8 +20,9 @@ import java.util.List;
 public class ContractDTO {
 
     private Long id;
+    private String doctorId;
     private List<Long> medicineIds;
-    private String contractDate;
+
     private String contractType;
     private String contractStatus;
     private Double totalAmount;
@@ -32,4 +34,7 @@ public class ContractDTO {
     private Double gz;
     private Double kb;
 
+    private LocalDate createdAt;
+    private LocalDate startDate;
+    private LocalDate endDate;
 }

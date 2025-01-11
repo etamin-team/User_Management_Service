@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -35,9 +36,6 @@ public class Contract {
     )
     private List<Medicine> medicines;
 
-    @Column(name = "contract_date")
-    private String contractDate;
-
     @Column(name = "contract_type")
     private String contractType;
 
@@ -47,13 +45,11 @@ public class Contract {
     @Column(name = "total_amount")
     private Double totalAmount;
 
-
     @Column(name = "quota_60")
     private Double quota_60;
 
     @Column(name = "quota_75_90")
     private Double quota_75_90;
-
 
     @Column(name = "su")
     private Double su;
@@ -67,4 +63,13 @@ public class Contract {
     @Column(name = "kb")
     private Double kb;
 
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
 }

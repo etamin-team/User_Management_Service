@@ -62,7 +62,6 @@ public class DataBaseService {
     public Contract saveContractFromDTO(ContractDTO contractDTO) {
         Contract contract = new Contract();
 
-        contract.setContractDate(contractDTO.getContractDate());
         contract.setContractType(contractDTO.getContractType());
         contract.setContractStatus(contractDTO.getContractStatus());
         contract.setTotalAmount(contractDTO.getTotalAmount());
@@ -79,6 +78,12 @@ public class DataBaseService {
         List<Medicine> medicines = medicineRepository.findAllById(contractDTO.getMedicineIds());
         contract.setMedicines(medicines);
 
+        // Set new fields
+        contract.setCreatedAt(contractDTO.getCreatedAt());
+        contract.setStartDate(contractDTO.getStartDate());
+        contract.setEndDate(contractDTO.getEndDate());
+
         return contractRepository.save(contract);
     }
+
 }

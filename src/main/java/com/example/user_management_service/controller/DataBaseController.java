@@ -58,12 +58,7 @@ public class DataBaseController {
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
-    @PostMapping("/contracts")
-    public ResponseEntity<Contract> createContract(@RequestBody ContractDTO contractDTO) {
 
-        Contract savedContract = dataBaseService.saveContractFromDTO(contractDTO);
-        return ResponseEntity.ok(savedContract);
-    }
     @GetMapping("/contracts/{contractId}")
     public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
         Contract contract = dataBaseService.getContractById(contractId);
