@@ -106,8 +106,8 @@ public class AuthController {
     }
 
     @GetMapping("/regions")
-    public  ResponseEntity<List<Region>> getAllRegions(){
-        List<Region>  regionList= districtRegionService.getRegions();
+    public  ResponseEntity<List<RegionDTO>> getAllRegions(){
+        List<RegionDTO>  regionList= districtRegionService.getRegions();
         return ResponseEntity.ok(regionList);
     }
 
