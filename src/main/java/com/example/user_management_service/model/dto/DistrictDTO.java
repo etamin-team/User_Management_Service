@@ -2,21 +2,21 @@ package com.example.user_management_service.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 /**
  * Date-1/11/2025
  * By Sardor Tokhirov
- * Time-5:04 AM (GMT+5)
+ * Time-5:08 AM (GMT+5)
  */
+
 @Data
 @AllArgsConstructor
-public class RegionDTO {
+@NoArgsConstructor
+public class DistrictDTO {
     private Long id;
     private String name;
     private String nameUzCyrillic;
     private String nameUzLatin;
     private String nameRussian;
-    private List<DistrictDTO> districts;
 }
