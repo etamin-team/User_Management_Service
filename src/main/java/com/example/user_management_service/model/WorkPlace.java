@@ -33,8 +33,8 @@ public class WorkPlace {
     @Column(name = "description")
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "District_id", referencedColumnName = "id")
-    private District District;
+    @OneToMany
+    @JoinColumn(name = "district_id", referencedColumnName = "id")
+    private District district;
 
 }

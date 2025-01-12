@@ -87,16 +87,16 @@ public class User implements UserDetails {
     private String fieldName;
 
 
-    @Enumerated(EnumType.STRING) // Store enum as a string in the database
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
     private Gender gender;
 
-    @OneToOne
-    @JoinColumn(name = "District_id", referencedColumnName = "id")
-    private District District;
+    @ManyToOne
+    @JoinColumn(name = "district_id", referencedColumnName = "id")
+    private District district;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
     private WorkPlace workplace;
 

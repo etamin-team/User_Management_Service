@@ -40,7 +40,7 @@ import static com.example.user_management_service.token.TokenType.BEARER;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-    private final DistrictRegionService DistrictRegionService;
+    private final DistrictRegionService districtRegionService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -92,7 +92,7 @@ public class RegistrationService {
         User newUser = new User();
 
         if (request.getDistrictId() != null ) {
-            District district = DistrictRegionService.getDistrict(request.getDistrictId());
+            District district = districtRegionService.getDistrict(request.getDistrictId());
             newUser.setDistrict(district);
         }
         newUser.setFirstName(request.getFirstName());
