@@ -29,7 +29,8 @@ public class DistrictRegionService {
                         district.getName(),
                         district.getNameUzCyrillic(),
                         district.getNameUzLatin(),
-                        district.getNameRussian()
+                        district.getNameRussian(),
+                        district.getRegion().getId()
                 ))
                 .collect(Collectors.toList());
 
@@ -60,7 +61,8 @@ public class DistrictRegionService {
                         district.getName(),
                         district.getNameUzCyrillic(),
                         district.getNameUzLatin(),
-                        district.getNameRussian()
+                        district.getNameRussian(),
+                        district.getRegion().getId()
                 ))
                 .collect(Collectors.toList());
     }

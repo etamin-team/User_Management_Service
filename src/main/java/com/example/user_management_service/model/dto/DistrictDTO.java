@@ -14,9 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DistrictDTO {
-    private Long id;
+    private Long districtId;
     private String name;
     private String nameUzCyrillic;
     private String nameUzLatin;
     private String nameRussian;
+    private Long regionId;
 }
