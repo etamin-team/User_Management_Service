@@ -124,10 +124,10 @@ public class RegistrationService {
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
 
-//        if (request.getRole().equals(Role.DOCTOR)) {
-//            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
-//            newUser.setWorkplace(workPlace);
-//        }
+        if (request.getRole().equals(Role.DOCTOR)) {
+            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
+            newUser.setWorkplace(workPlace);
+        }
         return newUser;
     }
 

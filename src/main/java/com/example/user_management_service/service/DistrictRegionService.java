@@ -67,12 +67,13 @@ public class DistrictRegionService {
                 .collect(Collectors.toList());
     }
 
-    public District getDistrict(Long DistrictId) {
-        return districtRepository.findById(DistrictId).get();
+    public District getDistrict(Long districtId) {
+        System.err.println(districtId);
+        return districtRepository.findById(districtId).get();
     }
 
-    public Region getRegionByDistrict(Long DistrictId) {
-        return districtRepository.findById(DistrictId).get().getRegion();
+    public Region getRegionByDistrict(Long districtId) {
+        return districtRepository.findById(districtId).get().getRegion();
     }
 
 }

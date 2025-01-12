@@ -48,8 +48,7 @@ public class AdminService {
                 user.getPosition(),
                 user.getFieldName(),
                 user.getGender(),
-                1L,
-//                user.getWorkplace().getId(),
+                user.getWorkplace().getId(),
                 user.getDistrict().getId()
         );
     }

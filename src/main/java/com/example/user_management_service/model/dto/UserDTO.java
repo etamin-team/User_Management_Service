@@ -29,6 +29,6 @@ public class UserDTO {
     private String fieldName;
     private Gender gender;
 
-    private Long districtId;
     private Long workplaceId;
+    private Long districtId;
 }
