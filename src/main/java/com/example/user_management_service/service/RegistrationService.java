@@ -8,6 +8,7 @@ import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.AuthRequest;
 import com.example.user_management_service.model.dto.DoctorSignUpRequest;
 import com.example.user_management_service.model.dto.RegisterRequest;
+import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
@@ -28,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static com.example.user_management_service.token.TokenType.BEARER;
 
@@ -50,10 +52,23 @@ public class RegistrationService {
 
     private final VerificationNumberRepository verificationNumberRepository;
 
-    public List<WorkPlace> getAllWorkPlaces() {
-        return workPlaceRepository.findAll();
+    public List<WorkPlaceDTO> getAllWorkPlaces() {
+        return convertToDTOs(workPlaceRepository.findAll());
     }
-
+    public List<WorkPlaceDTO> convertToDTOs(List<WorkPlace> workPlaces) {
+        return workPlaces.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
+        return new WorkPlaceDTO(
+                workPlace.getId(),
+                workPlace.getName(),
+                workPlace.getAddress(),
+                workPlace.getDescription(),
+                workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
+        );
+    }
     public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setFirstName(request.getFirstName());

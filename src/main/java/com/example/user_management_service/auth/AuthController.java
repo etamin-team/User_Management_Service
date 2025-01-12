@@ -98,8 +98,8 @@ public class AuthController {
     }
 
     @GetMapping("/workplaces")
-    public  ResponseEntity<List<WorkPlace>> getAllWorkPlaces(){
-      List<WorkPlace>  workPlaceList= authService.getAllWorkPlaces();
+    public  ResponseEntity<List<WorkPlaceDTO>> getAllWorkPlaces(){
+      List<WorkPlaceDTO>  workPlaceList= authService.getAllWorkPlaces();
         return ResponseEntity.ok(workPlaceList);
     }
 
