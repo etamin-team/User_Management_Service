@@ -34,6 +34,7 @@ public class AdminService {
         return userRepository.findDoctorsByStatus(Role.DOCTOR, UserStatus.PENDING, pageable)
                 .map(this::convertToDTO);
     }
+
     private UserDTO convertToDTO(User user) {
         return new UserDTO(
                 user.getUserId(),
@@ -47,10 +48,12 @@ public class AdminService {
                 user.getPosition(),
                 user.getFieldName(),
                 user.getGender(),
-                user.getWorkplace().getId(),
+                1L,
+//                user.getWorkplace().getId(),
                 user.getDistrict().getId()
         );
     }
+
     public void enableUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
@@ -66,7 +69,7 @@ public class AdminService {
     }
 
     public void createWorkPlace(WorkPlaceDTO workPlaceDTO) {
-        WorkPlace workPlace= convertToEntity(workPlaceDTO) ;
+        WorkPlace workPlace = convertToEntity(workPlaceDTO);
         workPlaceRepository.save(workPlace);
     }
 
