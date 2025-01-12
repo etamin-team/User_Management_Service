@@ -5,6 +5,7 @@ import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.model.dto.ResetPasswordRequest;
+import com.example.user_management_service.model.dto.UserDTO;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
@@ -38,12 +39,13 @@ public class AdminController {
     private final DataBaseService dataBaseService;
 
     @GetMapping("/doctors/not-declined-not-enabled")
-    public Page<User> getDoctorsNotDeclinedAndNotEnabled(
+    public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getDoctorsNotDeclinedAndNotEnabled(pageable);
     }
+
     @PatchMapping("/{id}/enable")
     public ResponseEntity<String> enableUser(@PathVariable UUID id) {
         adminService.enableUser(id);

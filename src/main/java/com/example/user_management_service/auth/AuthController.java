@@ -1,7 +1,5 @@
 package com.example.user_management_service.auth;
 
-//import com.example.user_management_service.model.District;
-//import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;

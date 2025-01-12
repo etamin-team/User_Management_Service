@@ -3,6 +3,7 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.dto.UserDTO;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
@@ -29,10 +30,27 @@ public class AdminService {
 
     private final WorkPlaceRepository workPlaceRepository;
 
-    public Page<User> getDoctorsNotDeclinedAndNotEnabled(Pageable pageable) {
-        return userRepository.findDoctorsByStatus(Role.DOCTOR,UserStatus.PENDING, pageable);
+    public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(Pageable pageable) {
+        return userRepository.findDoctorsByStatus(Role.DOCTOR, UserStatus.PENDING, pageable)
+                .map(this::convertToDTO);
     }
-
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(
+                user.getUserId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getMiddleName(),
+                user.getDateOfBirth(),
+                user.getPhoneNumber(),
+                user.getNumber(),
+                user.getEmail(),
+                user.getPosition(),
+                user.getFieldName(),
+                user.getGender(),
+                user.getWorkplace().getId(),
+                user.getDistrict().getId()
+        );
+    }
     public void enableUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
