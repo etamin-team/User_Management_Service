@@ -44,7 +44,7 @@ public class UserManagementServiceApplication {
 //                e.printStackTrace();
 //            }
 
-        };
-    }
+//        };
+//    }
 
 }
