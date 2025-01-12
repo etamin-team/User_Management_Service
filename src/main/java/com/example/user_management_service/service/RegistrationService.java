@@ -92,8 +92,8 @@ public class RegistrationService {
         User newUser = new User();
 
         if (request.getDistrictId() != null ) {
-            District District = DistrictRegionService.getDistrict(request.getDistrictId());
-            newUser.setDistrict(District);
+            District district = DistrictRegionService.getDistrict(request.getDistrictId());
+            newUser.setDistrict(district);
         }
         newUser.setFirstName(request.getFirstName());
         newUser.setLastName(request.getLastName());

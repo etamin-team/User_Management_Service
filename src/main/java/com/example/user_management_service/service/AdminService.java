@@ -69,23 +69,23 @@ public class AdminService {
         WorkPlace workPlace= convertToEntity(workPlaceDTO) ;
         workPlaceRepository.save(workPlace);
     }
+
     private WorkPlace convertToEntity(WorkPlaceDTO workPlaceDTO) {
         WorkPlace workPlace = new WorkPlace();
         workPlace.setId(workPlaceDTO.getId());
         workPlace.setName(workPlaceDTO.getName());
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());
-
-        District District = new District();
-        District.setId(workPlaceDTO.getDistrictId());
-        workPlace.setDistrict(District);
-
+        District district = new District();
+        district.setId(workPlaceDTO.getDistrictId());
+        workPlace.setDistrict(district);
         return workPlace;
     }
+
+
     public void updateWorkPlace(Long id, WorkPlaceDTO workPlaceDTO) {
         WorkPlace existingWorkPlace = workPlaceRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("WorkPlace not found with id: " + id));
-
 
         existingWorkPlace.setName(workPlaceDTO.getName());
         existingWorkPlace.setAddress(workPlaceDTO.getAddress());
