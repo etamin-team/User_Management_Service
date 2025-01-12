@@ -33,7 +33,7 @@ public class WorkPlace {
     @Column(name = "description")
     private String description;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
 
