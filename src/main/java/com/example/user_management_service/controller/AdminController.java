@@ -58,7 +58,7 @@ public class AdminController {
         return ResponseEntity.ok("User has been declined successfully.");
     }
 
-    @PutMapping("/workplaces/create")
+    @PostMapping("/workplaces/create")
     public ResponseEntity<String> createWorkPlace(@RequestBody WorkPlaceDTO workPlaceDTO) {
         adminService.createWorkPlace(workPlaceDTO);
         return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
