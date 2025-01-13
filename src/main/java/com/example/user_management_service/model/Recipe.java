@@ -61,4 +61,9 @@ public class Recipe {
     @Column(name = "preparation")
     private List<Preparation> preparations = new ArrayList<>();
 
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", referencedColumnName = "user_id", nullable = false)
+    private User doctorId;
+
 }

@@ -44,9 +44,11 @@ public class DoctorController {
     @GetMapping("/templates")
     public List<Template> getTemplates(
             @RequestParam(required = false, defaultValue = "false") Boolean saved,
-            @RequestParam(required = false, defaultValue = "false") Boolean sortBy) {
-        return doctorService.getTemplates(saved, sortBy);
+            @RequestParam(required = false, defaultValue = "false") Boolean sortBy,
+            @RequestParam(required = false) String searchText) {
+        return doctorService.getTemplates(saved, sortBy, searchText);
     }
+
 
     @PostMapping("/save-recipe")
     public void saveRecipe(@RequestBody RecipeDto recipe) {

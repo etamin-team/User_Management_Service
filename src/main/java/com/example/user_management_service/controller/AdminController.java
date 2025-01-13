@@ -3,23 +3,23 @@ package com.example.user_management_service.controller;
 import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
-import com.example.user_management_service.model.dto.ContractDTO;
-import com.example.user_management_service.model.dto.ResetPasswordRequest;
-import com.example.user_management_service.model.dto.UserDTO;
-import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
 import com.example.user_management_service.service.PasswordResetService;
+import com.example.user_management_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +37,7 @@ public class AdminController {
     private final AdminService adminService;
     private final PasswordResetService passwordResetService;
     private final DataBaseService dataBaseService;
+    private final RecipeService recipeService;
 
     @GetMapping("/doctors/not-declined-not-enabled")
     public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(
@@ -94,6 +95,27 @@ public class AdminController {
     public ResponseEntity<Contract> createContract(@RequestBody ContractDTO contractDTO) {
         Contract savedContract = dataBaseService.saveContractFromDTO(contractDTO);
         return ResponseEntity.ok(savedContract);
+    }
+
+    @GetMapping("/recipes")
+    public ResponseEntity<List<LastRecipeDTO>> getAllLastRecipes(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String district,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String specialty,
+            @RequestParam(required = false) Long medicineId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+
+        // Split the 'name' parameter into first, last, and middle names
+        String[] nameParts = name != null ? name.split(" ") : new String[0];
+        String firstName = nameParts.length > 0 ? nameParts[0] : null;
+        String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : null;
+        String middleName = nameParts.length > 2 ? nameParts[1] : null;
+
+        // Call the service to fetch filtered data
+        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, district, category, specialty, medicineId, startDate, endDate);
+        return ResponseEntity.ok(recipes);
     }
 
 }

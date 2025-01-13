@@ -1,9 +1,14 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.PreparationType;
 import com.example.user_management_service.model.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -13,5 +18,30 @@ import java.util.UUID;
  */
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
-    // Custom query methods can be added here if necessary
+
+    @Query("SELECT DISTINCT r FROM Recipe r " +
+            "JOIN r.preparations p " +
+            "JOIN r.doctorId u " +  // Join with User entity (doctor)
+            "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
+            "AND (:middleName IS NULL OR u.middleName LIKE %:middleName%) " +
+            "AND (:lastName IS NULL OR u.lastName LIKE %:lastName%) " +
+            "AND (:district IS NULL OR u.district.name LIKE %:district%) " + // Assuming `district` is part of `doctorId`
+            "AND (:category IS NULL OR u.fieldName LIKE %:category%) " +  // Assuming category is a field in `Recipe`
+            "AND (:specialty IS NULL OR u.position LIKE %:specialty%) " + // Assuming specialty is part of `doctorId`
+            "AND (:startDate IS NULL OR r.dateCreation >= :startDate) " +
+            "AND (:endDate IS NULL OR r.dateCreation <= :endDate) " +
+            "AND (:medicineId IS NULL OR p.medicine.id = :medicineId) " +
+            "AND (u.role = 'DOCTOR')")  // Filter by doctor role
+    List<Recipe> findRecipesByFilters(
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("district") String district,
+            @Param("category") String category,
+            @Param("specialty") String specialty,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("medicineId") Long medicineId);
+
+
 }

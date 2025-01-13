@@ -72,4 +72,5 @@ public class Contract {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
 }

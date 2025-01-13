@@ -49,30 +49,48 @@ public class UserService {
         }
         return false;
     }
+    private UserDTO convertToDTO(User user) {
+        return new UserDTO(
+                user.getUserId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getMiddleName(),
+                user.getDateOfBirth(),
+                user.getPhoneNumber(),
+                user.getNumber(),
+                user.getEmail(),
+                user.getPosition(),
+                user.getFieldName(),
+                user.getGender(),
+                user.getWorkplace().getId(),
+                user.getDistrict().getId()
+        );
+    }
 
 
-    public List<User> getDoctors(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getDoctors(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
         if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchDoctorsByName(Role.DOCTOR, nameQuery);
+            return userRepository.searchDoctorsByName(Role.DOCTOR, nameQuery).stream().map(this::convertToDTO).toList();
 //        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
 //            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
 //                    Role.DOCTOR, creatorId, countryId, regionId, workplaceId);
         } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId);
+            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
         } else {
-            return userRepository.findDoctors();
+            return userRepository.findDoctors().stream().map(this::convertToDTO).toList();
         }
     }
-    public List<User> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+
+    public List<UserDTO> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
         if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchManagersByName(Role.MANAGER, nameQuery);
+            return userRepository.searchManagersByName(Role.MANAGER, nameQuery).stream().map(this::convertToDTO).toList();
 //        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
 //            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
 //                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
         } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId);
+            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
         } else {
-            return userRepository.findManagers();
+            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
         }
     }
     public User updateUser(String userId, UserDTO updatedUser) {

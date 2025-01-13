@@ -49,27 +49,38 @@ public class DoctorService {
         }
     }
 
-    public List<Template> getTemplates(Boolean saved, Boolean sortBy) {
-        if (saved != null && saved) {
-            if (sortBy) {
-                return templateRepository.findBySavedTrueOrderByDiagnosisAsc();
+    public List<Template> getTemplates(Boolean saved, Boolean sortBy, String searchText) {
+        if (searchText != null && !searchText.isEmpty()) {
+            if (saved != null && saved) {
+                return sortBy
+                        ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText)
+                        : templateRepository.findBySavedTrueAndSearchText(searchText);
+            } else if (saved != null && !saved) {
+                return sortBy
+                        ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText)
+                        : templateRepository.findBySavedFalseAndSearchText(searchText);
             } else {
-                return templateRepository.findBySavedTrue();
-            }
-        } else if (saved != null && !saved) {
-            if (sortBy) {
-                return templateRepository.findBySavedFalseOrderByDiagnosisAsc();
-            } else {
-                return templateRepository.findBySavedFalse();
+                return sortBy
+                        ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText)
+                        : templateRepository.findAllBySearchText(searchText);
             }
         } else {
-            if (sortBy) {
-                return templateRepository.findAll(Sort.by(Sort.Order.asc("diagnosis")));
+            if (saved != null && saved) {
+                return sortBy
+                        ? templateRepository.findBySavedTrueOrderByDiagnosisAsc()
+                        : templateRepository.findBySavedTrue();
+            } else if (saved != null && !saved) {
+                return sortBy
+                        ? templateRepository.findBySavedFalseOrderByDiagnosisAsc()
+                        : templateRepository.findBySavedFalse();
             } else {
-                return templateRepository.findAll();
+                return sortBy
+                        ? templateRepository.findAll(Sort.by(Sort.Order.asc("diagnosis")))
+                        : templateRepository.findAll();
             }
         }
     }
+
 
     private Template convertToEntity(TemplateDto templateDto) {
         Template template = new Template();

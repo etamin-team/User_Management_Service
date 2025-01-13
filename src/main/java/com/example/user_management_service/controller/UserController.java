@@ -81,26 +81,26 @@ public class UserController {
     }
 
     @GetMapping("/doctors")
-    public ResponseEntity<List<User>> getDoctors(
+    public ResponseEntity<List<UserDTO>> getDoctors(
             @RequestParam(required = false) String creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery
     ) {
-        List<User> doctors = userService.getDoctors(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> doctors = userService.getDoctors(creatorId, countryId, regionId, workplaceId, nameQuery);
         return ResponseEntity.ok(doctors);
     }
 
     @GetMapping("/managers")
-    public ResponseEntity<List<User>> getManagers(
+    public ResponseEntity<List<UserDTO>> getManagers(
             @RequestParam(required = false) String creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String query) {
 
-        List<User> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, query);
+        List<UserDTO> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, query);
         return users.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(users);
     }
 

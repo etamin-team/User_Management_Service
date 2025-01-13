@@ -4,6 +4,9 @@ import com.example.user_management_service.model.Contract;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * Date-12/29/2024
  * By Sardor Tokhirov
@@ -11,4 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
+
 }
