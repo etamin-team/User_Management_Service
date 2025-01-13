@@ -98,10 +98,9 @@ public class UserController {
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) String query) {
-
-        List<UserDTO> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, query);
-        return users.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(users);
+            @RequestParam(required = false) String nameQuery) {
+        List<UserDTO> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, nameQuery);
+        return ResponseEntity.ok(users);
     }
 
     private void validateRoleAssignment(Role targetRole) {
