@@ -25,7 +25,7 @@ spring:
   sql:
     init:
       mode: always
-#      schema-locations:  classpath:sql/*.sql
+      schema-locations:  classpath:sql/*.sql
 springdoc:
   swagger-ui:
     operationsSorter: method
