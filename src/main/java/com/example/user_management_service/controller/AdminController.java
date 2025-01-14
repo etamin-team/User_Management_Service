@@ -107,13 +107,12 @@ public class AdminController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
 
-        // Split the 'name' parameter into first, last, and middle names
         String[] nameParts = name != null ? name.split(" ") : new String[0];
         String firstName = nameParts.length > 0 ? nameParts[0] : null;
         String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : null;
         String middleName = nameParts.length > 2 ? nameParts[1] : null;
 
-        // Call the service to fetch filtered data
+
         List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, district, category, specialty, medicineId, startDate, endDate);
         return ResponseEntity.ok(recipes);
     }

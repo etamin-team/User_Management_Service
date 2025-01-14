@@ -6,6 +6,7 @@ import com.example.user_management_service.model.dto.RecipeDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
+import com.example.user_management_service.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,11 +25,13 @@ public class DoctorController {
 
     private final DoctorService doctorService;
     private final RecipeService recipeService;
+    private final RoleService roleService;
 
     @Autowired
-    public DoctorController(DoctorService doctorService, RecipeService recipeService) {
+    public DoctorController(DoctorService doctorService, RecipeService recipeService, RoleService roleService) {
         this.doctorService = doctorService;
         this.recipeService = recipeService;
+        this.roleService = roleService;
     }
 
     @PostMapping("/create-template")
@@ -51,7 +54,7 @@ public class DoctorController {
             @RequestParam(required = false) Boolean saved,
             @RequestParam(required = false, defaultValue = "false") Boolean sortBy,
             @RequestParam(required = false) String searchText) {
-        return doctorService.getTemplates(saved, sortBy, searchText);
+        return doctorService.getTemplates(saved, sortBy, searchText,roleService.getCurrentUserId());
     }
 
 

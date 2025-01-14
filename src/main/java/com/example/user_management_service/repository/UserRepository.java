@@ -64,7 +64,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u WHERE u.role = :role AND (u.firstName LIKE %:query% OR u.lastName LIKE %:query%)")
     List<User> searchManagersByName(Role role, String query);
 
-    @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status")
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status ORDER BY u.createdDate DESC")
     Page<User> findDoctorsByStatus(@Param("role") Role role, @Param("status") UserStatus status, Pageable pageable);
 
 

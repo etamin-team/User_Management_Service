@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +31,8 @@ public class DoctorService {
     private final TemplateRepository templateRepository;
 
     private final MedicineRepository medicineRepository;
+
+
 
 
     public void saveTemplate(Long id, boolean save) {
@@ -51,34 +54,34 @@ public class DoctorService {
         templateRepository.save(template);
     }
 
-    public List<Template> getTemplates(Boolean saved, Boolean sortBy, String searchText) {
+    public List<Template> getTemplates(Boolean saved, Boolean sortBy, String searchText, UUID doctorId) {
         if (searchText != null && !searchText.isEmpty()) {
             if (saved != null && saved) {
                 return sortBy
-                        ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText)
-                        : templateRepository.findBySavedTrueAndSearchText(searchText);
+                        ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText,doctorId)
+                        : templateRepository.findBySavedTrueAndSearchText(searchText,doctorId);
             } else if (saved != null && !saved) {
                 return sortBy
-                        ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText)
-                        : templateRepository.findBySavedFalseAndSearchText(searchText);
+                        ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText,doctorId)
+                        : templateRepository.findBySavedFalseAndSearchText(searchText,doctorId);
             } else {
                 return sortBy
-                        ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText)
-                        : templateRepository.findAllBySearchText(searchText);
+                        ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText,doctorId)
+                        : templateRepository.findAllBySearchText(searchText,doctorId);
             }
         } else {
             if (saved != null && saved) {
                 return sortBy
-                        ? templateRepository.findBySavedTrueOrderByDiagnosisAsc()
-                        : templateRepository.findBySavedTrue();
+                        ? templateRepository.findBySavedTrueOrderByDiagnosisAsc(doctorId)
+                        : templateRepository.findBySavedTrue(doctorId);
             } else if (saved != null && !saved) {
                 return sortBy
-                        ? templateRepository.findBySavedFalseOrderByDiagnosisAsc()
-                        : templateRepository.findBySavedFalse();
+                        ? templateRepository.findBySavedFalseOrderByDiagnosisAsc(doctorId)
+                        : templateRepository.findBySavedFalse(doctorId);
             } else {
                 return sortBy
-                        ? templateRepository.findAll(Sort.by(Sort.Order.asc("diagnosis")))
-                        : templateRepository.findAll();
+                        ? templateRepository.findAllByDoctorIdAsc(doctorId)
+                        : templateRepository.findAllByDoctorId(doctorId);
             }
         }
     }

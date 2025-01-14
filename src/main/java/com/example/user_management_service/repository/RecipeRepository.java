@@ -21,13 +21,13 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 
     @Query("SELECT DISTINCT r FROM Recipe r " +
             "JOIN r.preparations p " +
-            "JOIN r.doctorId u " +  // Join with User entity (doctor)
+            "JOIN r.doctorId u " +
             "WHERE (:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
             "AND (:middleName IS NULL OR u.middleName LIKE %:middleName%) " +
             "AND (:lastName IS NULL OR u.lastName LIKE %:lastName%) " +
-            "AND (:district IS NULL OR u.district.name LIKE %:district%) " + // Assuming `district` is part of `doctorId`
-            "AND (:category IS NULL OR u.fieldName LIKE %:category%) " +  // Assuming category is a field in `Recipe`
-            "AND (:specialty IS NULL OR u.position LIKE %:specialty%) " + // Assuming specialty is part of `doctorId`
+            "AND (:district IS NULL OR u.district.name LIKE %:district%) " +
+            "AND (:category IS NULL OR u.fieldName LIKE %:category%) " +
+            "AND (:specialty IS NULL OR u.position LIKE %:specialty%) " +
             "AND (:startDate IS NULL OR r.dateCreation >= :startDate) " +
             "AND (:endDate IS NULL OR r.dateCreation <= :endDate) " +
             "AND (:medicineId IS NULL OR p.medicine.id = :medicineId) " +

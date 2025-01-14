@@ -66,7 +66,6 @@ public class RecipeService {
             String firstName, String lastName, String middleName, String district, String category,
             String specialty, Long medicineId, LocalDate startDate, LocalDate endDate) {
 
-        // Call repository to fetch filtered data
         return recipeRepository.findRecipesByFilters(firstName, lastName, middleName, district, category, specialty, startDate, endDate, medicineId)
                 .stream()
                 .map(this::mapToLastRecipeDTO)
