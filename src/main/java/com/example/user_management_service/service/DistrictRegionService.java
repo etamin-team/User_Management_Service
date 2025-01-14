@@ -44,12 +44,26 @@ public class DistrictRegionService {
         );
     }
 
-    // Method to get all regions
+
     public List<RegionDTO> getRegions() {
         List<Region> regionList = regionRepository.findAll();
         return regionList.stream()
                 .map(this::mapRegionToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public RegionDTO getRegionById(Long id) {
+        return mapRegionToDTO(regionRepository.findById(id).orElseThrow());
+    }
+
+    public DistrictDTO getDistrictById(Long id) {
+        District district = districtRepository.findById(id).orElseThrow();
+        return new DistrictDTO(district.getId(),
+                district.getName(),
+                district.getNameUzCyrillic(),
+                district.getNameUzLatin(),
+                district.getNameRussian(),
+                district.getRegion().getId());
     }
 
     // Method to get districts by region id

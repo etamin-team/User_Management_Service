@@ -115,6 +115,16 @@ public class AuthController {
         return ResponseEntity.ok(DistrictList);
     }
 
+    @GetMapping("/region")
+    public  ResponseEntity<RegionDTO> getRegionById(@RequestParam("regionId") Long regionId){
+        return ResponseEntity.ok(districtRegionService.getRegionById(regionId));
+    }
+
+    @GetMapping("/district")
+    public  ResponseEntity<DistrictDTO> getAllDistrictById(@RequestParam("districtId") Long districtId){
+        return ResponseEntity.ok(districtRegionService.getDistrictById(districtId));
+    }
+
 //    @GetMapping("/workplaces")
 //    public ResponseEntity<List<WorkPlace>> getAllWorkplaces() {
 //        List<WorkPlace> workplaces = userService.getAllWorkplaces();

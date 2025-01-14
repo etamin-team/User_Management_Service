@@ -115,6 +115,7 @@ public class RegistrationService {
             newUser.setDistrict(district);
         }
         newUser.setFirstName(request.getFirstName());
+        newUser.setMiddleName(request.getMiddleName());
         newUser.setLastName(request.getLastName());
         newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.setPhonePrefix(request.getPhonePrefix());
