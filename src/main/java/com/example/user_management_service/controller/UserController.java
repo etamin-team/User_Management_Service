@@ -63,6 +63,12 @@ public class UserController {
         return registerUser(request, "SuperAdmin", Role.SUPERADMIN);
     }
 
+    @PostMapping("/register-medagent")
+    public ResponseEntity<String> registerMedAgent(@RequestBody RegisterRequest request) {
+        validateRoleAssignment(Role.MEDAGENT);
+        return registerUser(request, "SuperAdmin", Role.MEDAGENT);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") String userId) {
         User user = userService.getUserById(userId);
@@ -100,6 +106,39 @@ public class UserController {
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery) {
         List<UserDTO> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, nameQuery);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/superadmins")
+    public ResponseEntity<List<UserDTO>> getSuperAdmins(
+            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery) {
+        List<UserDTO> users = userService.getSuperAdmins(creatorId, countryId, regionId, workplaceId, nameQuery);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<List<UserDTO>> getAdmins(
+            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery) {
+        List<UserDTO> users = userService.getAdmins(creatorId, countryId, regionId, workplaceId, nameQuery);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/medagents")
+    public ResponseEntity<List<UserDTO>> getMedAgents(
+            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) Long countryId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery) {
+        List<UserDTO> users = userService.getMedAgents(creatorId, countryId, regionId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
 

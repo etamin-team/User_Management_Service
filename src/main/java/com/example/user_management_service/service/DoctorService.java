@@ -42,11 +42,11 @@ public class DoctorService {
 
     public void saveTemplate(TemplateDto templateDto, boolean save) {
         Template template = convertToEntity(templateDto);
-        Template existingTemplate = templateRepository.findById(template.getId()).orElse(null);
-        if (existingTemplate != null && save != existingTemplate.isSaved()) {
-            existingTemplate.setSaved(save);
-            templateRepository.save(existingTemplate);
+        if (templateDto.getId() != null) {
+            template.setId(templateDto.getId());
+            template.setSaved(save);
         }
+        templateRepository.save(template);
     }
 
     public List<Template> getTemplates(Boolean saved, Boolean sortBy, String searchText) {
@@ -84,7 +84,6 @@ public class DoctorService {
 
     private Template convertToEntity(TemplateDto templateDto) {
         Template template = new Template();
-        template.setId(templateDto.getId());
         template.setName(templateDto.getName());
         template.setDiagnosis(templateDto.getDiagnosis());
         template.setPreparations(templateDto.getPreparations().stream().map(preparationDto -> {

@@ -7,10 +7,11 @@ package com.example.user_management_service.role;
  * Description: Represents user roles with ranks for privilege comparison.
  */
 public enum Role {
-    CHIEF(5),
-    SUPERADMIN(4),
-    ADMIN(3),
-    MANAGER(2),
+    CHIEF(6),
+    SUPERADMIN(5),
+    ADMIN(4),
+    MANAGER(3),
+    MEDAGENT(2),
     DOCTOR(1),
     PATIENT(0);
 
@@ -25,7 +26,7 @@ public enum Role {
     }
 
     public String getRoleName() {
-        return this.name().toLowerCase();  // 'chief', 'superadmin', etc.
+        return this.name().toLowerCase();
     }
 
     // Optional method to check if this role has higher or lower rank

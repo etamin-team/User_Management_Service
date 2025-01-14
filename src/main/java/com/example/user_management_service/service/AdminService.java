@@ -74,7 +74,6 @@ public class AdminService {
 
     private WorkPlace convertToEntity(WorkPlaceDTO workPlaceDTO) {
         WorkPlace workPlace = new WorkPlace();
-        workPlace.setId(workPlaceDTO.getId());
         workPlace.setName(workPlaceDTO.getName());
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());

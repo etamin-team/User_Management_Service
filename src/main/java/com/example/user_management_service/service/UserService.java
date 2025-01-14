@@ -93,6 +93,44 @@ public class UserService {
             return userRepository.findManagers().stream().map(this::convertToDTO).toList();
         }
     }
+
+    public List<UserDTO> getSuperAdmins(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+        if (nameQuery != null && !nameQuery.isEmpty()) {
+            return userRepository.searchManagersByName(Role.SUPERADMIN, nameQuery).stream().map(this::convertToDTO).toList();
+//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
+        } else if (creatorId != null) {
+            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
+        } else {
+            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
+        }
+    }
+
+    public List<UserDTO> getAdmins(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+        if (nameQuery != null && !nameQuery.isEmpty()) {
+            return userRepository.searchManagersByName(Role.ADMIN, nameQuery).stream().map(this::convertToDTO).toList();
+//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
+        } else if (creatorId != null) {
+            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
+        } else {
+            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
+        }
+    }
+    public List<UserDTO> getMedAgents(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
+        if (nameQuery != null && !nameQuery.isEmpty()) {
+            return userRepository.searchManagersByName(Role.MEDAGENT, nameQuery).stream().map(this::convertToDTO).toList();
+//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
+//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
+//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
+        } else if (creatorId != null) {
+            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
+        } else {
+            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
+        }
+    }
     public User updateUser(String userId, UserDTO updatedUser) {
         return userRepository.findById(UUID.fromString(userId))
                 .map(existingUser -> {
