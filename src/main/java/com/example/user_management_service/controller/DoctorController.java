@@ -32,8 +32,8 @@ public class DoctorController {
     }
 
     @PostMapping("/create-template")
-    public void createTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
-        doctorService.createTemplate(templateDto, save);
+    public void createTemplate(@RequestBody TemplateDto templateDto) {
+        doctorService.createTemplate(templateDto);
     }
 
     @PutMapping("/update-template")

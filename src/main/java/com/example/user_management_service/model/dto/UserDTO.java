@@ -30,6 +30,8 @@ public class UserDTO {
     private String fieldName;
     private Gender gender;
     private UserStatus status;
+    private String creatorId;
+
 
     private Long workplaceId;
     private Long districtId;

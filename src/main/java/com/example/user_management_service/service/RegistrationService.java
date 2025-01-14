@@ -92,16 +92,17 @@ public class RegistrationService {
         registerRequest.setPosition(request.getPosition());
         registerRequest.setGender(request.getGender());
 
-        register(registerRequest, Role.DOCTOR, UserStatus.PENDING);
+        register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null);
         return AuthRandomNumberResponse.SUCCESS;
     }
 
 
-    public boolean register(RegisterRequest request, Role role, UserStatus userStatus) {
+    public boolean register(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
         User user = createUserRequest(request, role);
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
+        user.setCreatorId(String.valueOf(creatorId));
         userRepository.save(user);
         return true;
     }
@@ -119,7 +120,6 @@ public class RegistrationService {
         newUser.setPhonePrefix(request.getPhonePrefix());
         newUser.setNumber(request.getNumber());
         newUser.setPassword(request.getPassword());
-        newUser.setCreatorId(request.getCreatorId());
         newUser.setCreatedDate(LocalDateTime.now());
         newUser.setRole(role);
         newUser.setFieldName(request.getFieldName());

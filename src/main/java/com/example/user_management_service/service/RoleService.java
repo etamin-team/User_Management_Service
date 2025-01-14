@@ -1,9 +1,13 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.User;
 import com.example.user_management_service.role.Role;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * RoleService
@@ -39,5 +43,16 @@ public class RoleService {
 
         // If no roles are found
         throw new IllegalStateException("No roles found for the current user.");
+    }
+
+    public UUID getCurrentUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Check for an unauthenticated user
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("No authenticated user found.");
+        }
+
+            return ((User) authentication.getPrincipal()).getUserId();
     }
 }

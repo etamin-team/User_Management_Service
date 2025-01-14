@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping("/register-doctor")
     public ResponseEntity<Void> registerDoctor(@RequestBody RegisterRequest request) {
-        boolean isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED);
+        boolean isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED,roleService.getCurrentUserId());
         return ResponseEntity.status(isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED).build();
     }
 
@@ -151,7 +151,7 @@ public class UserController {
 
 
     private ResponseEntity<String> registerUser(RegisterRequest request, String roleName, Role role) {
-        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED);
+        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED,roleService.getCurrentUserId());
         HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }

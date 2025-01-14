@@ -63,6 +63,7 @@ public class UserService {
                 user.getFieldName(),
                 user.getGender(),
                 user.getStatus(),
+                user.getCreatorId(),
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
                 user.getDistrict().getId()
         );
