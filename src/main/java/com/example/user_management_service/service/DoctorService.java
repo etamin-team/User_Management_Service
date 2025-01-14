@@ -42,10 +42,11 @@ public class DoctorService {
 
     public void saveTemplate(TemplateDto templateDto, boolean save) {
         Template template = convertToEntity(templateDto);
-        if (templateDto.getId() != null) {
-            template.setId(templateDto.getId());
-            template.setSaved(save);
-        }
+        template.setId(templateDto.getId());
+        templateRepository.save(template);
+    }
+    public void createTemplate(TemplateDto templateDto, boolean save) {
+        Template template = convertToEntity(templateDto);
         templateRepository.save(template);
     }
 

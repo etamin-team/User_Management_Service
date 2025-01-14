@@ -33,6 +33,11 @@ public class DoctorController {
 
     @PostMapping("/create-template")
     public void createTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
+        doctorService.createTemplate(templateDto, save);
+    }
+
+    @PutMapping("/update-template")
+    public void updateTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
         doctorService.saveTemplate(templateDto, save);
     }
 
@@ -43,7 +48,7 @@ public class DoctorController {
 
     @GetMapping("/templates")
     public List<Template> getTemplates(
-            @RequestParam(required = false, defaultValue = "false") Boolean saved,
+            @RequestParam(required = false) Boolean saved,
             @RequestParam(required = false, defaultValue = "false") Boolean sortBy,
             @RequestParam(required = false) String searchText) {
         return doctorService.getTemplates(saved, sortBy, searchText);

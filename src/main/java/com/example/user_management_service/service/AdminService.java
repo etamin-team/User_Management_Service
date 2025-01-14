@@ -48,6 +48,7 @@ public class AdminService {
                 user.getPosition(),
                 user.getFieldName(),
                 user.getGender(),
+                user.getStatus(),
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
                 user.getDistrict().getId()
         );

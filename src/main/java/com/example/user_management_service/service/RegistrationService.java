@@ -55,11 +55,13 @@ public class RegistrationService {
     public List<WorkPlaceDTO> getAllWorkPlaces() {
         return convertToDTOs(workPlaceRepository.findAll());
     }
+
     public List<WorkPlaceDTO> convertToDTOs(List<WorkPlace> workPlaces) {
         return workPlaces.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
     private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
         return new WorkPlaceDTO(
                 workPlace.getId(),
@@ -69,6 +71,7 @@ public class RegistrationService {
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );
     }
+
     public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setFirstName(request.getFirstName());
@@ -106,7 +109,7 @@ public class RegistrationService {
     private User createUserRequest(RegisterRequest request, Role role) {
         User newUser = new User();
 
-        if (request.getDistrictId() != null ) {
+        if (request.getDistrictId() != null) {
             District district = districtRegionService.getDistrict(request.getDistrictId());
             newUser.setDistrict(district);
         }
@@ -124,10 +127,9 @@ public class RegistrationService {
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
         newUser.setDateOfBirth(request.getBirthDate());
-        if (role.equals(Role.DOCTOR)) {
-            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
-            newUser.setWorkplace(workPlace);
-        }
+
+        WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
+        newUser.setWorkplace(workPlace);
         return newUser;
     }
 
