@@ -30,9 +30,11 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
-    public User getUserById(String userId) {
-        return userRepository.findById(UUID.fromString(userId)).orElse(null);
+    public UserDTO getUserById(String userId) {
+        return convertToDTO(userRepository.findById(UUID.fromString(userId)).orElse(null));
     }
+
+
     public boolean changePassword(ChangePasswordRequest changePasswordRequest) {
         User user = userRepository.findById(UUID.fromString(changePasswordRequest.getUserId())).orElse(null);
 
