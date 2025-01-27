@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class UserService {
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
     public UserDTO getUserById(String userId) {
-        return convertToDTO(userRepository.findById(UUID.fromString(userId)).orElse(null));
+        return convertToDTO(Objects.requireNonNull(userRepository.findById(UUID.fromString(userId)).orElse(null)));
     }
 
 
@@ -67,7 +68,7 @@ public class UserService {
                 user.getStatus(),
                 user.getCreatorId(),
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
-                user.getDistrict().getId()
+                user.getDistrict()==null ? null : user.getDistrict().getId()
         );
     }
 

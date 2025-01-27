@@ -28,7 +28,7 @@ public class Medicine {
     @Column(name = "image_url")
     private String imageUrl;
 
-    private Long price;
+    private Long cip;
 
     private Integer quantity;
 

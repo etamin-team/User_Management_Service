@@ -3,12 +3,17 @@ package com.example.user_management_service.controller;
 import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.ContractDTO;
+import com.example.user_management_service.model.dto.SalesDTO;
 import com.example.user_management_service.service.DataBaseService;
+import com.example.user_management_service.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +29,12 @@ import java.util.Optional;
 public class DataBaseController {
 
     private final DataBaseService dataBaseService;
+    private final SalesService salesService;
 
     @Autowired
-    public DataBaseController(DataBaseService dataBaseService) {
+    public DataBaseController(DataBaseService dataBaseService, SalesService salesService) {
         this.dataBaseService = dataBaseService;
+        this.salesService = salesService;
     }
 
     @PostMapping("/medicine")
@@ -76,4 +83,51 @@ public class DataBaseController {
         dataBaseService.deleteContract(contractId);
         return ResponseEntity.noContent().build();
     }
+
+
+
+    /// Sales
+
+    @PostMapping("/sales/load-data")
+    public ResponseEntity<String> loadData(@RequestBody List<SalesDTO> salesDTOS) {
+        try {
+            salesService.saveSalesDTOList(salesDTOS);
+            return ResponseEntity.ok("Sales data saved successfully.");
+        } catch (ResponseStatusException e) {
+            // Return the error message with the status code
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+    }
+    @PutMapping("/sales/{salesId}")
+    public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesDTO salesDTO) {
+        try {
+            salesService.updateSales(salesId, salesDTO);
+            return ResponseEntity.ok("Sales data updated successfully.");
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+    }
+
+    @DeleteMapping("/sales/{salesId}")
+    public ResponseEntity<String> deleteSales(@PathVariable Long salesId) {
+        try {
+            salesService.deleteSales(salesId);
+            return ResponseEntity.ok("Sales data deleted successfully.");
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        }
+    }
+
+    @GetMapping("/sales/data")
+    public ResponseEntity<Page<SalesDTO>> getSalesInfoByMedicine(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<SalesDTO> salesInfo = salesService.getSalesData(startDate, endDate, page, size);
+        return ResponseEntity.ok(salesInfo);
+    }
+
+
 }
