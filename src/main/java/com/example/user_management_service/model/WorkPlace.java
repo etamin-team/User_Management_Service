@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 /**
  * Date-11/27/2024
  * By Sardor Tokhirov
@@ -33,8 +35,17 @@ public class WorkPlace {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "email")
+    private String email;
+
+    @OneToOne
+    @JoinColumn(name = "chief_doctor_id", referencedColumnName = "user_id")
+    private User chiefDoctor;
+
     @ManyToOne
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
-
 }

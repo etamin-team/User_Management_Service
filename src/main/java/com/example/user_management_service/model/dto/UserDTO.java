@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Gender;
 import com.example.user_management_service.role.UserStatus;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class UserDTO {
     private String number;
     private String email;
     private String position;
-    private String fieldName;
+    private Field fieldName;
     private Gender gender;
     private UserStatus status;
     private String creatorId;

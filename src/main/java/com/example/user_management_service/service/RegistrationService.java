@@ -68,8 +68,12 @@ public class RegistrationService {
                 workPlace.getName(),
                 workPlace.getAddress(),
                 workPlace.getDescription(),
+                workPlace.getPhone(),
+                workPlace.getEmail(),
+                workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );
+
     }
 
     public AuthRandomNumberResponse signUpDoctorWithOutConfirmation(DoctorSignUpRequest request) {
@@ -133,6 +137,29 @@ public class RegistrationService {
         newUser.setWorkplace(workPlace);
         return newUser;
     }
+
+    public boolean registerAll(List<RegisterRequest> requests, Role role, UserStatus userStatus, UUID creatorId) {
+        try {
+            List<User> users = requests.stream()
+                    .map(request -> createUserFromRequest(request, role, userStatus, creatorId))
+                    .toList();
+            userRepository.saveAll(users);
+            return true;
+        } catch (Exception e) {
+            // Handle any specific logging or exceptions
+            return false;
+        }
+    }
+
+    private User createUserFromRequest(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
+        User user = createUserRequest(request, role);
+        user.setUserId(UUID.randomUUID());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(userStatus);
+        user.setCreatorId(String.valueOf(creatorId));
+        return user;
+    }
+
 
     private String getMissingFields(DoctorSignUpRequest request) {
         StringBuilder missingFields = new StringBuilder();

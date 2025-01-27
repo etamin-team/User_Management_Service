@@ -1,5 +1,6 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.PreparationType;
 import com.example.user_management_service.model.Recipe;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,7 +27,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             "AND (:middleName IS NULL OR u.middleName LIKE %:middleName%) " +
             "AND (:lastName IS NULL OR u.lastName LIKE %:lastName%) " +
             "AND (:district IS NULL OR u.district.name LIKE %:district%) " +
-            "AND (:category IS NULL OR u.fieldName LIKE %:category%) " +
+            "AND (:category IS NULL OR u.fieldName = :category) " +
             "AND (:specialty IS NULL OR u.position LIKE %:specialty%) " +
             "AND (:startDate IS NULL OR r.dateCreation >= :startDate) " +
             "AND (:endDate IS NULL OR r.dateCreation <= :endDate) " +
@@ -37,7 +38,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("district") String district,
-            @Param("category") String category,
+            @Param("category") Field category,
             @Param("specialty") String specialty,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,

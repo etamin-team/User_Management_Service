@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Gender;
 import lombok.*;
 
@@ -35,7 +36,7 @@ public class DoctorSignUpRequest {
 
     private Long workPlaceId;
 
-    private String fieldName;
+    private Field fieldName;
 
     private String position;
 

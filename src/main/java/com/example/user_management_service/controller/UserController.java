@@ -142,6 +142,46 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @PostMapping("/upload-doctors")
+    public ResponseEntity<String> uploadDoctors(@RequestBody List<RegisterRequest> requests) {
+        return uploadUsers(requests, Role.DOCTOR, "Doctors");
+    }
+
+    @PostMapping("/upload-admins")
+    public ResponseEntity<String> uploadAdmins(@RequestBody List<RegisterRequest> requests) {
+        validateRoleAssignment(Role.ADMIN);
+        return uploadUsers(requests, Role.ADMIN, "Admins");
+    }
+
+    @PostMapping("/upload-managers")
+    public ResponseEntity<String> uploadManagers(@RequestBody List<RegisterRequest> requests) {
+        validateRoleAssignment(Role.MANAGER);
+        return uploadUsers(requests, Role.MANAGER, "Managers");
+    }
+
+    @PostMapping("/upload-superadmins")
+    public ResponseEntity<String> uploadSuperAdmins(@RequestBody List<RegisterRequest> requests) {
+        validateRoleAssignment(Role.SUPERADMIN);
+        return uploadUsers(requests, Role.SUPERADMIN, "SuperAdmins");
+    }
+
+    @PostMapping("/upload-medagents")
+    public ResponseEntity<String> uploadMedAgents(@RequestBody List<RegisterRequest> requests) {
+        validateRoleAssignment(Role.MEDAGENT);
+        return uploadUsers(requests, Role.MEDAGENT, "MedAgents");
+    }
+
+    private ResponseEntity<String> uploadUsers(List<RegisterRequest> requests, Role role, String roleName) {
+        boolean allRegistered = authService.registerAll(requests, role, UserStatus.ENABLED, roleService.getCurrentUserId());
+        String responseMessage = allRegistered
+                ? roleName + " upload successful"
+                : roleName + " upload partially failed. Please check the input data.";
+        return ResponseEntity.status(allRegistered ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT).body(responseMessage);
+    }
+
+
+
+
     private void validateRoleAssignment(Role targetRole) {
         Role currentUserRole = roleService.getCurrentUserRole();
         if (!authService.canCreateRole(currentUserRole, targetRole)) {

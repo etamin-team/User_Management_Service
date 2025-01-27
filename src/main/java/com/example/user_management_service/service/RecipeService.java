@@ -24,7 +24,6 @@ public class RecipeService {
 
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
-    private final UserRepository userRepository;
 
 
 
@@ -63,7 +62,7 @@ public class RecipeService {
     }
 
     public List<LastRecipeDTO> getRecipes(
-            String firstName, String lastName, String middleName, String district, String category,
+            String firstName, String lastName, String middleName, String district, Field category,
             String specialty, Long medicineId, LocalDate startDate, LocalDate endDate) {
 
         return recipeRepository.findRecipesByFilters(firstName, lastName, middleName, district, category, specialty, startDate, endDate, medicineId)
@@ -90,6 +89,9 @@ public class RecipeService {
                 workPlace.getName(),
                 workPlace.getAddress(),
                 workPlace.getDescription(),
+                workPlace.getPhone(),
+                workPlace.getEmail(),
+                workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );
     }

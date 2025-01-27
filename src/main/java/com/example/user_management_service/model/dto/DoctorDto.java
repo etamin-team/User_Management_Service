@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,7 +28,7 @@ public class DoctorDto {
     private String number;
     private String email;
     private String position;
-    private String fieldName;
+    private Field fieldName;
     private Gender gender;
 
     private Long workplaceId;

@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Gender;
 import com.example.user_management_service.role.Role;
 import lombok.*;
@@ -36,6 +37,6 @@ public class RegisterRequest {
     private LocalDate birthDate;
     private Gender gender;
 
-    private String fieldName;
+    private Field fieldName;
     private String position;
 }

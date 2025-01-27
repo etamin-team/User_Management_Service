@@ -1,6 +1,7 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.*;
@@ -59,22 +60,6 @@ public class AdminController {
         return ResponseEntity.ok("User has been declined successfully.");
     }
 
-    @PostMapping("/workplaces/create")
-    public ResponseEntity<String> createWorkPlace(@RequestBody WorkPlaceDTO workPlaceDTO) {
-        adminService.createWorkPlace(workPlaceDTO);
-        return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
-    }
-
-    @PutMapping("/workplaces/{id}")
-    public ResponseEntity<String> updateWorkPlace(@PathVariable Long id, @RequestBody WorkPlaceDTO workPlaceDTO) {
-        adminService.updateWorkPlace(id, workPlaceDTO);
-        return ResponseEntity.ok("Workplace updated successfully!");
-    }
-    @DeleteMapping("/workplaces/{id}")
-    public ResponseEntity<String> deleteWorkPlace(@PathVariable Long id) {
-        adminService.deleteWorkPlace(id);
-        return ResponseEntity.ok("Workplace deleted successfully!");
-    }
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
@@ -101,7 +86,7 @@ public class AdminController {
     public ResponseEntity<List<LastRecipeDTO>> getAllLastRecipes(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String district,
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Field category,
             @RequestParam(required = false) String specialty,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,

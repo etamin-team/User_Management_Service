@@ -4,6 +4,8 @@ import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
+import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
 import com.example.user_management_service.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class DataBaseController {
         this.salesService = salesService;
     }
 
+
+
+    // medicine
     @PostMapping("/medicine")
     public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody Medicine medicine) {
         Medicine savedMedicine = dataBaseService.saveOrUpdateMedicine(medicine);
@@ -66,6 +71,10 @@ public class DataBaseController {
     }
 
 
+
+
+
+    // contracts
     @GetMapping("/contracts/{contractId}")
     public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
         Contract contract = dataBaseService.getContractById(contractId);
@@ -87,7 +96,6 @@ public class DataBaseController {
 
 
     /// Sales
-
     @PostMapping("/sales/load-data")
     public ResponseEntity<String> loadData(@RequestBody List<SalesDTO> salesDTOS) {
         try {
@@ -129,5 +137,24 @@ public class DataBaseController {
         return ResponseEntity.ok(salesInfo);
     }
 
+
+    // workplace
+
+    @PostMapping("/workplaces/create")
+    public ResponseEntity<String> createWorkPlace(@RequestBody WorkPlaceDTO workPlaceDTO) {
+        dataBaseService.createWorkPlace(workPlaceDTO);
+        return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
+    }
+
+    @PutMapping("/workplaces/{id}")
+    public ResponseEntity<String> updateWorkPlace(@PathVariable Long id, @RequestBody WorkPlaceDTO workPlaceDTO) {
+        dataBaseService.updateWorkPlace(id, workPlaceDTO);
+        return ResponseEntity.ok("Workplace updated successfully!");
+    }
+    @DeleteMapping("/workplaces/{id}")
+    public ResponseEntity<String> deleteWorkPlace(@PathVariable Long id) {
+        dataBaseService.deleteWorkPlace(id);
+        return ResponseEntity.ok("Workplace deleted successfully!");
+    }
 
 }
