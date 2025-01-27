@@ -84,7 +84,7 @@ public class User implements UserDetails {
     private String position;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "fieldName")
+    @Column(name = "field_name")
     private Field fieldName;
 
 
