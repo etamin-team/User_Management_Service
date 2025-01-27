@@ -41,6 +41,10 @@ public class WorkPlace {
     @Column(name = "email")
     private String email;
 
+    @Enumerated(EnumType.STRING) // Store the enum as a string in the database
+    @Column(name = "medical_institution_type", nullable = false)
+    private MedicalInstitutionType medicalInstitutionType;
+
     @OneToOne
     @JoinColumn(name = "chief_doctor_id", referencedColumnName = "user_id")
     private User chiefDoctor;

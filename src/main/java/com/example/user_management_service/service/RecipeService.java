@@ -91,9 +91,11 @@ public class RecipeService {
                 workPlace.getDescription(),
                 workPlace.getPhone(),
                 workPlace.getEmail(),
+                workPlace.getMedicalInstitutionType(), // Include MedicalInstitutionType here
                 workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );
+
     }
     private UserFullNameDTO convertToUserFullNameDTO(User user){
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());

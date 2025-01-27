@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.MedicalInstitutionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class WorkPlaceDTO {
     private String description;
     private String phone;
     private String email;
+    private MedicalInstitutionType medicalInstitutionType;
     private UUID chiefDoctorId;
     private Long districtId;
 }
