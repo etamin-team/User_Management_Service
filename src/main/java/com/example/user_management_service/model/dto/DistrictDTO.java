@@ -3,6 +3,7 @@ package com.example.user_management_service.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Date-1/11/2025

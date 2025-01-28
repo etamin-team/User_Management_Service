@@ -1,9 +1,6 @@
 package com.example.user_management_service.controller;
 
-import com.example.user_management_service.model.Contract;
-import com.example.user_management_service.model.Field;
-import com.example.user_management_service.model.User;
-import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
@@ -102,4 +99,49 @@ public class AdminController {
         return ResponseEntity.ok(recipes);
     }
 
+
+
+    //manager goal
+
+    @PostMapping("/manager/goal")
+    public ResponseEntity<ManagerGoalDTO> createManagerGoal(@RequestBody ManagerGoalDTO managerGoalDTO) {
+        ManagerGoalDTO savedGoal = adminService.createManagerGoal(managerGoalDTO);
+        return new ResponseEntity<>(savedGoal, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/manager/goal/{id}")
+    public ResponseEntity<ManagerGoalDTO> updateManagerGoal(
+            @PathVariable Long id,
+            @RequestBody ManagerGoalDTO updateGoalDTO
+    ) {
+        return adminService.updateManagerGoal(id, updateGoalDTO)
+                .map(updatedGoal -> new ResponseEntity<>(updatedGoal, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/manager/goal/{id}")
+    public ResponseEntity<Void> deleteManagerGoal(@PathVariable Long id) {
+        if (adminService.deleteManagerGoal(id)) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PatchMapping("/manager/goal/{id}/status")
+    public ResponseEntity<ManagerGoalDTO> updateGoalStatus(
+            @PathVariable Long id,
+            @RequestParam GoalStatus status
+    ) {
+        return adminService.updateGoalStatus(id, status)
+                .map(updatedGoal -> new ResponseEntity<>(updatedGoal, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/manager/goal")
+    public ResponseEntity<List<ManagerGoalWithDetailsDTO>> getManagerGoalsWithDetails(
+            @RequestParam(name = "status") GoalStatus status) {
+        List<ManagerGoalWithDetailsDTO> goals = adminService.getManagerGoalsWithDetails(status);
+        return ResponseEntity.ok(goals);
+    }
 }
