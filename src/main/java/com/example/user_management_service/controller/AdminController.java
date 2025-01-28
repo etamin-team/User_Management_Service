@@ -144,4 +144,39 @@ public class AdminController {
         List<ManagerGoalWithDetailsDTO> goals = adminService.getManagerGoalsWithDetails(status);
         return ResponseEntity.ok(goals);
     }
+
+
+
+
+    // Med Agent Contract
+
+
+
+    @PostMapping("/med-agent")
+    public ResponseEntity<AgentContractDTO> createAgentContract(@RequestBody AgentContractDTO agentContractDTO) {
+        AgentContractDTO createdContract = adminService.createAgentContract(agentContractDTO);
+        return ResponseEntity.ok(createdContract);
+    }
+
+    // Update an existing Agent Contract
+    @PutMapping("/med-agent/{contractId}")
+    public ResponseEntity<AgentContractDTO> updateAgentContract(@PathVariable Long contractId,
+                                                                @RequestBody   AgentContractDTO agentContractDTO) {
+        AgentContractDTO updatedContract = adminService.updateAgentContract(contractId, agentContractDTO);
+        return ResponseEntity.ok(updatedContract);
+    }
+
+    // Delete an Agent Contract
+    @DeleteMapping("/med-agent/{contractId}")
+    public ResponseEntity<Void> deleteAgentContract(@PathVariable Long contractId) {
+        adminService.deleteAgentContract(contractId);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
+
+
+
+
 }
