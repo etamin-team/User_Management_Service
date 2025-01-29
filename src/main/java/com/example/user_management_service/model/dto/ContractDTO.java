@@ -23,18 +23,11 @@ public class ContractDTO {
     private String doctorId;
     private List<Long> medicineIds;
 
-    private String contractType;
-    private String contractStatus;
-    private Double totalAmount;
-
-    private Double quota_60;
-    private Double quota_75_90;
-    private Double sb;
-    private Double su;
-    private Double gz;
-    private Double kb;
+    private Long  totalAmount;
 
     private LocalDate createdAt;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private List<MedicineWithQuantityDTO> medicinesWithQuantities;
 }

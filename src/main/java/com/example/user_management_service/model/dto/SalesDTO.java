@@ -18,6 +18,7 @@ public class SalesDTO {
     private String medicineName;
     private Long cip;
     private LocalDate salesDate;
+    private String groups;
     private List<SalesByRegionDTO> salesByRegion;
 
 }

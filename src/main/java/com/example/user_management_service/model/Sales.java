@@ -25,6 +25,9 @@ public class Sales {
     @Column(name = "sales_date", nullable = false)
     private LocalDate salesDate;
 
+    @Column(name = "groups", nullable = false)
+    private   String groups;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medicine_id", nullable = false)
     private Medicine medicine;

@@ -39,32 +39,11 @@ public class AgentContract {
     @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantity> medicinesWithQuantities;
 
-    @Column(name = "contract_type")
-    private String contractType;
-
-    @Column(name = "contract_status")
-    private String contractStatus;
 
     @Column(name = "total_amount")
     private Double totalAmount;
 
-    @Column(name = "quota_60")
-    private Double quota60;
 
-    @Column(name = "quota_75_90")
-    private Double quota75To90;
-
-    @Column(name = "su")
-    private Double su;
-
-    @Column(name = "sb")
-    private Double sb;
-
-    @Column(name = "gz")
-    private Double gz;
-
-    @Column(name = "kb")
-    private Double kb;
 
     @Column(name = "created_at")
     private LocalDate createdAt;

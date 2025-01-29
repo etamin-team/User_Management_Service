@@ -155,6 +155,7 @@ public class SalesService {
                 sales.getMedicine().getName(),
                 sales.getMedicine().getCip(),
                 sales.getSalesDate(),
+                sales.getGroups(),
                 sales.getSalesByRegion().stream()
                         .map(region -> new SalesByRegionDTO(
                                 region.getDistrict().getId(),

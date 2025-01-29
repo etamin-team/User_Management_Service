@@ -73,11 +73,6 @@ public class AdminController {
     }
 
 
-    @PostMapping("/contracts")
-    public ResponseEntity<Contract> createContract(@RequestBody ContractDTO contractDTO) {
-        Contract savedContract = dataBaseService.saveContractFromDTO(contractDTO);
-        return ResponseEntity.ok(savedContract);
-    }
 
     @GetMapping("/recipes")
     public ResponseEntity<List<LastRecipeDTO>> getAllLastRecipes(

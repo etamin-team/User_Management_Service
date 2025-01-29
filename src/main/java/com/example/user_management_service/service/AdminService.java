@@ -212,15 +212,7 @@ public class AdminService {
 
         return new AgentContractDTO(
                 agentContract.getId(),
-                agentContract.getContractType(),
-                agentContract.getContractStatus(),
                 agentContract.getTotalAmount(),
-                agentContract.getQuota60(),
-                agentContract.getQuota75To90(),
-                agentContract.getSu(),
-                agentContract.getSb(),
-                agentContract.getGz(),
-                agentContract.getKb(),
                 agentContract.getCreatedAt(),
                 agentContract.getStartDate(),
                 agentContract.getEndDate(),
@@ -253,20 +245,9 @@ public class AdminService {
 
 
     public AgentContractDTO createAgentContract(AgentContractDTO agentContractDTO) {
-        // Create a new AgentContract object
         AgentContract agentContract = new AgentContract();
-
-        // Set values using setter methods
-        agentContract.setContractType(agentContractDTO.getContractType());
-        agentContract.setContractStatus(agentContractDTO.getContractStatus());
         agentContract.setTotalAmount(agentContractDTO.getTotalAmount());
-        agentContract.setQuota60(agentContractDTO.getQuota60());
-        agentContract.setQuota75To90(agentContractDTO.getQuota75To90());
-        agentContract.setSu(agentContractDTO.getSu());
-        agentContract.setSb(agentContractDTO.getSb());
-        agentContract.setGz(agentContractDTO.getGz());
-        agentContract.setKb(agentContractDTO.getKb());
-        agentContract.setCreatedAt(LocalDate.now());  // Set current date for creation
+        agentContract.setCreatedAt(LocalDate.now());
         agentContract.setStartDate(agentContractDTO.getStartDate());
         agentContract.setEndDate(agentContractDTO.getEndDate());
 
@@ -306,16 +287,7 @@ public class AdminService {
         AgentContract existingContract = agentContractRepository.findById(contractId)
                 .orElseThrow(() -> new RuntimeException("Agent Contract not found"));
 
-        // Set updated values using setter methods
-        existingContract.setContractType(agentContractDTO.getContractType());
-        existingContract.setContractStatus(agentContractDTO.getContractStatus());
         existingContract.setTotalAmount(agentContractDTO.getTotalAmount());
-        existingContract.setQuota60(agentContractDTO.getQuota60());
-        existingContract.setQuota75To90(agentContractDTO.getQuota75To90());
-        existingContract.setSu(agentContractDTO.getSu());
-        existingContract.setSb(agentContractDTO.getSb());
-        existingContract.setGz(agentContractDTO.getGz());
-        existingContract.setKb(agentContractDTO.getKb());
         existingContract.setStartDate(agentContractDTO.getStartDate());
         existingContract.setEndDate(agentContractDTO.getEndDate());
 

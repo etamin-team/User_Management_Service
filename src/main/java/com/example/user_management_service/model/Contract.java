@@ -36,33 +36,12 @@ public class Contract {
     )
     private List<Medicine> medicines;
 
-    @Column(name = "contract_type")
-    private String contractType;
-
-    @Column(name = "contract_status")
-    private String contractStatus;
 
     @Column(name = "total_amount")
     private Double totalAmount;
 
-    @Column(name = "quota_60")
-    private Double quota_60;
-
-    @Column(name = "quota_75_90")
-    private Double quota_75_90;
-
-    @Column(name = "su")
-    private Double su;
-
-    @Column(name = "sb")
-    private Double sb;
-
-    @Column(name = "gz")
-    private Double gz;
-
-    @Column(name = "kb")
-    private Double kb;
-
+    @OneToMany(mappedBy = "doctorContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
@@ -72,5 +51,10 @@ public class Contract {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", referencedColumnName = "user_id")
+    private User doctor;
+
 
 }
