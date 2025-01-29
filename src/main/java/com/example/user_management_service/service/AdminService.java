@@ -8,13 +8,11 @@ import com.example.user_management_service.role.UserStatus;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +31,9 @@ public class AdminService {
     private final ManagerGoalRepository managerGoalRepository;  // Assuming this repository exists
     private final MedicineRepository medicineRepository;  // Assuming this repository exists
     private final DistrictRepository districtRepository;
+    private final ContractMedicineAmountRepository contractMedicineAmountRepository;
+    private final ContractFieldAmountRepository contractFieldAmountRepository;
+    private final ContractDistrictAmountRepository contractDistrictAmountRepository;
 
     private AgentContractRepository agentContractRepository;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
@@ -76,129 +77,137 @@ public class AdminService {
         user.setStatus(UserStatus.DECLINED);
         userRepository.save(user);
     }
-
+    @Transactional
     public ManagerGoalDTO createManagerGoal(ManagerGoalDTO managerGoalDTO) {
-        // Convert DTO to entity
         ManagerGoal managerGoal = new ManagerGoal();
         managerGoal.setManagerId(userRepository.findById(managerGoalDTO.getManagerId())
                 .orElseThrow(() -> new RuntimeException("Manager not found")));
-        managerGoal.setFields(managerGoalDTO.getFields());
-        managerGoal.setMedicines(medicineRepository.findAllById(managerGoalDTO.getMedicineIds()));
-        managerGoal.setDistricts(districtRepository.findAllById(managerGoalDTO.getDistrictIds()));
         managerGoal.setCreatedAt(LocalDate.now());
         managerGoal.setStartDate(managerGoalDTO.getStartDate());
         managerGoal.setEndDate(managerGoalDTO.getEndDate());
 
-        // Save entity
-        ManagerGoal savedGoal = managerGoalRepository.save(managerGoal);
+        managerGoalRepository.save(managerGoal);
 
-        // Convert entity back to DTO and return
-        return new ManagerGoalDTO(
-                savedGoal.getGoalId(),
-                savedGoal.getManagerId().getUserId(),
-                savedGoal.getFields(),
-                savedGoal.getMedicines().stream().map(Medicine::getId).collect(Collectors.toList()),
-                savedGoal.getDistricts().stream().map(District::getId).collect(Collectors.toList()),
-                savedGoal.getCreatedAt(),
-                savedGoal.getStartDate(),
-                savedGoal.getEndDate()
-        );
+        managerGoal.setFieldGoalQuantities(managerGoalDTO.getFieldGoalQuantities().stream()
+                .map(dto -> {
+                    ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
+                    contractFieldAmount.setAmount(0L); // Or set it based on your logic
+                    contractFieldAmountRepository.save(contractFieldAmount);
+                    FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
+                    fieldGoalQuantity.setField(dto.getFieldName());
+                    fieldGoalQuantity.setQuote(dto.getQuote());
+                    fieldGoalQuantity.setManagerGoal(managerGoal);
+                    fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
+                    return fieldGoalQuantity;
+                })
+                .collect(Collectors.toList()));
+
+        managerGoal.setManagerGoalQuantities(managerGoalDTO.getManagerGoalQuantities().stream()
+                .map(dto -> {
+                    ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
+                    contractMedicineAmount.setAmount(0L); // Or set it based on your logic
+                    contractMedicineAmountRepository.save(contractMedicineAmount);
+                    MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
+                    medicineGoalQuantity.setId(dto.getManagerGoalId());
+                    medicineGoalQuantity.setQuote(dto.getQuote());
+                    medicineGoalQuantity.setManagerGoal(managerGoal);
+                    Medicine medicine=medicineRepository.getOne(dto.getMedicineId());
+                    medicineGoalQuantity.setMedicine(medicine);
+                    medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
+                    return medicineGoalQuantity;
+                })
+                .collect(Collectors.toList()));
+
+        managerGoal.setDistrictGoalQuantities(managerGoalDTO.getDistrictGoalQuantities().stream()
+                .map(dto -> {
+                    ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
+                    contractDistrictAmount.setAmount(0L); // Or set it based on your logic
+                    contractDistrictAmountRepository.save(contractDistrictAmount); // Save it to generate ID
+                    DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
+                    districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
+                    districtGoalQuantity.setQuote(dto.getQuote());
+                    districtGoalQuantity.setManagerGoal(managerGoal);
+                    districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
+                    return districtGoalQuantity;
+                })
+                .collect(Collectors.toList()));
+
+        ManagerGoal savedGoal = managerGoalRepository.save(managerGoal);
+        return convertToDTO(savedGoal);
     }
 
-    // Update Manager Goal
     public Optional<ManagerGoalDTO> updateManagerGoal(Long id, ManagerGoalDTO updateGoalDTO) {
         return managerGoalRepository.findById(id)
                 .map(existingGoal -> {
-                    existingGoal.setFields(updateGoalDTO.getFields());
-                    existingGoal.setMedicines(medicineRepository.findAllById(updateGoalDTO.getMedicineIds()));
-                    existingGoal.setDistricts(districtRepository.findAllById(updateGoalDTO.getDistrictIds()));
                     existingGoal.setStartDate(updateGoalDTO.getStartDate());
                     existingGoal.setEndDate(updateGoalDTO.getEndDate());
 
-                    // Save the updated goal
-                    ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
+                    existingGoal.setFieldGoalQuantities(updateGoalDTO.getFieldGoalQuantities().stream()
+                            .map(dto -> {
+                                FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
+                                fieldGoalQuantity.setField(dto.getFieldName());
+                                fieldGoalQuantity.setQuote(dto.getQuote());
+                                fieldGoalQuantity.setManagerGoal(existingGoal);
+                                return fieldGoalQuantity;
+                            })
+                            .collect(Collectors.toList()));
 
-                    // Return DTO
-                    return new ManagerGoalDTO(
-                            updatedGoal.getGoalId(),
-                            updatedGoal.getManagerId().getUserId(),
-                            updatedGoal.getFields(),
-                            updatedGoal.getMedicines().stream().map(Medicine::getId).collect(Collectors.toList()),
-                            updatedGoal.getDistricts().stream().map(District::getId).collect(Collectors.toList()),
-                            updatedGoal.getCreatedAt(),
-                            updatedGoal.getStartDate(),
-                            updatedGoal.getEndDate()
-                    );
+                    existingGoal.setManagerGoalQuantities(updateGoalDTO.getManagerGoalQuantities().stream()
+                            .map(dto -> {
+                                MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
+                                medicineGoalQuantity.setManagerGoal(existingGoal);
+                                medicineGoalQuantity.setQuote(dto.getQuote());
+                                medicineGoalQuantity.setManagerGoal(existingGoal);
+                                return medicineGoalQuantity;
+                            })
+                            .collect(Collectors.toList()));
+
+                    existingGoal.setDistrictGoalQuantities(updateGoalDTO.getDistrictGoalQuantities().stream()
+                            .map(dto -> {
+                                DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
+                                districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
+                                districtGoalQuantity.setQuote(dto.getQuote());
+                                districtGoalQuantity.setManagerGoal(existingGoal);
+                                return districtGoalQuantity;
+                            })
+                            .collect(Collectors.toList()));
+
+                    ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
+                    return convertToDTO(updatedGoal);
                 });
     }
 
-    // Delete Manager Goal
     public boolean deleteManagerGoal(Long id) {
         if (managerGoalRepository.existsById(id)) {
             managerGoalRepository.deleteById(id);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
-    // Update Goal Status
-    public Optional<ManagerGoalDTO> updateGoalStatus(Long id, GoalStatus status) {
-        return managerGoalRepository.findById(id)
-                .map(existingGoal -> {
-                    existingGoal.setStatus(status);
-                    ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
 
-                    // Return DTO
-                    return new ManagerGoalDTO(
-                            updatedGoal.getGoalId(),
-                            updatedGoal.getManagerId().getUserId(),
-                            updatedGoal.getFields(),
-                            updatedGoal.getMedicines().stream().map(Medicine::getId).collect(Collectors.toList()),
-                            updatedGoal.getDistricts().stream().map(District::getId).collect(Collectors.toList()),
-                            updatedGoal.getCreatedAt(),
-                            updatedGoal.getStartDate(),
-                            updatedGoal.getEndDate()
-                    );
-                });
-    }
 
-    @Transactional
-    public List<ManagerGoalWithDetailsDTO> getManagerGoalsWithDetails(GoalStatus status) {
-        List<ManagerGoal> managerGoals = managerGoalRepository.findByStatusWithMedicinesAndDistricts(status);
 
-        List<ManagerGoalWithDetailsDTO> goalDetailsList = new ArrayList<>();
 
-        for (ManagerGoal goal : managerGoals) {
-            ManagerGoalWithDetailsDTO dto = new ManagerGoalWithDetailsDTO();
-            dto.setGoalId(goal.getGoalId());
-            dto.setManagerId(goal.getManagerId().getUserId());
-            dto.setFields(goal.getFields());
-            dto.setCreatedAt(goal.getCreatedAt());
-            dto.setStartDate(goal.getStartDate());
-            dto.setEndDate(goal.getEndDate());
+    private ManagerGoalDTO convertToDTO(ManagerGoal goal) {
+        return new ManagerGoalDTO(
+                goal.getGoalId(),
+                goal.getManagerId().getUserId(),
+                goal.getFieldGoalQuantities().stream()
+                        .map(q -> new FieldGoalQuantityDTO(q.getId(),q.getField(), q.getQuote(),q.getManagerGoal().getGoalId()))
+                        .collect(Collectors.toList()),
+                goal.getManagerGoalQuantities().stream()
+                        .map(q -> new ManagerGoalQuantityDTO(q.getId(), q.getMedicine().getId(),q.getMedicine().getName(),q.getQuote(),q.getManagerGoal().getGoalId()
 
-            // Set medicines
-            List<Medicine> medicineDTOs = goal.getMedicines();
-            dto.setMedicines(medicineDTOs);
-
-            // Set districts
-            List<DistrictDTO> districtDTOs = goal.getDistricts().stream()
-                    .map(district ->new DistrictDTO(
-                            district.getId(),
-                            district.getName(),
-                            district.getNameUzCyrillic(),
-                            district.getNameUzLatin(),
-                            district.getNameRussian(),
-                            district.getRegion().getId()
-                    ))
-                    .collect(Collectors.toList());
-            dto.setDistricts(districtDTOs);
-
-            goalDetailsList.add(dto);
-        }
-
-        return goalDetailsList;
+                        ))
+                        .collect(Collectors.toList()),
+                goal.getDistrictGoalQuantities().stream()
+                        .map(q -> new DistrictGoalQuantityDTO(q.getId(),q.getDistrict().getId(),q.getDistrict().getName(),q.getQuote(), q.getManagerGoal().getGoalId()))
+                        .collect(Collectors.toList()),
+                goal.getCreatedAt(),
+                goal.getStartDate(),
+                goal.getEndDate()
+        );
     }
 
     public AgentContractDTO convertToDTO(AgentContract agentContract) {

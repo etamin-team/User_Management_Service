@@ -17,34 +17,25 @@ public class ManagerGoal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "goal_id")
     private Long goalId;
 
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
     private User managerId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private GoalStatus status = GoalStatus.PENDING_REVIEW;
 
-    @ElementCollection
-    private List<Field> fields;
 
-    @ManyToMany
-    @JoinTable(
-            name = "manager_goal_medicines",
-            joinColumns = @JoinColumn(name = "goal_id"),
-            inverseJoinColumns = @JoinColumn(name = "medicine_id")
-    )
-    private List<Medicine> medicines;
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FieldGoalQuantity> fieldGoalQuantities;
 
-    @ManyToMany
-    @JoinTable(
-            name = "manager_goal_districts",
-            joinColumns = @JoinColumn(name = "goal_id"),
-            inverseJoinColumns = @JoinColumn(name = "district_id")
-    )
-    private List<District> districts;
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedicineGoalQuantity> managerGoalQuantities;
+
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DistrictGoalQuantity> districtGoalQuantities;
+
+
 
     @Column(name = "created_at")
     private LocalDate createdAt;

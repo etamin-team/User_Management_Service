@@ -37,6 +37,10 @@ public class Contract {
     private List<Medicine> medicines;
 
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private GoalStatus status = GoalStatus.PENDING_REVIEW;
+
     @Column(name = "total_amount")
     private Double totalAmount;
 

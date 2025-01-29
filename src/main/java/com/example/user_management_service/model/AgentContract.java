@@ -28,13 +28,7 @@ public class AgentContract {
     @Column(name = "contract_id")
     private Long id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "contract_medicine",
-            joinColumns = @JoinColumn(name = "contract_id"),
-            inverseJoinColumns = @JoinColumn(name = "medicine_id")
-    )
-    private List<Medicine> medicines;
+
 
     @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantity> medicinesWithQuantities;

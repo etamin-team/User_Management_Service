@@ -45,13 +45,13 @@ public class AdminController {
         return adminService.getDoctorsNotDeclinedAndNotEnabled(pageable);
     }
 
-    @PatchMapping("/{id}/enable")
+    @PatchMapping("/{id}/user-enable")
     public ResponseEntity<String> enableUser(@PathVariable UUID id) {
         adminService.enableUser(id);
         return ResponseEntity.ok("User has been enabled successfully.");
     }
 
-    @PatchMapping("/{id}/decline")
+    @PatchMapping("/{id}/user-decline")
     public ResponseEntity<String> declineUser(@PathVariable UUID id) {
         adminService.declineUser(id);
         return ResponseEntity.ok("User has been declined successfully.");
@@ -122,25 +122,6 @@ public class AdminController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    @PatchMapping("/manager/goal/{id}/status")
-    public ResponseEntity<ManagerGoalDTO> updateGoalStatus(
-            @PathVariable Long id,
-            @RequestParam GoalStatus status
-    ) {
-        return adminService.updateGoalStatus(id, status)
-                .map(updatedGoal -> new ResponseEntity<>(updatedGoal, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping("/manager/goal")
-    public ResponseEntity<List<ManagerGoalWithDetailsDTO>> getManagerGoalsWithDetails(
-            @RequestParam(name = "status") GoalStatus status) {
-        List<ManagerGoalWithDetailsDTO> goals = adminService.getManagerGoalsWithDetails(status);
-        return ResponseEntity.ok(goals);
-    }
-
-
 
 
     // Med Agent Contract

@@ -12,9 +12,5 @@ import java.util.List;
 
 @Repository
 public interface ManagerGoalRepository extends JpaRepository<ManagerGoal, Long> {
-    @Query("SELECT mg FROM ManagerGoal mg " +
-            "JOIN FETCH mg.medicines m " +
-            "JOIN FETCH mg.districts d " +
-            "WHERE mg.status = :status")
-    List<ManagerGoal> findByStatusWithMedicinesAndDistricts(@Param("status") GoalStatus status);
+
 }
