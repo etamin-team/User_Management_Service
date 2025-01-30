@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,4 +23,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("SELECT c FROM Contract c WHERE c.status = :status")
     Page<Contract> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
 
+
+    @Query("SELECT c FROM Contract c WHERE c.doctor.userId = :doctorId " +
+            "AND c.startDate <= CURRENT_DATE " +
+            "AND c.endDate >= CURRENT_DATE")
+    Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
 }

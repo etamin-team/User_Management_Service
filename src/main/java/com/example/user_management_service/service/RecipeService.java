@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +25,7 @@ public class RecipeService {
 
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
-
+    private final ContractService contractService;;
 
 
     public void saveRecipe(RecipeDto recipeDto) {
@@ -37,11 +38,22 @@ public class RecipeService {
         recipe.setDiagnosis(recipeDto.getDiagnosis());
         recipe.setComment(recipeDto.getComment());
         recipe.setTelegramId(recipeDto.getTelegramId());
-        recipe.setPreparations(
-                recipeDto.getPreparations().stream().map(this::mapPreparationDtoToEntity).collect(Collectors.toList())
-        );
+
+        List<Preparation> preparations = recipeDto.getPreparations().stream()
+                .map(this::mapPreparationDtoToEntity)
+                .collect(Collectors.toList());
+
+        recipe.setPreparations(preparations);
         recipe.setDateCreation(LocalDate.now());
         recipeRepository.save(recipe);
+
+        List<Long> medicineIds = preparations.stream()
+                .map(Preparation::getMedicine)
+                .filter(Objects::nonNull)  // Ensure no null medicines
+                .map(Medicine::getId)
+                .collect(Collectors.toList());
+
+        contractService.saveContractMedicineAmount(recipe.getDoctorId().getUserId(), medicineIds);
     }
 
     private Preparation mapPreparationDtoToEntity(PreparationDto preparationDto) {
