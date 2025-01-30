@@ -13,7 +13,7 @@ public class SalesByRegionDTO {
         private Long districtId;
         private Integer directSales;
         private Integer secondarySales;
-        private Integer quote;
+        private Long quote;
         private Integer totalSales;
         private LocalDate salesDate;
 }

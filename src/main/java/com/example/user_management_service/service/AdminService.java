@@ -444,7 +444,8 @@ public class AdminService {
                         .map(mq -> new MedicineWithQuantityDTO(
                                 mq.getMedicine().getId(),
                                 mq.getMedicine().getName(),
-                                mq.getQuote()
+                                mq.getQuote(),
+                                mq.getContractMedicineAmount()
                         )).collect(Collectors.toList()) : List.of(),
                 agentContract.getFieldWithQuantities() != null ? agentContract.getFieldWithQuantities().stream()
                         .map(fq -> new FieldWithQuantityDTO(

@@ -25,7 +25,7 @@ public class MedicineGoalQuantity {
     private Medicine medicine;
 
     @Column(name = "quote")
-    private Integer quote;
+    private Long quote;
 
     @ManyToOne
     @JoinColumn(name = "goal_id")

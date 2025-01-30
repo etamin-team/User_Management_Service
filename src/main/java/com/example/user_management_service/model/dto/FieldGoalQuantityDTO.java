@@ -12,6 +12,6 @@ import lombok.Setter;
 public class FieldGoalQuantityDTO {
     private Long id;
     private Field fieldName;
-    private Integer quote;
+    private Long quote;
     private Long managerGoalId;
 }

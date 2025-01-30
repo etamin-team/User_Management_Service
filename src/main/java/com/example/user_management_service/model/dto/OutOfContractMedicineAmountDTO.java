@@ -5,16 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class DistrictGoalQuantityDTO {
-    private Long id;
-    private Long districtId;
-    private String districtName;
-    private Long quote;
-    private Long managerGoalId;
-}
+public class OutOfContractMedicineAmountDTO {
 
+    private Long id;
+    private Long amount;
+    private Long medicineId; // Assuming you need to provide only the medicineId
+}

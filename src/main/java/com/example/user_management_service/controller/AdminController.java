@@ -178,6 +178,10 @@ public class AdminController {
         return ResponseEntity.ok(contracts);
     }
 
-
+    @GetMapping("/contract/{contractId}")
+    public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
+        ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
 
 }

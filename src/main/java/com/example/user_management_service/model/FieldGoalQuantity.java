@@ -20,7 +20,7 @@ public class FieldGoalQuantity {
     private Field field ;
 
     @Column(name = "quote")
-    private Integer quote;
+    private Long quote;
 
     @ManyToOne
     @JoinColumn(name = "goal_id")

@@ -21,7 +21,7 @@ public class DistrictGoalQuantity {
     private District district;
 
     @Column(name = "quote")
-    private Integer quote;
+    private Long quote;
 
     @ManyToOne
     @JoinColumn(name = "goal_id")

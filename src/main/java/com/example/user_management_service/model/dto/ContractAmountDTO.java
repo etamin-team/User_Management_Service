@@ -1,0 +1,32 @@
+package com.example.user_management_service.model.dto;
+
+import com.example.user_management_service.model.ContractMedicineAmount;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class ContractAmountDTO {
+
+    private Long id;
+    private UUID doctorId;
+
+    private LocalDate createdAt;
+    private LocalDate startDate;
+    private LocalDate endDate;
+
+    private Long fieldId;
+    private Long agentId;
+
+    private List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmount;
+    private List<MedicineWithQuantityDTO> contractedMedicineWithQuantity;
+}

@@ -35,7 +35,7 @@ public class SalesByRegion {
     private Integer secondarySales;
 
     @Column(name = "quote", nullable = false)
-    private Integer quote;
+    private Long quote;
 
     @Column(name = "total_sales", nullable = false)
     private Integer totalSales;

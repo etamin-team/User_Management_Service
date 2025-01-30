@@ -25,7 +25,7 @@ public class MedicineWithQuantity {
     private Medicine medicine;
 
     @Column(name = "quote")
-    private Integer quote;
+    private Long quote;
 
     @ManyToOne
     @JoinColumn(name = "contract_medicine_amount_id", referencedColumnName = "id")

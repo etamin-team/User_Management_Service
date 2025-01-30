@@ -24,7 +24,7 @@ public class FieldWithQuantity {
     private Field field ;
 
     @Column(name = "quote")
-    private Integer quote;
+    private Long quote;
 
     @ManyToOne
     @JoinColumn(name = "contract_id")

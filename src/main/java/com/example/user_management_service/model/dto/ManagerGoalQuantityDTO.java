@@ -13,6 +13,6 @@ public class ManagerGoalQuantityDTO {
     private Long id;
     private Long medicineId;
     private String medicineName;
-    private Integer quote;
+    private Long quote;
     private Long managerGoalId;
 }

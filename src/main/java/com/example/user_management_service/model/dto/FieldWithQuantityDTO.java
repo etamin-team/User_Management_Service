@@ -14,6 +14,6 @@ public class FieldWithQuantityDTO {
 
     private Long id;
     private Field fieldName;
-    private Integer quote;
+    private Long quote;
 
 }
