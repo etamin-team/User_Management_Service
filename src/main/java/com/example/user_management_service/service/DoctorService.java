@@ -3,14 +3,12 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Preparation;
 import com.example.user_management_service.model.Template;
-import com.example.user_management_service.model.dto.PreparationDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.TemplateRepository;
+import com.example.user_management_service.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +29,7 @@ public class DoctorService {
     private final TemplateRepository templateRepository;
 
     private final MedicineRepository medicineRepository;
-
-
+    private final UserRepository userRepository;
 
 
     public void saveTemplate(Long id, boolean save) {
@@ -49,8 +46,10 @@ public class DoctorService {
         template.setSaved(save);
         templateRepository.save(template);
     }
-    public void createTemplate(TemplateDto templateDto) {
+
+    public void createTemplate(TemplateDto templateDto, UUID currentUserId) {
         Template template = convertToEntity(templateDto);
+        template.setDoctorId(userRepository.findById(currentUserId).orElseThrow());
         templateRepository.save(template);
     }
 
@@ -58,16 +57,16 @@ public class DoctorService {
         if (searchText != null && !searchText.isEmpty()) {
             if (saved != null && saved) {
                 return sortBy
-                        ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText,doctorId)
-                        : templateRepository.findBySavedTrueAndSearchText(searchText,doctorId);
+                        ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText, doctorId)
+                        : templateRepository.findBySavedTrueAndSearchText(searchText, doctorId);
             } else if (saved != null && !saved) {
                 return sortBy
-                        ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText,doctorId)
-                        : templateRepository.findBySavedFalseAndSearchText(searchText,doctorId);
+                        ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText, doctorId)
+                        : templateRepository.findBySavedFalseAndSearchText(searchText, doctorId);
             } else {
                 return sortBy
-                        ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText,doctorId)
-                        : templateRepository.findAllBySearchText(searchText,doctorId);
+                        ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText, doctorId)
+                        : templateRepository.findAllBySearchText(searchText, doctorId);
             }
         } else {
             if (saved != null && saved) {

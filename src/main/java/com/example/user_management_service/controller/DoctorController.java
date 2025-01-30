@@ -36,7 +36,7 @@ public class DoctorController {
 
     @PostMapping("/create-template")
     public void createTemplate(@RequestBody TemplateDto templateDto) {
-        doctorService.createTemplate(templateDto);
+        doctorService.createTemplate(templateDto,roleService.getCurrentUserId());
     }
 
     @PutMapping("/update-template")
@@ -56,6 +56,7 @@ public class DoctorController {
             @RequestParam(required = false) String searchText) {
         return doctorService.getTemplates(saved, sortBy, searchText,roleService.getCurrentUserId());
     }
+
 
 
     @PostMapping("/save-recipe")

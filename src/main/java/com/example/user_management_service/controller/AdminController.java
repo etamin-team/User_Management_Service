@@ -2,10 +2,7 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.service.AdminService;
-import com.example.user_management_service.service.DataBaseService;
-import com.example.user_management_service.service.PasswordResetService;
-import com.example.user_management_service.service.RecipeService;
+import com.example.user_management_service.service.*;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +33,7 @@ public class AdminController {
     private final PasswordResetService passwordResetService;
     private final DataBaseService dataBaseService;
     private final RecipeService recipeService;
+    private final ContractService contractService;
 
     @GetMapping("/doctors/not-declined-not-enabled")
     public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(
@@ -148,11 +146,6 @@ public class AdminController {
     }
 
 
-
-
-
-
-
     // Doctor Contract
 
 
@@ -177,6 +170,13 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/contracts/pending-review")
+    public ResponseEntity<Page<ContractDTO>> getPendingReviewContracts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ContractDTO> contracts = contractService.getPendingReviewContracts(page, size);
+        return ResponseEntity.ok(contracts);
+    }
 
 
 

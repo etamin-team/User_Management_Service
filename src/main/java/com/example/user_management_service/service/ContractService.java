@@ -6,8 +6,12 @@ import com.example.user_management_service.model.dto.MedicineWithQuantityDTO;
 import com.example.user_management_service.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -155,5 +159,11 @@ public class ContractService {
                         ))
                         .collect(Collectors.toList())
         );
+    }
+
+    public Page<ContractDTO> getPendingReviewContracts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Contract> contracts = contractRepository.findByStatus(GoalStatus.PENDING_REVIEW, pageable);
+        return contracts.map(this::convertToDTO);
     }
 }
