@@ -8,6 +8,7 @@ import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.repository.MedicineRepository;
+import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +27,14 @@ public class DataBaseService {
     private final ContractRepository contractRepository;
     private final MedicineRepository medicineRepository;
     private final WorkPlaceRepository workPlaceRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository) {
+    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository) {
         this.contractRepository = contractRepository;
         this.medicineRepository = medicineRepository;
         this.workPlaceRepository = workPlaceRepository;
+        this.userRepository = userRepository;
     }
 
     // Create or update a Medicine (save)
@@ -80,6 +83,8 @@ public class DataBaseService {
         workPlace.setName(workPlaceDTO.getName());
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());
+        workPlace.setMedicalInstitutionType(workPlaceDTO.getMedicalInstitutionType());
+        workPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId()!=null?userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new RuntimeException("ChiefDoctor not found")):null);
         District district = new District();
         district.setId(workPlaceDTO.getDistrictId());
         workPlace.setDistrict(district);
