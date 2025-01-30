@@ -36,11 +36,13 @@ public class DoctorController {
 
     @PostMapping("/create-template")
     public void createTemplate(@RequestBody TemplateDto templateDto) {
-        doctorService.createTemplate(templateDto,roleService.getCurrentUserId());
+        templateDto.setDoctorId(roleService.getCurrentUserId());
+        doctorService.createTemplate(templateDto);
     }
 
     @PutMapping("/update-template")
     public void updateTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
+        templateDto.setDoctorId(roleService.getCurrentUserId());
         doctorService.saveTemplate(templateDto, save);
     }
 

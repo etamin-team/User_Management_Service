@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-1/2/2025
@@ -20,5 +21,6 @@ public class TemplateDto {
     private String diagnosis;
     private List<PreparationDto> preparations;
     private String note;
+    private UUID doctorId;
     private boolean saved;
 }

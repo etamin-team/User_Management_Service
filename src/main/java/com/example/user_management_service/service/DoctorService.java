@@ -47,9 +47,8 @@ public class DoctorService {
         templateRepository.save(template);
     }
 
-    public void createTemplate(TemplateDto templateDto, UUID currentUserId) {
+    public void createTemplate(TemplateDto templateDto) {
         Template template = convertToEntity(templateDto);
-        template.setDoctorId(userRepository.findById(currentUserId).orElseThrow());
         templateRepository.save(template);
     }
 
@@ -90,6 +89,7 @@ public class DoctorService {
         Template template = new Template();
         template.setName(templateDto.getName());
         template.setDiagnosis(templateDto.getDiagnosis());
+        template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         template.setPreparations(templateDto.getPreparations().stream().map(preparationDto -> {
             Preparation preparation = new Preparation();
             preparation.setName(preparationDto.getName());
