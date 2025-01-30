@@ -28,14 +28,6 @@ public class Contract {
     @Column(name = "contract_id")
     private Long id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "contract_medicine",
-            joinColumns = @JoinColumn(name = "contract_id"),
-            inverseJoinColumns = @JoinColumn(name = "medicine_id")
-    )
-    private List<Medicine> medicines;
-
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

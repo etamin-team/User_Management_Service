@@ -23,20 +23,20 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdminService {
 
     private final UserRepository userRepository;
-    private final ManagerGoalRepository managerGoalRepository;  // Assuming this repository exists
-    private final MedicineRepository medicineRepository;  // Assuming this repository exists
+    private final ManagerGoalRepository managerGoalRepository;
+    private final MedicineRepository medicineRepository;
     private final DistrictRepository districtRepository;
     private final ContractMedicineAmountRepository contractMedicineAmountRepository;
     private final ContractFieldAmountRepository contractFieldAmountRepository;
     private final ContractDistrictAmountRepository contractDistrictAmountRepository;
-    private final FieldWithQuantityRepository fieldWithQuantityRepository;
 
     private AgentContractRepository agentContractRepository;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
-
+    private final ContractService contractService;
 
     public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(Pageable pageable) {
         return userRepository.findDoctorsByStatus(Role.DOCTOR, UserStatus.PENDING, pageable)
@@ -77,7 +77,6 @@ public class AdminService {
         userRepository.save(user);
     }
 
-    @Transactional
     public ManagerGoalDTO createManagerGoal(ManagerGoalDTO managerGoalDTO) {
         ManagerGoal managerGoal = new ManagerGoal();
         managerGoal.setManagerId(userRepository.findById(managerGoalDTO.getManagerId())
@@ -136,7 +135,7 @@ public class AdminService {
         return convertToDTO(savedGoal);
     }
 
-    @Transactional
+
     public Optional<ManagerGoalDTO> updateManagerGoal(Long id, ManagerGoalDTO updateGoalDTO) {
         return managerGoalRepository.findById(id)
                 .map(existingGoal -> {
@@ -244,10 +243,6 @@ public class AdminService {
 
 
 
-
-
-
-
     //agent contract
 
     public AgentContractDTO createAgentContract(AgentContractDTO agentContractDTO) {
@@ -256,6 +251,8 @@ public class AdminService {
         agentContract.setStartDate(agentContractDTO.getStartDate());
         agentContract.setEndDate(agentContractDTO.getEndDate());
         agentContract.setMedAgent(userRepository.findById(agentContractDTO.getMedAgentId())
+                .orElseThrow(() -> new RuntimeException("Manager not found")));
+        agentContract.setManager(userRepository.findById(agentContractDTO.getManagerId())
                 .orElseThrow(() -> new RuntimeException("Manager not found")));
         ManagerGoal managerGoal=managerGoalRepository.getById(agentContractDTO.getManagerGoalId());
         Set<Long> medicineIds = managerGoal.getManagerGoalQuantities()
@@ -451,12 +448,31 @@ public class AdminService {
                 agentContract.getFieldWithQuantities() != null ? agentContract.getFieldWithQuantities().stream()
                         .map(fq -> new FieldWithQuantityDTO(
                                 fq.getId(),
-                                fq.getField(), // `Field` is correctly mapped
+                                fq.getField(),
                                 fq.getQuote()
                         )).collect(Collectors.toList()) : List.of(),
                 agentContract.getManagerGoal() != null ? agentContract.getManagerGoal().getGoalId() : null,
+                agentContract.getManager().getUserId() != null ? agentContract.getManager().getUserId() : null,
                 agentContract.getDistrictGoalQuantity() != null ? agentContract.getDistrictGoalQuantity().getId() : null
         );
+    }
+
+
+
+
+    // Doctor Contract
+
+    public ContractDTO createContract(ContractDTO contractDTO) {
+        return contractService.createContract(contractDTO);
+    }
+
+    public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
+
+        return contractService.updateContract(contractId,contractDTO);
+    }
+
+    public void deleteContract(Long contractId) {
+        contractService.deleteContract(contractId);
     }
 
 

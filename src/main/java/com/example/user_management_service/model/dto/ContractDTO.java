@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-12/29/2024
@@ -20,14 +21,14 @@ import java.util.List;
 public class ContractDTO {
 
     private Long id;
-    private String doctorId;
-    private List<Long> medicineIds;
-
-    private Long  totalAmount;
+    private UUID doctorId;
 
     private LocalDate createdAt;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private Long fieldId;
+    private Long agentId;
 
     private List<MedicineWithQuantityDTO> medicinesWithQuantities;
 }

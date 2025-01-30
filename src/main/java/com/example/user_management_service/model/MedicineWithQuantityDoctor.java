@@ -27,6 +27,19 @@ public class MedicineWithQuantityDoctor {
         private Integer quote;
 
         @ManyToOne
+        @JoinColumn(name = "contract_medicine_amount_id", referencedColumnName = "id")
+        private ContractMedicineAmount contractMedicineAmount;
+
+        @ManyToOne
+        @JoinColumn(name = "contract_medicine_med_agent_amount_id", referencedColumnName = "id")
+        private ContractMedicineAmount contractMedicineMedAgentAmount;
+
+        @ManyToOne
+        @JoinColumn(name = "contract_medicine_doctor_amount_id", referencedColumnName = "id")
+        private ContractMedicineAmount contractMedicineDoctorAmount;
+
+
+        @ManyToOne
         @JoinColumn(name = "contract_id")
         private Contract doctorContract;
-    }
+}

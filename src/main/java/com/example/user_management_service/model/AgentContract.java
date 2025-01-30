@@ -59,6 +59,10 @@ public class AgentContract {
     private User medAgent;
 
     @ManyToOne
+    @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
+    private User manager;
+
+    @ManyToOne
     @JoinColumn(name = "manager_goal_id", referencedColumnName = "goal_id")
     private ManagerGoal managerGoal;
 

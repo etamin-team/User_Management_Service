@@ -126,8 +126,6 @@ public class AdminController {
 
     // Med Agent Contract
 
-
-
     @PostMapping("/med-agent")
     public ResponseEntity<AgentContractDTO> createAgentContract(@RequestBody AgentContractDTO agentContractDTO) {
         AgentContractDTO createdContract = adminService.createAgentContract(agentContractDTO);
@@ -151,6 +149,33 @@ public class AdminController {
 
 
 
+
+
+
+
+    // Doctor Contract
+
+
+    // Create a new Contract
+    @PostMapping("/contract")
+    public ResponseEntity<ContractDTO> createContract(@RequestBody ContractDTO contractDTO) {
+        ContractDTO createdContract = adminService.createContract(contractDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdContract);
+    }
+
+    // Update an existing Contract
+    @PutMapping("/contract/{contractId}")
+    public ResponseEntity<ContractDTO> updateContract(@PathVariable Long contractId, @RequestBody ContractDTO contractDTO) {
+        ContractDTO updatedContract = adminService.updateContract(contractId, contractDTO);
+        return ResponseEntity.ok(updatedContract);
+    }
+
+    // Delete a Contract
+    @DeleteMapping("/contract/{contractId}")
+    public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
+        adminService.deleteContract(contractId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 
