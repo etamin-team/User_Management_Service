@@ -17,40 +17,40 @@ import java.util.UUID;
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, Long> {
 
-    @Query("SELECT t FROM Template t WHERE t.doctorId=:doctorId ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE t.doctorId.userId=:doctorId ORDER BY t.diagnosis ASC")
     List<Template> findAllByDoctorIdAsc(@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE t.doctorId.userId =:doctorId")
     List<Template> findAllByDoctorId(@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.saved = true AND t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE t.saved = true AND t.doctorId.userId=:doctorId")
     List<Template> findBySavedTrue(@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.saved = false AND t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE t.saved = false AND t.doctorId.userId=:doctorId")
     List<Template> findBySavedFalse(@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE  t.saved = true AND t.doctorId=:doctorId ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE  t.saved = true AND t.doctorId.userId =:doctorId ORDER BY t.diagnosis ASC")
     List<Template> findBySavedTrueOrderByDiagnosisAsc(@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE  t.saved = false AND t.doctorId=:doctorId ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE  t.saved = false AND t.doctorId.userId =:doctorId ORDER BY t.diagnosis ASC")
     List<Template> findBySavedFalseOrderByDiagnosisAsc(@Param("doctorId") UUID doctorId);
 
     // Methods for searchText filtering
-    @Query("SELECT t FROM Template t WHERE t.saved = true AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE t.saved = true AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId")
     List<Template> findBySavedTrueAndSearchText(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.saved = true AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId  ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE t.saved = true AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId  ORDER BY t.diagnosis ASC")
     List<Template> findBySavedTrueAndSearchTextOrderByDiagnosisAsc(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.saved = false AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE t.saved = false AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId")
     List<Template> findBySavedFalseAndSearchText(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE t.saved = false AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE t.saved = false AND (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId ORDER BY t.diagnosis ASC")
     List<Template> findBySavedFalseAndSearchTextOrderByDiagnosisAsc(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId")
+    @Query("SELECT t FROM Template t WHERE (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId")
     List<Template> findAllBySearchText(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 
-    @Query("SELECT t FROM Template t WHERE (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId=:doctorId ORDER BY t.diagnosis ASC")
+    @Query("SELECT t FROM Template t WHERE (t.name LIKE %:searchText% OR t.diagnosis LIKE %:searchText%) AND t.doctorId.userId=:doctorId ORDER BY t.diagnosis ASC")
     List<Template> findAllBySearchTextOrderByDiagnosisAsc(@Param("searchText") String searchText,@Param("doctorId") UUID doctorId);
 }

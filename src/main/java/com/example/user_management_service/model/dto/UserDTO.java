@@ -2,6 +2,7 @@ package com.example.user_management_service.model.dto;
 
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Gender;
+import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +33,7 @@ public class UserDTO {
     private Gender gender;
     private UserStatus status;
     private String creatorId;
-
-
     private Long workplaceId;
     private Long districtId;
+    private Role role;
 }

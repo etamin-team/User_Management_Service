@@ -37,7 +37,7 @@ public class Template {
 
     private String  note;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "doctor_id", referencedColumnName = "user_id")
     private User doctorId;
 

@@ -68,7 +68,8 @@ public class UserService {
                 user.getStatus(),
                 user.getCreatorId(),
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
-                user.getDistrict()==null ? null : user.getDistrict().getId()
+                user.getDistrict()==null ? null : user.getDistrict().getId(),
+                user.getRole()
         );
     }
 
