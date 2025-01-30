@@ -129,6 +129,7 @@ public class RegistrationService {
         newUser.setPassword(request.getPassword());
         newUser.setCreatedDate(LocalDateTime.now());
         newUser.setRole(role);
+        newUser.setEmail(request.getEmail());
         newUser.setFieldName(request.getFieldName());
         newUser.setPosition(request.getPosition());
         newUser.setGender(request.getGender());

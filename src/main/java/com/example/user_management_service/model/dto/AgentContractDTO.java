@@ -1,5 +1,7 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Field;
+import com.example.user_management_service.model.FieldWithQuantity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +19,12 @@ import java.util.UUID;
 @Getter
 @Setter
 public class AgentContractDTO {
-
-    private Long id; // Contract ID
-    private Double totalAmount; // Total contract amount
-    private LocalDate createdAt; // Creation date of the contract
-    private LocalDate startDate; // Contract start date
-    private LocalDate endDate; // Contract end date
+    private Long id;
+    private LocalDate createdAt;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private UUID medAgentId;
-    private List<MedicineWithQuantityDTO> medicinesWithQuantities;
-
+    private List<MedicineWithQuantityDTO> medicineWithQuantityDTOS;
+    private List<FieldWithQuantityDTO> fieldWithQuantityDTOS;
+    private Long managerGoalId;
 }

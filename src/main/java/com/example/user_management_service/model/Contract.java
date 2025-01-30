@@ -47,6 +47,7 @@ public class Contract {
     @OneToMany(mappedBy = "doctorContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors;
 
+
     @Column(name = "created_at")
     private LocalDate createdAt;
 
@@ -60,5 +61,7 @@ public class Contract {
     @JoinColumn(name = "doctor_id", referencedColumnName = "user_id")
     private User doctor;
 
-
+    @ManyToOne
+    @JoinColumn(name = "agent_contract_id", referencedColumnName = "contract_id")
+    private AgentContract agentContract;
 }

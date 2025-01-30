@@ -31,12 +31,18 @@ public class AgentContract {
 
 
     @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FieldWithQuantity> fieldWithQuantities;
+
+    @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantity> medicinesWithQuantities;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_district_amount_id", referencedColumnName = "id")
+    private DistrictGoalQuantity districtGoalQuantity;
 
 
     @Column(name = "total_amount")
     private Double totalAmount;
-
 
 
     @Column(name = "created_at")
@@ -51,5 +57,9 @@ public class AgentContract {
     @ManyToOne
     @JoinColumn(name = "agent_id", referencedColumnName = "user_id")
     private User medAgent;
+
+    @ManyToOne
+    @JoinColumn(name = "manager_goal_id", referencedColumnName = "goal_id")
+    private ManagerGoal managerGoal;
 
 }

@@ -36,7 +36,6 @@ public class ManagerGoal {
     private List<DistrictGoalQuantity> districtGoalQuantities;
 
 
-
     @Column(name = "created_at")
     private LocalDate createdAt;
 
