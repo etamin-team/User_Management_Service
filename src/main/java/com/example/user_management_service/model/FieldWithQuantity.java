@@ -33,4 +33,10 @@ public class FieldWithQuantity {
     @ManyToOne
     @JoinColumn(name = "contract_field_amount_id", referencedColumnName = "id")
     private ContractFieldAmount contractFieldAmount;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_field_med_agent_amount_id", referencedColumnName = "id")
+    private ContractFieldAmount contractFieldMedAgentAmount;
+
+
 }

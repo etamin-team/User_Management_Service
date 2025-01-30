@@ -27,4 +27,5 @@ public class AgentContractDTO {
     private List<MedicineWithQuantityDTO> medicineWithQuantityDTOS;
     private List<FieldWithQuantityDTO> fieldWithQuantityDTOS;
     private Long managerGoalId;
+    private Long districtId;
 }
