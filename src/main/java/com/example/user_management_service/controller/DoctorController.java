@@ -52,7 +52,7 @@ public class DoctorController {
     }
 
     @GetMapping("/templates")
-    public List<Template> getTemplates(
+    public List<TemplateDto> getTemplates(
             @RequestParam(required = false) Boolean saved,
             @RequestParam(required = false, defaultValue = "false") Boolean sortBy,
             @RequestParam(required = false) String searchText) {

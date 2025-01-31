@@ -3,6 +3,7 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Preparation;
 import com.example.user_management_service.model.Template;
+import com.example.user_management_service.model.dto.PreparationDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.TemplateRepository;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,39 +54,67 @@ public class DoctorService {
         templateRepository.save(template);
     }
 
-    public List<Template> getTemplates(Boolean saved, Boolean sortBy, String searchText, UUID doctorId) {
+    public List<TemplateDto> getTemplates(Boolean saved, Boolean sortBy, String searchText, UUID doctorId) {
+        List<Template> templates;
+
         if (searchText != null && !searchText.isEmpty()) {
             if (saved != null && saved) {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findBySavedTrueAndSearchTextOrderByDiagnosisAsc(searchText, doctorId)
                         : templateRepository.findBySavedTrueAndSearchText(searchText, doctorId);
             } else if (saved != null && !saved) {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findBySavedFalseAndSearchTextOrderByDiagnosisAsc(searchText, doctorId)
                         : templateRepository.findBySavedFalseAndSearchText(searchText, doctorId);
             } else {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findAllBySearchTextOrderByDiagnosisAsc(searchText, doctorId)
                         : templateRepository.findAllBySearchText(searchText, doctorId);
             }
         } else {
             if (saved != null && saved) {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findBySavedTrueOrderByDiagnosisAsc(doctorId)
                         : templateRepository.findBySavedTrue(doctorId);
             } else if (saved != null && !saved) {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findBySavedFalseOrderByDiagnosisAsc(doctorId)
                         : templateRepository.findBySavedFalse(doctorId);
             } else {
-                return sortBy
+                templates = sortBy
                         ? templateRepository.findAllByDoctorIdAsc(doctorId)
                         : templateRepository.findAllByDoctorId(doctorId);
             }
         }
+
+        return templates.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
+    private TemplateDto convertToDto(Template template) {
+        return new TemplateDto(
+                template.getId(),
+                template.getName(),
+                template.getDiagnosis(),
+                template.getPreparations() != null
+                        ? template.getPreparations().stream().map(this::convertToPreparationDto).collect(Collectors.toList())
+                        : Collections.emptyList(),
+                template.getNote(),
+                template.getDoctorId().getUserId(),
+                template.isSaved()
+        );
+    }
 
+    private PreparationDto convertToPreparationDto(Preparation preparation) {
+        return new PreparationDto(
+                preparation.getName(),
+                preparation.getAmount(),
+                preparation.getQuantity(),
+                preparation.getTimesInDay(),
+                preparation.getDays(),
+                preparation.getType(),
+                preparation.getMedicine() != null ? preparation.getMedicine().getId() : null
+        );
+    }
     private Template convertToEntity(TemplateDto templateDto) {
         Template template = new Template();
         template.setName(templateDto.getName());
