@@ -217,4 +217,19 @@ public class AdminController {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
+
+
+
+    @PatchMapping("/contract/{id}/user-enable")
+    public ResponseEntity<String> enableContract(@PathVariable Long id) {
+        contractService.enableContract(id);
+        return ResponseEntity.ok("Contract has been enabled successfully.");
+    }
+
+    @PatchMapping("/contract/{id}/user-decline")
+    public ResponseEntity<String> declineContract(@PathVariable Long id) {
+        contractService.declineContract(id);
+        return ResponseEntity.ok("Contract  has been declined successfully.");
+    }
+
 }

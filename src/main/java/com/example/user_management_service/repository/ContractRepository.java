@@ -3,6 +3,7 @@ package com.example.user_management_service.repository;
 import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.GoalStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,4 +29,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND c.startDate <= CURRENT_DATE " +
             "AND c.endDate >= CURRENT_DATE")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
+
+    @Modifying
+    @Query("UPDATE Contract c SET c.status = :status WHERE c.id = :id")
+    void updateContractStatus(@Param("id") UUID id, @Param("status") GoalStatus status);
 }

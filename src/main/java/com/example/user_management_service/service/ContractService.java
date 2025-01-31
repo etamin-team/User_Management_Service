@@ -355,4 +355,28 @@ public class ContractService {
 
         return contractDTO;
     }
+
+    public void enableContract(Long id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));
+
+        if (contract.getStatus() == GoalStatus.APPROVED) {
+            throw new IllegalStateException("Contract is already approved.");
+        }
+
+        contract.setStatus(GoalStatus.APPROVED);
+        contractRepository.save(contract);
+    }
+
+    public void declineContract(Long id) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));
+
+        if (contract.getStatus() == GoalStatus.DECLINED) {
+            throw new IllegalStateException("Contract is already declined.");
+        }
+
+        contract.setStatus(GoalStatus.DECLINED);
+        contractRepository.save(contract);
+    }
 }
