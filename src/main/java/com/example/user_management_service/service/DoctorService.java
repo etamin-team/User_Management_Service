@@ -44,13 +44,14 @@ public class DoctorService {
 
     public void saveTemplate(TemplateDto templateDto, boolean save) {
         Template template = convertToEntity(templateDto);
-        template.setId(templateDto.getId());
+        template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         template.setSaved(save);
         templateRepository.save(template);
     }
 
     public void createTemplate(TemplateDto templateDto) {
         Template template = convertToEntity(templateDto);
+        template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         templateRepository.save(template);
     }
 
@@ -119,7 +120,6 @@ public class DoctorService {
         Template template = new Template();
         template.setName(templateDto.getName());
         template.setDiagnosis(templateDto.getDiagnosis());
-        template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         template.setPreparations(templateDto.getPreparations().stream().map(preparationDto -> {
             Preparation preparation = new Preparation();
             preparation.setName(preparationDto.getName());
