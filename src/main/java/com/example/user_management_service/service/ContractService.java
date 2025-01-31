@@ -321,4 +321,38 @@ public class ContractService {
 
         return contractDTO;
     }
+    public ContractAmountDTO getContractByDoctorId(UUID doctorId) {
+        Optional<Contract> contractOptional = contractRepository.findActiveContractByDoctorId(doctorId);
+        if (contractOptional.isEmpty()) {
+            throw new IllegalStateException("Contract not found for doctorId: " + doctorId);
+        }
+
+        Contract contract = contractOptional.get();
+
+        // Mapping Contract to ContractAmountDTO
+        ContractAmountDTO contractDTO = new ContractAmountDTO();
+        contractDTO.setId(contract.getId());
+        contractDTO.setDoctorId(contract.getDoctor().getUserId());
+        contractDTO.setCreatedAt(contract.getCreatedAt());
+        contractDTO.setStartDate(contract.getStartDate());
+        contractDTO.setEndDate(contract.getEndDate());
+        contractDTO.setAgentId(contract.getAgentContract() != null ? contract.getAgentContract().getId() : null);
+
+        // Mapping contracted medicines (MedicineWithQuantityDTO)
+        List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
+                .map(med -> new MedicineWithQuantityDTO(med.getId(), med.getMedicine().getName(),
+                        med.getContractMedicineAmount().getAmount(), med.getContractMedicineAmount())) // mapping to DTO
+                .collect(Collectors.toList());
+
+        contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
+
+        // Mapping OutOfContractMedicineAmounts to OutOfContractMedicineAmountDTO
+        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = contract.getOutOfContractMedicineAmounts().stream()
+                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
+                .collect(Collectors.toList());
+
+        contractDTO.setOutOfContractMedicineAmount(outOfContractMedicineAmountDTOs);
+
+        return contractDTO;
+    }
 }

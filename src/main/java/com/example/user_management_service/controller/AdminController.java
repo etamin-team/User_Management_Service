@@ -183,5 +183,9 @@ public class AdminController {
         ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
         return ResponseEntity.ok(contractAmountDTO);
     }
-
+    @GetMapping("/contract/doctor/{doctorId}")
+    public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
+        ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
 }
