@@ -66,7 +66,7 @@ public class UserController {
     @PostMapping("/register-medagent")
     public ResponseEntity<String> registerMedAgent(@RequestBody RegisterRequest request) {
         validateRoleAssignment(Role.MEDAGENT);
-        return registerUser(request, "SuperAdmin", Role.MEDAGENT);
+        return registerUser(request, "MedAgent", Role.MEDAGENT);
     }
 
     @GetMapping("/{id}")
