@@ -8,6 +8,7 @@ import com.example.user_management_service.role.UserStatus;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -102,13 +103,12 @@ public class AdminService {
                 })
                 .collect(Collectors.toList()));
 
-        managerGoal.setManagerGoalQuantities(managerGoalDTO.getManagerGoalQuantities().stream()
+        managerGoal.setManagerGoalQuantities(managerGoalDTO.getMedicineGoalQuantities().stream()
                 .map(dto -> {
                     ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
                     contractMedicineAmount.setAmount(0L); // Or set it based on your logic
                     contractMedicineAmountRepository.save(contractMedicineAmount);
                     MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
-                    medicineGoalQuantity.setId(dto.getManagerGoalId());
                     medicineGoalQuantity.setQuote(dto.getQuote());
                     medicineGoalQuantity.setManagerGoal(managerGoal);
                     Medicine medicine = medicineRepository.getOne(dto.getMedicineId());
@@ -163,17 +163,17 @@ public class AdminService {
                             })
                             .collect(Collectors.toList()));
 
-                    existingGoal.setManagerGoalQuantities(updateGoalDTO.getManagerGoalQuantities().stream()
+                    existingGoal.setManagerGoalQuantities(updateGoalDTO.getMedicineGoalQuantities().stream()
                             .map(dto -> {
                                 MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
-                                medicineGoalQuantity.setId(dto.getManagerGoalId());
+                                medicineGoalQuantity.setId(dto.getMedicineId());
                                 medicineGoalQuantity.setQuote(dto.getQuote());
                                 medicineGoalQuantity.setManagerGoal(existingGoal);
                                 Medicine medicine = medicineRepository.getOne(dto.getMedicineId());
                                 medicineGoalQuantity.setMedicine(medicine);
 
-                                ContractMedicineAmount contractMedicineAmount = dto.getId() != null
-                                        ? contractMedicineAmountRepository.findById(dto.getId()).orElse(null)
+                                ContractMedicineAmount contractMedicineAmount = dto.getMedicineId() != null
+                                        ? contractMedicineAmountRepository.findById(dto.getMedicineId()).orElse(null)
                                         : null;
                                 if (contractMedicineAmount == null) {
                                     contractMedicineAmount = new ContractMedicineAmount();
@@ -221,16 +221,14 @@ public class AdminService {
 
 
     private ManagerGoalDTO convertToDTO(ManagerGoal goal) {
-        return new ManagerGoalDTO(
+        ManagerGoalDTO managerGoalDTO = new ManagerGoalDTO(
                 goal.getGoalId(),
                 goal.getManagerId().getUserId(),
                 goal.getFieldGoalQuantities().stream()
-                        .map(q -> new FieldGoalQuantityDTO(q.getId(), q.getField(), q.getQuote(), q.getManagerGoal().getGoalId()))
+                        .map(q -> new FieldGoalQuantityDTO(q.getId(), q.getField(), q.getQuote(), q.getManagerGoal().getGoalId(), q.getContractFieldAmount()))
                         .collect(Collectors.toList()),
                 goal.getManagerGoalQuantities().stream()
-                        .map(q -> new ManagerGoalQuantityDTO(q.getId(), q.getMedicine().getId(), q.getMedicine().getName(), q.getQuote(), q.getManagerGoal().getGoalId()
-
-                        ))
+                        .map(q -> new MedicineGoalQuantityDTO(q.getId(), q.getMedicine().getId(), q.getMedicine().getName(), q.getQuote(), q.getManagerGoal().getGoalId(), q.getContractMedicineAmount()))
                         .collect(Collectors.toList()),
                 goal.getDistrictGoalQuantities().stream()
                         .map(q -> new DistrictGoalQuantityDTO(q.getId(), q.getDistrict().getId(), q.getDistrict().getName(), q.getQuote(), q.getManagerGoal().getGoalId()))
@@ -239,10 +237,74 @@ public class AdminService {
                 goal.getStartDate(),
                 goal.getEndDate()
         );
+        return managerGoalDTO;
     }
 
 
+    public ManagerGoalDTO getManagerGoalById(Long goalId) {
+        Optional<ManagerGoal> managerGoalOptional = managerGoalRepository.findById(goalId);
+        if (managerGoalOptional.isEmpty()) {
+            throw new IllegalStateException("Manager Goal not found");
+        }
 
+        ManagerGoal managerGoal = managerGoalOptional.get();
+
+        // Mapping ManagerGoal to ManagerGoalDTO
+        ManagerGoalDTO managerGoalDTO = new ManagerGoalDTO();
+        managerGoalDTO.setGoalId(managerGoal.getGoalId());
+        managerGoalDTO.setCreatedAt(managerGoal.getCreatedAt());
+        managerGoalDTO.setStartDate(managerGoal.getStartDate());
+        managerGoalDTO.setEndDate(managerGoal.getEndDate());
+        managerGoalDTO.setManagerId(managerGoal.getManagerId().getUserId());
+
+        // Mapping related MedicinesWithQuantities
+        @NotNull List<MedicineGoalQuantityDTO> medicineWithQuantityDTOS = managerGoal.getManagerGoalQuantities().stream()
+                .map(med -> new MedicineGoalQuantityDTO(med.getId(),med.getId(), med.getMedicine().getName(),
+                        med.getQuote(),med.getManagerGoal().getGoalId(), med.getContractMedicineAmount()))  // mapping to DTO
+                .collect(Collectors.toList());
+        managerGoalDTO.setMedicineGoalQuantities(medicineWithQuantityDTOS);
+
+        // Mapping related FieldsWithQuantities
+        List<FieldGoalQuantityDTO> fieldWithQuantityDTOS = managerGoal.getFieldGoalQuantities().stream()
+                .map(field -> new FieldGoalQuantityDTO(field.getId(), field.getField(),
+                        field.getQuote(),field.getManagerGoal().getGoalId(), field.getContractFieldAmount()))  // mapping to DTO
+                .collect(Collectors.toList());
+        managerGoalDTO.setFieldGoalQuantities(fieldWithQuantityDTOS);
+
+        return managerGoalDTO;
+    }
+
+    public List<ManagerGoalDTO> getManagerGoalsByManagerId(UUID managerId) {
+        List<ManagerGoal> managerGoals = managerGoalRepository.findByManagerUserId(managerId);
+        if (managerGoals.isEmpty()) {
+            throw new IllegalStateException("No Manager Goals found for managerId: " + managerId);
+        }
+
+        return managerGoals.stream().map(managerGoal -> {
+            ManagerGoalDTO managerGoalDTO = new ManagerGoalDTO();
+            managerGoalDTO.setGoalId(managerGoal.getGoalId());
+            managerGoalDTO.setCreatedAt(managerGoal.getCreatedAt());
+            managerGoalDTO.setStartDate(managerGoal.getStartDate());
+            managerGoalDTO.setEndDate(managerGoal.getEndDate());
+            managerGoalDTO.setManagerId(managerGoal.getManagerId().getUserId());
+
+            // Mapping related MedicinesWithQuantities
+            List<MedicineGoalQuantityDTO> medicineWithQuantityDTOS = managerGoal.getManagerGoalQuantities().stream()
+                    .map(med -> new MedicineGoalQuantityDTO(med.getId(),med.getMedicine().getId(), med.getMedicine().getName(),
+                            med.getQuote(),med.getManagerGoal().getGoalId(), med.getContractMedicineAmount()))  // mapping to DTO
+                    .collect(Collectors.toList());
+            managerGoalDTO.setMedicineGoalQuantities(medicineWithQuantityDTOS);
+
+            // Mapping related FieldsWithQuantities
+            List<FieldGoalQuantityDTO> fieldWithQuantityDTOS = managerGoal.getFieldGoalQuantities().stream()
+                    .map(field -> new FieldGoalQuantityDTO(field.getId(), field.getField(),
+                            field.getQuote(),field.getManagerGoal().getGoalId() ,field.getContractFieldAmount()))  // mapping to DTO
+                    .collect(Collectors.toList());
+            managerGoalDTO.setFieldGoalQuantities(fieldWithQuantityDTOS);
+
+            return managerGoalDTO;
+        }).collect(Collectors.toList());
+    }
 
     //agent contract
 
@@ -538,17 +600,6 @@ public class AdminService {
 
         return agentContractDTO;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -122,6 +122,22 @@ public class AdminController {
     }
 
 
+    @GetMapping("/manager/goal/{goalId}")
+    public ResponseEntity<ManagerGoalDTO> getManagerGoalById(@PathVariable Long goalId) {
+        ManagerGoalDTO managerGoalDTO = adminService.getManagerGoalById(goalId);
+        return ResponseEntity.ok(managerGoalDTO);
+    }
+
+    @GetMapping("/manager/goal/manager/{managerId}")
+    public ResponseEntity<List<ManagerGoalDTO>> getManagerGoalsByManagerId(@PathVariable UUID managerId) {
+        List<ManagerGoalDTO> managerGoals = adminService.getManagerGoalsByManagerId(managerId);
+        return ResponseEntity.ok(managerGoals);
+    }
+
+
+
+
+
     // Med Agent Contract
 
     @PostMapping("/med-agent")
@@ -147,8 +163,7 @@ public class AdminController {
 
 
 
-
-    @GetMapping("/{agentContractId}")
+    @GetMapping("/med-agent/contract/{agentContractId}")
     public ResponseEntity<AgentContractDTO> getAgentContractById(@PathVariable Long agentContractId) {
         AgentContractDTO agentContractDTO = adminService.getAgentContractById(agentContractId);
         return ResponseEntity.ok(agentContractDTO);

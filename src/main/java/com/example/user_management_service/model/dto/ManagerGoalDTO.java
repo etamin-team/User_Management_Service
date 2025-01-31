@@ -17,7 +17,7 @@ public class ManagerGoalDTO {
     private Long goalId;
     private UUID managerId;
     private List<FieldGoalQuantityDTO> fieldGoalQuantities;
-    private List<ManagerGoalQuantityDTO> managerGoalQuantities;
+    private List<MedicineGoalQuantityDTO> medicineGoalQuantities;
     private List<DistrictGoalQuantityDTO> districtGoalQuantities;
     private LocalDate createdAt;
     private LocalDate startDate;

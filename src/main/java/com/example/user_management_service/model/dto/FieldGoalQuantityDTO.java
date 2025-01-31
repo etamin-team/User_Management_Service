@@ -1,4 +1,6 @@
 package com.example.user_management_service.model.dto;
+import com.example.user_management_service.model.ContractFieldAmount;
+import com.example.user_management_service.model.ContractMedicineAmount;
 import com.example.user_management_service.model.Field;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,4 +16,5 @@ public class FieldGoalQuantityDTO {
     private Field fieldName;
     private Long quote;
     private Long managerGoalId;
+    private ContractFieldAmount contractMedicineAmount;
 }
