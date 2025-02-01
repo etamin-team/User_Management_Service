@@ -35,37 +35,53 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Get users by role
     List<User> findByRole(Role role);
 
-//    // Get users with multiple filters including role
-//    List<User> findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//            Role role, String creatorId, Long countryId, Long regionId, Long workplaceId);
 
-    boolean existsByRole(Role role);
 
-    // Search doctors by name (first or last name)
-    @Query("SELECT u FROM User u WHERE u.role = :role AND (u.firstName LIKE %:query% OR u.lastName LIKE %:query%)")
-    List<User> searchDoctorsByName(Role role, String query);
+
 
     // Get all doctors
     default List<User> findDoctors() {
         return findByRole(Role.DOCTOR);
     }
 
-    // Get all admins
-    default List<User> findAdmins() {
-        return findByRole(Role.ADMIN);
-    }
 
     // Get all managers
     default List<User> findManagers() {
         return findByRole(Role.MANAGER);
     }
 
-    // Search managers by name (first or last name)
-    @Query("SELECT u FROM User u WHERE u.role = :role AND (u.firstName LIKE %:query% OR u.lastName LIKE %:query%)")
-    List<User> searchManagersByName(Role role, String query);
+
 
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status ORDER BY u.createdDate DESC")
     Page<User> findDoctorsByStatus(@Param("role") Role role, @Param("status") UserStatus status, Pageable pageable);
+
+    @Query("""
+    SELECT u FROM User u 
+    WHERE u.role = :role
+    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+    AND (:regionId IS NULL OR u.district.region.id = :regionId)
+    AND (:cityId IS NULL OR u.district.id = :cityId)
+    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+    AND (
+        (:firstName IS NULL AND :lastName IS NULL AND :middleName IS NULL) 
+        OR (
+            (:firstName IS NULL OR u.firstName ILIKE  :firstName)
+            AND (:lastName IS NULL OR u.lastName ILIKE  :lastName)
+            AND (:middleName IS NULL OR u.middleName ILIKE :middleName)
+        )
+    )
+""")
+    List<User> findUsersByFilters(
+            @Param("role") Role role,
+            @Param("creatorId") UUID creatorId,
+            @Param("regionId") Long regionId,
+            @Param("cityId") Long cityId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName
+    );
+
 
 
 }

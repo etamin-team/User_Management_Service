@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-11/27/2024
@@ -88,7 +89,7 @@ public class UserController {
 
     @GetMapping("/doctors")
     public ResponseEntity<List<UserDTO>> getDoctors(
-            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) UUID creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
@@ -100,7 +101,7 @@ public class UserController {
 
     @GetMapping("/managers")
     public ResponseEntity<List<UserDTO>> getManagers(
-            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) UUID creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
@@ -111,7 +112,7 @@ public class UserController {
 
     @GetMapping("/superadmins")
     public ResponseEntity<List<UserDTO>> getSuperAdmins(
-            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) UUID creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
@@ -122,7 +123,7 @@ public class UserController {
 
     @GetMapping("/admins")
     public ResponseEntity<List<UserDTO>> getAdmins(
-            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) UUID creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,
@@ -133,7 +134,7 @@ public class UserController {
 
     @GetMapping("/medagents")
     public ResponseEntity<List<UserDTO>> getMedAgents(
-            @RequestParam(required = false) String creatorId,
+            @RequestParam(required = false) UUID creatorId,
             @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long workplaceId,

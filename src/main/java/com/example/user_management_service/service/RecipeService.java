@@ -26,6 +26,7 @@ public class RecipeService {
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
     private final ContractService contractService;;
+    private final UserRepository userRepository;
 
 
     public void saveRecipe(RecipeDto recipeDto) {
@@ -45,6 +46,7 @@ public class RecipeService {
 
         recipe.setPreparations(preparations);
         recipe.setDateCreation(LocalDate.now());
+        recipe.setDoctorId(userRepository.findById(recipeDto.getDoctorId()).orElseThrow());
         recipeRepository.save(recipe);
 
         List<Long> medicineIds = preparations.stream()

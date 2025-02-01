@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Date-11/27/2024
@@ -74,69 +71,99 @@ public class UserService {
     }
 
 
-    public List<UserDTO> getDoctors(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
-        if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchDoctorsByName(Role.DOCTOR, nameQuery).stream().map(this::convertToDTO).toList();
-//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//                    Role.DOCTOR, creatorId, countryId, regionId, workplaceId);
-        } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
-        } else {
-            return userRepository.findDoctors().stream().map(this::convertToDTO).toList();
-        }
+    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+
+        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public List<UserDTO> getManagers(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
-        if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchManagersByName(Role.MANAGER, nameQuery).stream().map(this::convertToDTO).toList();
-//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
-        } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
-        } else {
-            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
-        }
+    public List<UserDTO> getManagers(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
-    public List<UserDTO> getSuperAdmins(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
-        if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchManagersByName(Role.SUPERADMIN, nameQuery).stream().map(this::convertToDTO).toList();
-//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
-        } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
-        } else {
-            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
-        }
+    public List<UserDTO> getSuperAdmins(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+
     }
 
-    public List<UserDTO> getAdmins(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
-        if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchManagersByName(Role.ADMIN, nameQuery).stream().map(this::convertToDTO).toList();
-//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
-        } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
-        } else {
-            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
-        }
+    public List<UserDTO> getAdmins(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
-    public List<UserDTO> getMedAgents(String creatorId, Long countryId, Long regionId, Long workplaceId, String nameQuery) {
-        if (nameQuery != null && !nameQuery.isEmpty()) {
-            return userRepository.searchManagersByName(Role.MEDAGENT, nameQuery).stream().map(this::convertToDTO).toList();
-//        } else if (creatorId != null && countryId != null && regionId != null && workplaceId != null) {
-//            return userRepository.findByRoleAndCreatorIdAndCountryIdAndRegionIdAndWorkplaceId(
-//                    Role.MANAGER, creatorId, countryId, regionId, workplaceId);
-        } else if (creatorId != null) {
-            return userRepository.findByCreatorId(creatorId).stream().map(this::convertToDTO).toList();
-        } else {
-            return userRepository.findManagers().stream().map(this::convertToDTO).toList();
-        }
+
+    public List<UserDTO> getMedAgents(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
+
+
+
+
+    private String[] prepareNameParts(String nameQuery) {
+        if (nameQuery == null || nameQuery.trim().isEmpty()) {
+            return new String[0]; // Return empty array if no name query is provided
+        }
+
+        String[] nameParts = nameQuery.split(" ");
+        List<String> cleanParts = new ArrayList<>();
+        for (String part : nameParts) {
+            if (part != null && !part.trim().isEmpty()) {
+                cleanParts.add(part.trim());
+            }
+        }
+
+        return cleanParts.toArray(new String[0]);
+    }
+
+
+
+
     public User updateUser(String userId, UserDTO updatedUser) {
         return userRepository.findById(UUID.fromString(userId))
                 .map(existingUser -> {

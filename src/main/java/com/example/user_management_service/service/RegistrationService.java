@@ -135,7 +135,6 @@ public class RegistrationService {
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
         newUser.setDateOfBirth(request.getBirthDate());
-
         if (role.equals(Role.DOCTOR)||role.equals(Role.MEDAGENT)) {
             WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
             newUser.setWorkplace(workPlace);
