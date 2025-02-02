@@ -93,8 +93,12 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        authService.refreshToken(request, response);
+    public ResponseEntity<AuthResponse>  refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body( authService.refreshToken(request, response));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/workplaces")

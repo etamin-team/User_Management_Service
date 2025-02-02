@@ -14,7 +14,6 @@ import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.token.Token;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -191,12 +190,12 @@ public class RegistrationService {
         return userRepository.findByNumber(number).isPresent();
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userId;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+            return null;
         }
         refreshToken = authHeader.substring(7);
         userId = jwtService.extractUserId(refreshToken);
@@ -206,10 +205,11 @@ public class RegistrationService {
                 var accessToken = jwtService.generateToken(userDetails);
                 var authResponse = AuthResponse.builder().refreshToken(refreshToken).accsesToken(accessToken).build();
                 saveToken(userDetails,accessToken);
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                return authResponse;
             }
 
         }
+         throw new UsernameNotFoundException("Password Incorrect");
     }
 
 
