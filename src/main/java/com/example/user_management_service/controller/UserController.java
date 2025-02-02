@@ -40,6 +40,13 @@ public class UserController {
         this.roleService = roleService;
     }
 
+    @GetMapping("/password-compare")
+    public ResponseEntity<Boolean> comparePassword(@RequestParam(required = true ) UUID userId, @RequestParam(required = true)  String password) {
+        boolean isDeleted = userService.comparePassword(userId, password);
+        return  ResponseEntity.ok(isDeleted);
+
+    }
+
     @PostMapping("/register-doctor")
     public ResponseEntity<Void> registerDoctor(@RequestBody RegisterRequest request) {
         boolean isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED,roleService.getCurrentUserId());
@@ -213,5 +220,7 @@ public class UserController {
                 ? ResponseEntity.ok("User successfully deleted.")
                 : ResponseEntity.notFound().build();
     }
+
+
 
 }

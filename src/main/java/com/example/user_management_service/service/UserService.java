@@ -1,7 +1,6 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.model.User;
-import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.model.dto.UserDTO;
 import com.example.user_management_service.repository.DistrictRepository;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -204,8 +202,10 @@ public class UserService {
         }
         return false;
     }
-//    public List<WorkPlace> getAllWorkplaces() {
-//        return workPlaceRepository.findAll();
-//    }
+
+    public boolean comparePassword(UUID userId, String password) {
+        User user = userRepository.findById(userId).orElseThrow();
+        return passwordEncoder.matches(password, user.getPassword());
+    }
 
 }
