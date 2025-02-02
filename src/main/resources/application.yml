@@ -40,6 +40,6 @@ application:
       secret-key: bGbWqUxYztvCj8FzNO8GuJYY/YzkrU9wGx9+gaGwBo+Dmw0c70GFGZhtp2vw+1uq
       expiration: 86400
       refresh-token:
-        expiration: 604800000
+        expiration: 160480
 
 
