@@ -38,8 +38,8 @@ application:
   security:
     jwt:
       secret-key: bGbWqUxYztvCj8FzNO8GuJYY/YzkrU9wGx9+gaGwBo+Dmw0c70GFGZhtp2vw+1uq
-      expiration: 86400
+      expiration: 86400000
       refresh-token:
-        expiration: 160480
+        expiration: 604800000
 
 
