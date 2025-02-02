@@ -60,7 +60,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     WHERE u.role = :role
     AND (:creatorId IS NULL OR u.creatorId = :creatorId)
     AND (:regionId IS NULL OR u.district.region.id = :regionId)
-    AND (:cityId IS NULL OR u.district.id = :cityId)
+    AND (:districtId IS NULL OR u.district.id = :districtId)
     AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
     AND (
            (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
@@ -73,7 +73,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("role") Role role,
             @Param("creatorId") UUID creatorId,
             @Param("regionId") Long regionId,
-            @Param("cityId") Long cityId,
+            @Param("districtId") Long districtId,
             @Param("workplaceId") Long workplaceId,
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,

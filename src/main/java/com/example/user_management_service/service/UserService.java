@@ -71,7 +71,7 @@ public class UserService {
     }
 
 
-    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -79,13 +79,13 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
-        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public List<UserDTO> getManagers(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getManagers(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -93,13 +93,13 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
-        return userRepository.findUsersByFilters(Role.MANAGER, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public List<UserDTO> getSuperAdmins(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getSuperAdmins(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -107,14 +107,14 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
-        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
 
     }
 
-    public List<UserDTO> getAdmins(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getAdmins(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -122,13 +122,13 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
-        return userRepository.findUsersByFilters(Role.ADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
 
-    public List<UserDTO> getMedAgents(UUID creatorId, Long regionId, Long cityId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getMedAgents(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -136,7 +136,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
-        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();

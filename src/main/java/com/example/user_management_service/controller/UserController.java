@@ -90,56 +90,56 @@ public class UserController {
     @GetMapping("/doctors")
     public ResponseEntity<List<UserDTO>> getDoctors(
             @RequestParam(required = false) UUID creatorId,
-            @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery
     ) {
-        List<UserDTO> doctors = userService.getDoctors(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(doctors);
     }
 
     @GetMapping("/managers")
     public ResponseEntity<List<UserDTO>> getManagers(
             @RequestParam(required = false) UUID creatorId,
-            @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery) {
-        List<UserDTO> users = userService.getManagers(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> users = userService.getManagers(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/superadmins")
     public ResponseEntity<List<UserDTO>> getSuperAdmins(
             @RequestParam(required = false) UUID creatorId,
-            @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery) {
-        List<UserDTO> users = userService.getSuperAdmins(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> users = userService.getSuperAdmins(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/admins")
     public ResponseEntity<List<UserDTO>> getAdmins(
             @RequestParam(required = false) UUID creatorId,
-            @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery) {
-        List<UserDTO> users = userService.getAdmins(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> users = userService.getAdmins(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/medagents")
     public ResponseEntity<List<UserDTO>> getMedAgents(
             @RequestParam(required = false) UUID creatorId,
-            @RequestParam(required = false) Long countryId,
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery) {
-        List<UserDTO> users = userService.getMedAgents(creatorId, countryId, regionId, workplaceId, nameQuery);
+        List<UserDTO> users = userService.getMedAgents(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
 
