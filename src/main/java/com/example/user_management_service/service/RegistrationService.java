@@ -205,6 +205,7 @@ public class RegistrationService {
             if (jwtService.isTokenValid(refreshToken, userDetails)) {
                 var accessToken = jwtService.generateToken(userDetails);
                 var authResponse = AuthResponse.builder().refreshToken(refreshToken).accsesToken(accessToken).build();
+                saveToken(userDetails,accessToken);
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
 
