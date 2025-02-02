@@ -75,9 +75,9 @@ public class UserService {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
-        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
-        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
-        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
         return userRepository.findUsersByFilters(Role.DOCTOR, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
                 .stream()
@@ -89,9 +89,9 @@ public class UserService {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
-        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
-        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
-        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
         return userRepository.findUsersByFilters(Role.MANAGER, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
                 .stream()
@@ -103,9 +103,9 @@ public class UserService {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
-        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
-        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
-        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
         return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
                 .stream()
@@ -118,9 +118,9 @@ public class UserService {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
-        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
-        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
-        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
         return userRepository.findUsersByFilters(Role.ADMIN, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
                 .stream()
@@ -132,9 +132,9 @@ public class UserService {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
-        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : null;
-        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : null;
-        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : null;
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : "";
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : "";
 
         return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId, regionId, cityId, workplaceId, name1, name2, name3)
                 .stream()

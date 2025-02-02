@@ -63,12 +63,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     AND (:cityId IS NULL OR u.district.id = :cityId)
     AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
     AND (
-        (:firstName IS NULL AND :lastName IS NULL AND :middleName IS NULL) 
-        OR (
-            (:firstName IS NULL OR u.firstName ILIKE  :firstName)
-            AND (:lastName IS NULL OR u.lastName ILIKE  :lastName)
-            AND (:middleName IS NULL OR u.middleName ILIKE :middleName)
-        )
+           (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+           AND (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+           AND (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+       
     )
 """)
     List<User> findUsersByFilters(
