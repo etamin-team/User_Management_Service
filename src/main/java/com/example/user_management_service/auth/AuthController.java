@@ -1,5 +1,8 @@
 package com.example.user_management_service.auth;
 
+import com.example.user_management_service.exception.DataNotFoundException;
+import com.example.user_management_service.exception.InvalidTokenException;
+import com.example.user_management_service.exception.UserAlreadyExistsException;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.WorkPlace;
@@ -11,10 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AuthController
@@ -39,32 +45,52 @@ public class AuthController {
         try {
             boolean success = passwordResetService.sendResetToken(request);
             if (success) {
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password reset link sent");
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password reset link sent successfully.");
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
             }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid phone number format.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending password reset link");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred while sending the password reset link.");
         }
     }
+
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+    public ResponseEntity<Object> login(@RequestBody AuthRequest request) {
         try {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(authService.authenticate(request));
+            AuthResponse response = authService.authenticate(request);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found."));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Incorrect password."));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred."));
         }
     }
 
+
     @PostMapping("/signup-doctor")
-    public ResponseEntity<String> signUpDoctor(@RequestBody DoctorSignUpRequest request) {
-        AuthRandomNumberResponse response = authService.signUpDoctorWithOutConfirmation(request);
-        HttpStatus status = response.equals(AuthRandomNumberResponse.SUCCESS)
-                ? HttpStatus.ACCEPTED
-                : HttpStatus.UNAUTHORIZED;
-        return ResponseEntity.status(status).body(response.name());
+    public ResponseEntity<Object> signUpDoctor(@RequestBody DoctorSignUpRequest request) {
+        try {
+            AuthRandomNumberResponse response = authService.signUpDoctorWithOutConfirmation(request);
+
+            if (response == AuthRandomNumberResponse.SUCCESS) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Doctor registered successfully."));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Doctor registration failed."));
+            }
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "User already exists."));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred."));
+        }
     }
+
 
 
 
@@ -93,13 +119,20 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse>  refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         try {
-            return ResponseEntity.status(HttpStatus.OK).body( authService.refreshToken(request, response));
+            AuthResponse authResponse = authService.refreshToken(request, response);
+            return ResponseEntity.ok(authResponse);
+        } catch (InvalidTokenException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred."));
         }
     }
+
 
     @GetMapping("/workplaces")
     public  ResponseEntity<List<WorkPlaceDTO>> getAllWorkPlaces(){
@@ -114,18 +147,21 @@ public class AuthController {
     }
 
     @GetMapping("/districts")
-    public  ResponseEntity<List<DistrictDTO>> getAllDistrictsByRegionName(@RequestParam("regionId") Long regionId){
-        List<DistrictDTO>  DistrictList= districtRegionService.getDistrictsByRegionId(regionId);
-        return ResponseEntity.ok(DistrictList);
+    public ResponseEntity<List<DistrictDTO>> getAllDistrictsByRegionId(@RequestParam("regionId") Long regionId) {
+        List<DistrictDTO> districtList = districtRegionService.getDistrictsByRegionId(regionId);
+        if (districtList.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(districtList);
     }
 
     @GetMapping("/region")
-    public  ResponseEntity<RegionDTO> getRegionById(@RequestParam("regionId") Long regionId){
+    public ResponseEntity<RegionDTO> getRegionById(@RequestParam("regionId") Long regionId) {
         return ResponseEntity.ok(districtRegionService.getRegionById(regionId));
     }
 
     @GetMapping("/district")
-    public  ResponseEntity<DistrictDTO> getAllDistrictById(@RequestParam("districtId") Long districtId){
+    public ResponseEntity<DistrictDTO> getAllDistrictById(@RequestParam("districtId") Long districtId) {
         return ResponseEntity.ok(districtRegionService.getDistrictById(districtId));
     }
 

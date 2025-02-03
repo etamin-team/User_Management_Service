@@ -3,6 +3,8 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.auth.*;
 import com.example.user_management_service.config.JwtService;
+import com.example.user_management_service.exception.DataNotFoundException;
+import com.example.user_management_service.exception.InvalidTokenException;
 import com.example.user_management_service.message.sms.SmsService;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.AuthRequest;
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -97,8 +100,10 @@ public class RegistrationService {
         registerRequest.setPosition(request.getPosition());
         registerRequest.setGender(request.getGender());
 
-        register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null);
-        return AuthRandomNumberResponse.SUCCESS;
+        boolean registered =  register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null);
+
+        return registered ? AuthRandomNumberResponse.SUCCESS : AuthRandomNumberResponse.FAILED;
+
     }
 
 
@@ -192,25 +197,36 @@ public class RegistrationService {
 
     public AuthResponse refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userId;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        refreshToken = authHeader.substring(7);
-        userId = jwtService.extractUserId(refreshToken);
-        if (userId != null) {
-            var userDetails = this.userRepository.findById(UUID.fromString(userId)).orElseThrow();
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                var accessToken = jwtService.generateToken(userDetails);
-                var authResponse = AuthResponse.builder().refreshToken(refreshToken).accsesToken(accessToken).build();
-                saveToken(userDetails,accessToken);
-                return authResponse;
-            }
 
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new InvalidTokenException("Missing or invalid Authorization header.");
         }
-         throw new UsernameNotFoundException("Password Incorrect");
+
+        String refreshToken = authHeader.substring(7);
+        String userId = jwtService.extractUserId(refreshToken);
+
+        if (userId == null) {
+            throw new InvalidTokenException("Invalid refresh token. User ID not found.");
+        }
+
+        User userDetails = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new DataNotFoundException("User not found for provided token."));
+
+        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+            throw new InvalidTokenException("Refresh token is expired or invalid.");
+        }
+
+        // Generate a new access token
+        String accessToken = jwtService.generateToken(userDetails);
+        AuthResponse authResponse = AuthResponse.builder()
+                .refreshToken(refreshToken)
+                .accsesToken(accessToken)
+                .build();
+
+        saveToken(userDetails, accessToken);
+        return authResponse;
     }
+
 
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
@@ -242,17 +258,21 @@ public class RegistrationService {
     public AuthResponse authenticate(AuthRequest request) {
         User user;
         if (request.getIsNumber()) {
-            user = userRepository.findByNumber(request.getNumber()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+            user = userRepository.findByNumber(request.getNumber())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         } else {
-            user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User Not Found"));
+            user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         }
-        boolean checkPassword = userPasswordChecker(user, request.getPassword());
-        if (checkPassword)
-            return createToken(user);
-        else
-            throw new UsernameNotFoundException("Password Incorrect");
 
+        boolean checkPassword = userPasswordChecker(user, request.getPassword());
+        if (!checkPassword) {
+            throw new BadCredentialsException("Incorrect password.");
+        }
+
+        return createToken(user);
     }
+
 
     public boolean userPasswordChecker(User user, String password) {
         return passwordEncoder.matches(password.trim(), user.getPassword());

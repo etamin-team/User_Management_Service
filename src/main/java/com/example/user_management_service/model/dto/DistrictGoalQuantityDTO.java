@@ -1,5 +1,7 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.ContractDistrictAmount;
+import com.example.user_management_service.model.ContractMedicineAmount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +18,7 @@ public class DistrictGoalQuantityDTO {
     private String districtName;
     private Long quote;
     private Long managerGoalId;
+    private ContractDistrictAmount contractDistrictAmount;
+
 }
 

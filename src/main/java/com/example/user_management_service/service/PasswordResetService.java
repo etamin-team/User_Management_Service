@@ -1,21 +1,14 @@
 package com.example.user_management_service.service;
 
-import com.example.user_management_service.auth.ErrorMessage;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.ForgotPasswordRequest;
 import com.example.user_management_service.model.dto.ResetPasswordRequest;
 import com.example.user_management_service.repository.UserRepository;
-import com.example.user_management_service.exception.ValidationException;
-import com.example.user_management_service.utils.ValidationUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-//import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service

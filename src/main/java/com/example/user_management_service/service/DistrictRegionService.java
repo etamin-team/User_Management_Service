@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.dto.DistrictDTO;
@@ -53,22 +54,29 @@ public class DistrictRegionService {
     }
 
     public RegionDTO getRegionById(Long id) {
-        return mapRegionToDTO(regionRepository.findById(id).orElseThrow());
+        return mapRegionToDTO(regionRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Region with ID " + id + " not found")));
     }
 
     public DistrictDTO getDistrictById(Long id) {
-        District district = districtRepository.findById(id).orElseThrow();
-        return new DistrictDTO(district.getId(),
+        District district = districtRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("District with ID " + id + " not found"));
+
+        return new DistrictDTO(
+                district.getId(),
                 district.getName(),
                 district.getNameUzCyrillic(),
                 district.getNameUzLatin(),
                 district.getNameRussian(),
-                district.getRegion().getId());
+                district.getRegion().getId()
+        );
     }
 
-    // Method to get districts by region id
     public List<DistrictDTO> getDistrictsByRegionId(Long regionId) {
         List<District> districtList = districtRepository.findByRegionId(regionId);
+        if (districtList.isEmpty()) {
+            throw new DataNotFoundException("No districts found for region ID: " + regionId);
+        }
         return districtList.stream()
                 .map(district -> new DistrictDTO(
                         district.getId(),
@@ -82,8 +90,8 @@ public class DistrictRegionService {
     }
 
     public District getDistrict(Long districtId) {
-        System.err.println(districtId);
-        return districtRepository.findById(districtId).get();
+        return districtRepository.findById(districtId)
+                .orElseThrow(() -> new DataNotFoundException("District with ID " + districtId + " not found"));
     }
 
     public Region getRegionByDistrict(Long districtId) {

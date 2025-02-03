@@ -231,7 +231,7 @@ public class AdminService {
                         .map(q -> new MedicineGoalQuantityDTO(q.getId(), q.getMedicine().getId(), q.getMedicine().getName(), q.getQuote(), q.getManagerGoal().getGoalId(), q.getContractMedicineAmount()))
                         .collect(Collectors.toList()),
                 goal.getDistrictGoalQuantities().stream()
-                        .map(q -> new DistrictGoalQuantityDTO(q.getId(), q.getDistrict().getId(), q.getDistrict().getName(), q.getQuote(), q.getManagerGoal().getGoalId()))
+                        .map(q -> new DistrictGoalQuantityDTO(q.getId(), q.getDistrict().getId(), q.getDistrict().getName(), q.getQuote(), q.getManagerGoal().getGoalId(),q.getContractDistrictAmount()))
                         .collect(Collectors.toList()),
                 goal.getCreatedAt(),
                 goal.getStartDate(),
@@ -275,7 +275,7 @@ public class AdminService {
     }
 
     public List<ManagerGoalDTO> getManagerGoalsByManagerId(UUID managerId) {
-        List<ManagerGoal> managerGoals = managerGoalRepository.findByManagerUserId(managerId);
+        List<ManagerGoal> managerGoals = managerGoalRepository.getGoalsByManagerId(managerId);
         if (managerGoals.isEmpty()) {
             throw new IllegalStateException("No Manager Goals found for managerId: " + managerId);
         }
@@ -301,6 +301,12 @@ public class AdminService {
                             field.getQuote(),field.getManagerGoal().getGoalId() ,field.getContractFieldAmount()))  // mapping to DTO
                     .collect(Collectors.toList());
             managerGoalDTO.setFieldGoalQuantities(fieldWithQuantityDTOS);
+
+            List<DistrictGoalQuantityDTO> districtGoalQuantityDTOS = managerGoal.getDistrictGoalQuantities().stream()
+                    .map(district -> new DistrictGoalQuantityDTO(district.getId(), district.getDistrict().getId(), district.getDistrict().getName(),
+                            district.getQuote(),district.getManagerGoal().getGoalId() ,district.getContractDistrictAmount()))  // mapping to DTO
+                    .collect(Collectors.toList());
+            managerGoalDTO.setDistrictGoalQuantities(districtGoalQuantityDTOS);
 
             return managerGoalDTO;
         }).collect(Collectors.toList());

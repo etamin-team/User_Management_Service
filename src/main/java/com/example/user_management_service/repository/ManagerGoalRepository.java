@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface ManagerGoalRepository extends JpaRepository<ManagerGoal, Long> {
-    @Query(value = "SELECT * FROM manager_goal WHERE manager_id.user_id = :managerId", nativeQuery = true)
-    List<ManagerGoal> findByManagerUserId(@Param("managerId") UUID managerId);
+    @Query("SELECT m FROM ManagerGoal m WHERE m.managerId.userId = :managerId")
+    List<ManagerGoal> getGoalsByManagerId(@Param("managerId") UUID managerId);
+
 }

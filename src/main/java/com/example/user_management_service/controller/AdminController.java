@@ -96,7 +96,7 @@ public class AdminController {
 
     //manager goal
 
-    @PostMapping("/manager/goal")
+    @PostMapping("/manager/new-goal")
     public ResponseEntity<ManagerGoalDTO> createManagerGoal(@RequestBody ManagerGoalDTO managerGoalDTO) {
         ManagerGoalDTO savedGoal = adminService.createManagerGoal(managerGoalDTO);
         return new ResponseEntity<>(savedGoal, HttpStatus.CREATED);
@@ -128,26 +128,24 @@ public class AdminController {
         return ResponseEntity.ok(managerGoalDTO);
     }
 
-    @GetMapping("/manager/goal/manager/{managerId}")
+
+    @GetMapping("/manager/goal/{managerId}")
     public ResponseEntity<List<ManagerGoalDTO>> getManagerGoalsByManagerId(@PathVariable UUID managerId) {
         List<ManagerGoalDTO> managerGoals = adminService.getManagerGoalsByManagerId(managerId);
         return ResponseEntity.ok(managerGoals);
     }
 
 
-
-
-
     // Med Agent Contract
 
-    @PostMapping("/med-agent")
+    @PostMapping("/med-agent/new-contract")
     public ResponseEntity<AgentContractDTO> createAgentContract(@RequestBody AgentContractDTO agentContractDTO) {
         AgentContractDTO createdContract = adminService.createAgentContract(agentContractDTO);
         return ResponseEntity.ok(createdContract);
     }
 
     // Update an existing Agent Contract
-    @PutMapping("/med-agent/{contractId}")
+    @PutMapping("/med-agent/contract/{contractId}")
     public ResponseEntity<AgentContractDTO> updateAgentContract(@PathVariable Long contractId,
                                                                 @RequestBody   AgentContractDTO agentContractDTO) {
         AgentContractDTO updatedContract = adminService.updateAgentContract(contractId, agentContractDTO);
@@ -155,7 +153,7 @@ public class AdminController {
     }
 
     // Delete an Agent Contract
-    @DeleteMapping("/med-agent/{contractId}")
+    @DeleteMapping("/med-agent/contract/{contractId}")
     public ResponseEntity<Void> deleteAgentContract(@PathVariable Long contractId) {
         adminService.deleteAgentContract(contractId);
         return ResponseEntity.noContent().build();
@@ -169,7 +167,7 @@ public class AdminController {
         return ResponseEntity.ok(agentContractDTO);
     }
 
-    @GetMapping("/med-agent/{medAgentId}")
+    @GetMapping("/med-agent/contract/{medAgentId}")
     public ResponseEntity<AgentContractDTO> getAgentContractByMedAgentId(@PathVariable UUID medAgentId) {
         AgentContractDTO agentContractDTO = adminService.getAgentContractByMedAgentId(medAgentId);
         return ResponseEntity.ok(agentContractDTO);
@@ -179,27 +177,27 @@ public class AdminController {
 
 
     // Create a new Contract
-    @PostMapping("/contract")
+    @PostMapping("/doctor/new-contract")
     public ResponseEntity<ContractDTO> createContract(@RequestBody ContractDTO contractDTO) {
         ContractDTO createdContract = adminService.createContract(contractDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdContract);
     }
 
     // Update an existing Contract
-    @PutMapping("/contract/{contractId}")
+    @PutMapping("/doctor/update-contract/{contractId}")
     public ResponseEntity<ContractDTO> updateContract(@PathVariable Long contractId, @RequestBody ContractDTO contractDTO) {
         ContractDTO updatedContract = adminService.updateContract(contractId, contractDTO);
         return ResponseEntity.ok(updatedContract);
     }
 
     // Delete a Contract
-    @DeleteMapping("/contract/{contractId}")
+    @DeleteMapping("/doctor/delete-contract/{contractId}")
     public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
         adminService.deleteContract(contractId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/contracts/pending-review")
+    @GetMapping("/doctor/contracts/pending-review")
     public ResponseEntity<Page<ContractDTO>> getPendingReviewContracts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -207,12 +205,12 @@ public class AdminController {
         return ResponseEntity.ok(contracts);
     }
 
-    @GetMapping("/contract/{contractId}")
+    @GetMapping("/doctor/contract/{contractId}")
     public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
         return ResponseEntity.ok(contractAmountDTO);
     }
-    @GetMapping("/contract/doctor/{doctorId}")
+    @GetMapping("/doctor/contract/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);

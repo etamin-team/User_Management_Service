@@ -6,5 +6,5 @@ package com.example.user_management_service.role;
  * Time-4:28 AM (GMT+5)
  */
 public enum AuthRandomNumberResponse {
-    INCORRECT_NUMBER,SUCCESS,TOO_MANY_ATTEMPTS,WRONG_NUMBER
+    INCORRECT_NUMBER,SUCCESS,TOO_MANY_ATTEMPTS,WRONG_NUMBER,FAILED
 }

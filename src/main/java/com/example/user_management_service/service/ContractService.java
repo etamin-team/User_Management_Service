@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.ContractNotFoundException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.ContractAmountDTO;
 import com.example.user_management_service.model.dto.ContractDTO;
@@ -231,7 +232,7 @@ public class ContractService {
     public void saveContractMedicineAmount(UUID doctorId, List<Long> medicineIds) {
         // Fetch active contract for the doctor
         Contract contract = contractRepository.findActiveContractByDoctorId(doctorId)
-                .orElseThrow(() -> new EntityNotFoundException("No active contract found for doctor with ID: " + doctorId));
+                .orElseThrow(() -> new ContractNotFoundException("Contracts not found for doctor with ID: " + doctorId));
 
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contract.getMedicineWithQuantityDoctors();
 
