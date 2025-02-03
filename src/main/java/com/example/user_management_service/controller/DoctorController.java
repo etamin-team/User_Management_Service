@@ -2,15 +2,20 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
+import com.example.user_management_service.model.dto.ContractAmountDTO;
 import com.example.user_management_service.model.dto.RecipeDto;
 import com.example.user_management_service.model.dto.TemplateDto;
+import com.example.user_management_service.service.ContractService;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
 import com.example.user_management_service.service.RoleService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-12/24/2024
@@ -20,19 +25,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/doctor")
 @CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class DoctorController {
 
-
+    private final ContractService contractService;
     private final DoctorService doctorService;
     private final RecipeService recipeService;
     private final RoleService roleService;
 
-    @Autowired
-    public DoctorController(DoctorService doctorService, RecipeService recipeService, RoleService roleService) {
-        this.doctorService = doctorService;
-        this.recipeService = recipeService;
-        this.roleService = roleService;
-    }
+
 
     @PostMapping("/create-template")
     public void createTemplate(@RequestBody TemplateDto templateDto) {
@@ -65,4 +66,16 @@ public class DoctorController {
     public void saveRecipe(@RequestBody RecipeDto recipe) {
         recipeService.saveRecipe(recipe);
     }
+
+    @GetMapping("/doctor/contract/{contractId}")
+    public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
+        ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
+    @GetMapping("/doctor/contract/{doctorId}")
+    public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
+        ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
+
 }
