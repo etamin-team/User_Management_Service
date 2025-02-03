@@ -162,8 +162,8 @@ public class UserService {
 
 
 
-    public User updateUser(String userId, UserDTO updatedUser) {
-        return userRepository.findById(UUID.fromString(userId))
+    public UserDTO updateUser(String userId, UserDTO updatedUser) {
+        User user= userRepository.findById(UUID.fromString(userId))
                 .map(existingUser -> {
                     // Update the fields of the existing user from the UserDTO
                     existingUser.setFirstName(updatedUser.getFirstName());
@@ -191,6 +191,7 @@ public class UserService {
                     return userRepository.save(existingUser);
                 })
                 .orElse(null);
+        return convertToDTO(user);
     }
 
 

@@ -205,11 +205,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserDTO> updateUser(
             @PathVariable("id") String userId,
             @RequestBody UserDTO updatedUser
     ) {
-        User user = userService.updateUser(userId, updatedUser);
+        UserDTO user = userService.updateUser(userId, updatedUser);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
