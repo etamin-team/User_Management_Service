@@ -30,7 +30,7 @@ public class ManagerGoal {
     private List<FieldGoalQuantity> fieldGoalQuantities;
 
     @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MedicineGoalQuantity> managerGoalQuantities;
+    private List<MedicineGoalQuantity> medicineGoalQuantities;
 
     @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DistrictGoalQuantity> districtGoalQuantities;
@@ -44,4 +44,8 @@ public class ManagerGoal {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @ManyToOne
+    @JoinColumn(name = "admin_id", referencedColumnName = "user_id")
+    private User admin;
 }

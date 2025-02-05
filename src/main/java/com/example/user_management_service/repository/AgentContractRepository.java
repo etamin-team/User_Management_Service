@@ -12,6 +12,8 @@ import java.util.UUID;
 
 @Repository
 public interface AgentContractRepository extends JpaRepository<AgentContract, Long> {
-    @Query("SELECT ac FROM AgentContract ac WHERE ac.medAgent.userId = :medAgentId")
+    @Query("SELECT ac FROM AgentContract ac WHERE ac.medAgent.userId = :medAgentId "+
+            "AND ac.startDate <= CURRENT_DATE " +
+            "AND ac.endDate >= CURRENT_DATE")
     Optional<AgentContract> findByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
 }

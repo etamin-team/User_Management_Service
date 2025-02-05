@@ -1,6 +1,7 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.ContractNotFoundException;
+import com.example.user_management_service.exception.DoctorContractExistsException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.ContractAmountDTO;
 import com.example.user_management_service.model.dto.ContractDTO;
@@ -42,6 +43,9 @@ public class ContractService {
     // Doctor Contract
 
     public ContractDTO createContract(ContractDTO contractDTO) {
+        if (contractRepository.findActiveContractByDoctorId(contractDTO.getDoctorId()).isPresent()){
+            throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:"+contractDTO.getDoctorId());
+        }
         // Fetch the agent contract based on the agentId
         AgentContract agentContract = agentContractRepository.findById(contractDTO.getAgentId())
                 .orElseThrow(() -> new RuntimeException("AgentContract not found"));

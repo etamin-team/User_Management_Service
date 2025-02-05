@@ -22,4 +22,6 @@ public class ManagerGoalDTO {
     private LocalDate createdAt;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    private UUID adminId;
 }

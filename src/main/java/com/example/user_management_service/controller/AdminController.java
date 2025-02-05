@@ -122,16 +122,16 @@ public class AdminController {
     }
 
 
-    @GetMapping("/manager/goal/{goalId}")
+    @GetMapping("/manager/goal/goal-id/{goalId}")
     public ResponseEntity<ManagerGoalDTO> getManagerGoalById(@PathVariable Long goalId) {
         ManagerGoalDTO managerGoalDTO = adminService.getManagerGoalById(goalId);
         return ResponseEntity.ok(managerGoalDTO);
     }
 
 
-    @GetMapping("/manager/goal/{managerId}")
-    public ResponseEntity<List<ManagerGoalDTO>> getManagerGoalsByManagerId(@PathVariable UUID managerId) {
-        List<ManagerGoalDTO> managerGoals = adminService.getManagerGoalsByManagerId(managerId);
+    @GetMapping("/manager/goal/manager-id/{managerId}")
+    public ResponseEntity<ManagerGoalDTO> getManagerGoalsByManagerId(@PathVariable UUID managerId) {
+        ManagerGoalDTO managerGoals = adminService.getManagerGoalsByManagerId(managerId);
         return ResponseEntity.ok(managerGoals);
     }
 
