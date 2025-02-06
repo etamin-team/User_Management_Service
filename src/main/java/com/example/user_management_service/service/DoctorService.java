@@ -51,6 +51,7 @@ public class DoctorService {
 
     public void createTemplate(TemplateDto templateDto) {
         Template template = convertToEntity(templateDto);
+        template.setId(templateDto.getId());
         template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         templateRepository.save(template);
     }
