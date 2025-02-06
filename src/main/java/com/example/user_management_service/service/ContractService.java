@@ -31,6 +31,7 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final FieldWithQuantityRepository fieldWithQuantityRepository;
     private final OutOfContractMedicineAmountRepository outOfContractMedicineAmountRepository;
+    private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
@@ -47,7 +48,7 @@ public class ContractService {
             throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:"+contractDTO.getDoctorId());
         }
         // Fetch the agent contract based on the agentId
-        AgentContract agentContract = agentContractRepository.findById(contractDTO.getAgentId())
+        AgentContract agentContract = agentContractRepository.findById(contractDTO.getAgentContractId())
                 .orElseThrow(() -> new RuntimeException("AgentContract not found"));
         ManagerGoal managerGoal = agentContract.getManagerGoal();
         if (managerGoal == null) {
@@ -117,6 +118,7 @@ public class ContractService {
         contract.setEndDate(contractDTO.getEndDate());
         contract.setCreatedAt(LocalDate.now());  // Current date as createdAt
 
+        contractRepository.save(contract);
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
@@ -135,12 +137,15 @@ public class ContractService {
                     ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), agentContract.getManagerGoal().getGoalId())
                             .orElseThrow(() -> new RuntimeException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
                     medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
+                    contractMedicineAmountRepository.save(medicineGoalQuantity);
 
 
                     ContractMedicineAmount contractMedicineMedAgentAmount = medicineWithQuantityRepository
                             .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentContract.getId()).orElseThrow(() -> new RuntimeException("No ContractMedicineAmount found for the given Medicine and AgentContract"));
-                    medicineWithQuantityDoctor.setContractMedicineAmount(contractMedicineMedAgentAmount);
+                    medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(contractMedicineMedAgentAmount);
+                    contractMedicineAmountRepository.save(contractMedicineMedAgentAmount);
 
+                    medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
                     return medicineWithQuantityDoctor;
                 })
                 .collect(Collectors.toList());
@@ -161,7 +166,7 @@ public class ContractService {
         // Update contract details
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
-        contract.setAgentContract(agentContractRepository.findById(contractDTO.getAgentId())
+        contract.setAgentContract(agentContractRepository.findById(contractDTO.getAgentContractId())
                 .orElseThrow(() -> new RuntimeException("AgentContract not found")));
         contract.setDoctor(userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new RuntimeException("Doctor not found")));
@@ -208,22 +213,34 @@ public class ContractService {
     }
 
     private ContractDTO convertToDTO(Contract contract) {
+        if (contract == null) {
+            throw new IllegalArgumentException("Contract cannot be null");
+        }
+
         return new ContractDTO(
                 contract.getId(),
-                contract.getDoctor().getUserId(),
+                contract.getDoctor() != null ? contract.getDoctor().getUserId() : null,
                 contract.getCreatedAt(),
                 contract.getStartDate(),
                 contract.getEndDate(),
-                fieldWithQuantityRepository.findByField(contract.getDoctor().getFieldName()),
-                contract.getAgentContract().getId(),
-                contract.getAgentContract().getMedicinesWithQuantities().stream()
-                        .map(fieldWithQuantity -> new MedicineWithQuantityDTO(
-                                fieldWithQuantity.getMedicine().getId(),
-                                fieldWithQuantity.getMedicine().getName(),
-                                fieldWithQuantity.getQuote(),
-                                fieldWithQuantity.getContractMedicineAmount()
+                contract.getDoctor() != null && contract.getDoctor().getFieldName() != null
+                        ? null //here is the problem
+                        : null,
+                contract.getAgentContract() != null && contract.getAgentContract().getMedAgent() != null
+                        ? contract.getAgentContract().getMedAgent().getUserId()
+                        : null,
+                contract.getAgentContract() != null ? contract.getAgentContract().getId() : null,
+                contract.getAgentContract() != null && contract.getAgentContract().getMedicinesWithQuantities() != null
+                        ? contract.getAgentContract().getMedicinesWithQuantities().stream()
+                        .filter(Objects::nonNull) // Avoid NullPointerException inside stream
+                        .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
+                                medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
+                                medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getName() : null,
+                                medicineWithQuantity.getQuote(),
+                                medicineWithQuantity.getContractMedicineAmount()
                         ))
                         .collect(Collectors.toList())
+                        : Collections.emptyList()
         );
     }
 
