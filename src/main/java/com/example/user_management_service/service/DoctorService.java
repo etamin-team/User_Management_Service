@@ -4,7 +4,6 @@ import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Preparation;
 import com.example.user_management_service.model.Template;
 import com.example.user_management_service.model.dto.DoctorDto;
-import com.example.user_management_service.model.dto.DoctorRecipeStatsDTO;
 import com.example.user_management_service.model.dto.PreparationDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.repository.MedicineRepository;
