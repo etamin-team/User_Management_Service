@@ -42,9 +42,9 @@ public class DoctorController {
     }
 
     @PutMapping("/update-template")
-    public void updateTemplate(@RequestBody TemplateDto templateDto, @RequestParam(defaultValue = "false") boolean save) {
+    public void updateTemplate(@RequestBody TemplateDto templateDto) {
         templateDto.setDoctorId(roleService.getCurrentUserId());
-        doctorService.saveTemplate(templateDto, save);
+        doctorService.saveTemplate(templateDto);
     }
 
     @PostMapping("/save-template/{id}")
