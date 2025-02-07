@@ -3,9 +3,12 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Preparation;
 import com.example.user_management_service.model.Template;
+import com.example.user_management_service.model.dto.DoctorDto;
+import com.example.user_management_service.model.dto.DoctorRecipeStatsDTO;
 import com.example.user_management_service.model.dto.PreparationDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.repository.MedicineRepository;
+import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.TemplateRepository;
 import com.example.user_management_service.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +35,7 @@ public class DoctorService {
 
     private final MedicineRepository medicineRepository;
     private final UserRepository userRepository;
+    private final RecipeRepository recipeRepository;
 
 
     public void saveTemplate(Long id, boolean save) {
@@ -45,13 +49,13 @@ public class DoctorService {
     public void saveTemplate(TemplateDto templateDto, boolean save) {
         Template template = convertToEntity(templateDto);
         template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
+        template.setId(templateDto.getId());
         template.setSaved(save);
         templateRepository.save(template);
     }
 
     public void createTemplate(TemplateDto templateDto) {
         Template template = convertToEntity(templateDto);
-        template.setId(templateDto.getId());
         template.setDoctorId(userRepository.findById(templateDto.getDoctorId()).orElseThrow());
         templateRepository.save(template);
     }
