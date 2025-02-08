@@ -3,6 +3,7 @@ package com.example.user_management_service.controller;
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
 import com.example.user_management_service.model.dto.ContractAmountDTO;
+import com.example.user_management_service.model.dto.OutOfContractAmountDTO;
 import com.example.user_management_service.model.dto.RecipeDto;
 import com.example.user_management_service.model.dto.TemplateDto;
 import com.example.user_management_service.service.ContractService;
@@ -75,6 +76,12 @@ public class DoctorController {
     @GetMapping("/doctor/contract/doctor-id/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
+
+    @GetMapping("/doctor/out-contract/doctor-id/{doctorId}")
+    public ResponseEntity<OutOfContractAmountDTO> getOutOfContractByDoctorId(@PathVariable UUID doctorId) {
+        OutOfContractAmountDTO contractAmountDTO = contractService.getOutOfContractsByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
 

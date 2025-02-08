@@ -39,9 +39,6 @@ public class Contract {
     @OneToMany(mappedBy = "doctorContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors;
 
-    @OneToMany(mappedBy = "doctorContract", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OutOfContractMedicineAmount> outOfContractMedicineAmounts;
-
     @Column(name = "created_at")
     private LocalDate createdAt;
 

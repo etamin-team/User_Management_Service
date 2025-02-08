@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "out_of_contract_medicine_amounts")
 @Data
@@ -24,7 +26,11 @@ public class OutOfContractMedicineAmount {
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 
+
+    @Column(name = "created_at")
+    private LocalDate createdAt;
+
     @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private Contract doctorContract;
+    @JoinColumn(name = "doctor_id", referencedColumnName = "user_id")
+    private User doctor;
 }

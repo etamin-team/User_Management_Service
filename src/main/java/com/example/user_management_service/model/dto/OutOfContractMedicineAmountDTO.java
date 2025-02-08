@@ -13,5 +13,5 @@ public class OutOfContractMedicineAmountDTO {
 
     private Long id;
     private Long amount;
-    private Long medicineId; // Assuming you need to provide only the medicineId
+    private Long medicineId;
 }

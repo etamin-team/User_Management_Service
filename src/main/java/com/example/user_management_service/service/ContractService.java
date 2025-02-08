@@ -3,10 +3,7 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.exception.ContractNotFoundException;
 import com.example.user_management_service.exception.DoctorContractExistsException;
 import com.example.user_management_service.model.*;
-import com.example.user_management_service.model.dto.ContractAmountDTO;
-import com.example.user_management_service.model.dto.ContractDTO;
-import com.example.user_management_service.model.dto.MedicineWithQuantityDTO;
-import com.example.user_management_service.model.dto.OutOfContractMedicineAmountDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -266,12 +263,12 @@ public class ContractService {
                 .collect(Collectors.toMap(m -> m.getMedicine().getId(), m -> m));
 
         // Fetch existing out-of-contract medicines
-        List<OutOfContractMedicineAmount> outOfContractMedicines = contract.getOutOfContractMedicineAmounts();
+        List<OutOfContractMedicineAmount> outOfContractMedicines = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId);
 
         for (Long medicineId : medicineIds) {
             MedicineWithQuantityDoctor medicineEntry = medicineMap.get(medicineId);
 
-            if (medicineEntry != null) {
+            if (medicineEntry != null&&medicineEntry.getQuote()>medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                 // Medicine exists in contract, update amounts
                 ContractMedicineAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
                 ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
@@ -297,11 +294,10 @@ public class ContractService {
 
                     OutOfContractMedicineAmount newOutOfContractMedicine = new OutOfContractMedicineAmount();
                     newOutOfContractMedicine.setAmount(1L);
-                    newOutOfContractMedicine.setDoctorContract(contract);
+                    newOutOfContractMedicine.setDoctor(contract.getDoctor());
                     newOutOfContractMedicine.setMedicine(medicine);
 
                     outOfContractMedicineAmountRepository.save(newOutOfContractMedicine);
-                    contract.getOutOfContractMedicineAmounts().add(newOutOfContractMedicine);
                 }
             }
         }
@@ -310,6 +306,16 @@ public class ContractService {
     }
 
 
+    public OutOfContractAmountDTO getOutOfContractsByDoctorId(UUID doctorId){
+        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).stream()
+                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
+                .collect(Collectors.toList());
+
+        return new OutOfContractAmountDTO(
+                doctorId,
+                outOfContractMedicineAmountDTOs
+        );
+    }
     public ContractAmountDTO getContractById(Long contractId) {
         Optional<Contract> contractOptional = contractRepository.findById(contractId);
         if (contractOptional.isEmpty()) {
@@ -333,16 +339,9 @@ public class ContractService {
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
-
-        // Mapping OutOfContractMedicineAmounts to OutOfContractMedicineAmountDTO
-        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = contract.getOutOfContractMedicineAmounts().stream()
-                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
-                .collect(Collectors.toList());
-
-        contractDTO.setOutOfContractMedicineAmount(outOfContractMedicineAmountDTOs);
-
         return contractDTO;
     }
+
     public ContractAmountDTO getContractByDoctorId(UUID doctorId) {
         Optional<Contract> contractOptional = contractRepository.findActiveContractByDoctorId(doctorId);
         if (contractOptional.isEmpty()) {
@@ -351,7 +350,6 @@ public class ContractService {
 
         Contract contract = contractOptional.get();
 
-        // Mapping Contract to ContractAmountDTO
         ContractAmountDTO contractDTO = new ContractAmountDTO();
         contractDTO.setId(contract.getId());
         contractDTO.setDoctorId(contract.getDoctor().getUserId());
@@ -360,7 +358,6 @@ public class ContractService {
         contractDTO.setEndDate(contract.getEndDate());
         contractDTO.setAgentId(contract.getAgentContract() != null ? contract.getAgentContract().getId() : null);
 
-        // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
                 .map(med -> new MedicineWithQuantityDTO(med.getId(), med.getMedicine().getName(),
                         med.getContractMedicineAmount().getAmount(), med.getContractMedicineAmount())) // mapping to DTO
@@ -368,12 +365,6 @@ public class ContractService {
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
 
-        // Mapping OutOfContractMedicineAmounts to OutOfContractMedicineAmountDTO
-        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = contract.getOutOfContractMedicineAmounts().stream()
-                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
-                .collect(Collectors.toList());
-
-        contractDTO.setOutOfContractMedicineAmount(outOfContractMedicineAmountDTOs);
 
         return contractDTO;
     }
