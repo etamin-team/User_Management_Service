@@ -205,12 +205,12 @@ public class AdminController {
         return ResponseEntity.ok(contracts);
     }
 
-    @GetMapping("/doctor/contract/{contractId}")
+    @GetMapping("/doctor/contract/contract-id/{contractId}")
     public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
         return ResponseEntity.ok(contractAmountDTO);
     }
-    @GetMapping("/doctor/contract/{doctorId}")
+    @GetMapping("/doctor/contract/doctor-id/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);

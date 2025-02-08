@@ -25,10 +25,13 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     Page<Contract> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
 
 
-    @Query("SELECT c FROM Contract c WHERE c.doctor.userId = :doctorId " +
+    @Query("SELECT c FROM Contract c " +
+            "WHERE c.doctor.userId = :doctorId " +
             "AND c.startDate <= CURRENT_DATE " +
-            "AND c.endDate >= CURRENT_DATE")
+            "AND c.endDate >= CURRENT_DATE " +
+            "AND c.status = 'ENABLED'")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
+
 
     @Modifying
     @Query("UPDATE Contract c SET c.status = :status WHERE c.id = :id")

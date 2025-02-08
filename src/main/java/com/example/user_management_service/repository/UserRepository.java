@@ -37,8 +37,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
 
-
-
     // Get all doctors
     default List<User> findDoctors() {
         return findByRole(Role.DOCTOR);

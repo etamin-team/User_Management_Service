@@ -68,18 +68,18 @@ public class DoctorController {
         recipeService.saveRecipe(recipe);
     }
 
-    @GetMapping("/doctor/contract/contract-id/{contractId}")
+    @GetMapping("/contract/contract-id/{contractId}")
     public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
         return ResponseEntity.ok(contractAmountDTO);
     }
-    @GetMapping("/doctor/contract/doctor-id/{doctorId}")
+    @GetMapping("/contract/doctor-id/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
 
-    @GetMapping("/doctor/out-contract/doctor-id/{doctorId}")
+    @GetMapping("/out-contract/doctor-id/{doctorId}")
     public ResponseEntity<OutOfContractAmountDTO> getOutOfContractByDoctorId(@PathVariable UUID doctorId) {
         OutOfContractAmountDTO contractAmountDTO = contractService.getOutOfContractsByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
