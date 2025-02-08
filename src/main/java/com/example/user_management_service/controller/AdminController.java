@@ -173,6 +173,14 @@ public class AdminController {
         return ResponseEntity.ok(agentContractDTO);
     }
 
+    @GetMapping("/med-agent/doctor/contract/all")
+    public ResponseEntity<Page<ContractDTO>> getAllContractsByAgent(
+            @RequestParam UUID agentId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ContractDTO> contracts = contractService.getAllContractsByAgent(agentId, page, size);
+        return ResponseEntity.ok(contracts);
+    }
     // Doctor Contract
 
 

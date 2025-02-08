@@ -53,6 +53,10 @@ public class Contract {
     private User doctor;
 
     @ManyToOne
+    @JoinColumn(name = "agent_id", referencedColumnName = "user_id")
+    private User medAgent;
+
+    @ManyToOne
     @JoinColumn(name = "agent_contract_id", referencedColumnName = "contract_id")
     private AgentContract agentContract;
 }

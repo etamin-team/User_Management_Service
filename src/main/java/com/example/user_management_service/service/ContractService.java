@@ -114,7 +114,8 @@ public class ContractService {
         contract.setAgentContract(agentContract);
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
-        contract.setCreatedAt(LocalDate.now());  // Current date as createdAt
+        contract.setCreatedAt(LocalDate.now());
+        contract.setMedAgent(agentContract.getMedAgent());
         contractRepository.save(contract);
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
@@ -217,6 +218,7 @@ public class ContractService {
         return new ContractDTO(
                 contract.getId(),
                 contract.getDoctor() != null ? contract.getDoctor().getUserId() : null,
+                contract.getStatus(),
                 contract.getCreatedAt(),
                 contract.getStartDate(),
                 contract.getEndDate(),
@@ -246,7 +248,11 @@ public class ContractService {
         Page<Contract> contracts = contractRepository.findByStatus(GoalStatus.PENDING_REVIEW, pageable);
         return contracts.map(this::convertToDTO);
     }
-
+    public Page<ContractDTO> getAllContractsByAgent(UUID agentId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return contractRepository.findAllContractsByAgent(agentId, pageable)
+                .map(this::convertToDTO);
+    }
     public void saveContractMedicineAmount(UUID doctorId, List<Long> medicineIds) {
         // Fetch active contract for the doctor
         Contract contract = contractRepository.findActiveContractByDoctorId(doctorId)

@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.GoalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class ContractDTO {
 
     private Long id;
     private UUID doctorId;
+    private GoalStatus goalStatus;
 
     private LocalDate createdAt;
     private LocalDate startDate;

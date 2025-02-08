@@ -36,4 +36,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Modifying
     @Query("UPDATE Contract c SET c.status = :status WHERE c.id = :id")
     void updateContractStatus(@Param("id") UUID id, @Param("status") GoalStatus status);
+
+    @Query("SELECT c FROM Contract c " +
+            "WHERE c.medAgent.userId = :agentId")
+    Page<Contract> findAllContractsByAgent(@Param("agentId") UUID agentId, Pageable pageable);
+
 }

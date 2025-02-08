@@ -4,5 +4,7 @@ public enum GoalStatus {
     PENDING_REVIEW,
     UNDER_REVIEW,
     APPROVED,
-    DECLINED
+    DECLINED,
+    DONE,
+    NOT_COMPLETED
 }
