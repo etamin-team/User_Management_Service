@@ -64,6 +64,24 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     """, nativeQuery = true)
     Double averageRecipesLast12MonthsByDoctor(@Param("doctorId") UUID doctorId);
 
+    @Query("SELECT COUNT(r) FROM Recipe r " +
+            "WHERE r.doctorId IN (" +
+            "   SELECT c.doctor FROM Contract c WHERE c.medAgent.userId = :medAgentId" +
+            ") " +
+            "AND EXTRACT(YEAR FROM r.dateCreation) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Integer countRecipesByDoctorsAssignedByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
+
+
+    @Query("SELECT COUNT(r) FROM Recipe r " +
+            "JOIN r.preparations p " +
+            "WHERE r.doctorId IN (" +
+            "   SELECT c.doctor FROM Contract c WHERE c.medAgent.userId = :medAgentId" +
+            ") "+
+            "AND EXTRACT(YEAR FROM r.dateCreation) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Integer totalMedicineAmountByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
+
 
 
 }

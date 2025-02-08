@@ -168,7 +168,7 @@ public class AdminController {
     }
 
     @GetMapping("/med-agent/contract/agent-id/{medAgentId}")
-    public ResponseEntity<AgentContractDTO> getAgentContractByMedAgentId(@PathVariable UUID medAgentId) {
+    public ResponseEntity<AgentContractDTO> getAgentContractmedAgentId(@PathVariable UUID medAgentId) {
         AgentContractDTO agentContractDTO = adminService.getAgentContractByMedAgentId(medAgentId);
         return ResponseEntity.ok(agentContractDTO);
     }
@@ -181,6 +181,16 @@ public class AdminController {
         Page<ContractDTO> contracts = contractService.getAllContractsByAgent(agentId, page, size);
         return ResponseEntity.ok(contracts);
     }
+
+
+
+    @GetMapping("/med-agent/statistics/{medAgentId}")
+    public ResponseEntity<MedAgentStatusDTO> getDoctorRecipeStatsDTOByMedAgentId(@PathVariable UUID medAgentId) {
+        MedAgentStatusDTO contractAmountDTO = adminService.getMedAgentStatusInfo(medAgentId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
+
+
     // Doctor Contract
 
 

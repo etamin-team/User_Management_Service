@@ -41,4 +41,25 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "WHERE c.medAgent.userId = :agentId")
     Page<Contract> findAllContractsByAgent(@Param("agentId") UUID agentId, Pageable pageable);
 
+    @Query("SELECT COUNT(DISTINCT c.doctor) FROM Contract c WHERE c.medAgent.userId = :medAgentId")
+    Integer countDoctorsByMedAgent(@Param("medAgentId") UUID medAgentId);
+
+    @Query("SELECT COUNT(DISTINCT c.doctor) FROM Contract c " +
+            "WHERE c.medAgent.userId = :medAgentId " +
+            "AND EXTRACT(YEAR FROM c.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM c.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Integer countDoctorsByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
+
+
+
+    @Query("SELECT COUNT(c) FROM Contract c WHERE c.medAgent.userId = :medAgentId")
+    Integer countContractsByMedAgent(@Param("medAgentId") UUID medAgentId);
+
+    @Query("SELECT COUNT(c) FROM Contract c " +
+            "WHERE c.medAgent.userId = :medAgentId " +
+            "AND EXTRACT(YEAR FROM c.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM c.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Integer countContractsCreatedThisMonthByMedAgent(@Param("medAgentId") UUID medAgentId);
+
+
 }
