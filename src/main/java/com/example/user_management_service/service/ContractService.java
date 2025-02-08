@@ -30,6 +30,7 @@ public class ContractService {
     private final OutOfContractMedicineAmountRepository outOfContractMedicineAmountRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private final RecipeRepository recipeRepository;
+    private final DistrictRegionService districtRegionService;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
@@ -239,9 +240,11 @@ public class ContractService {
                                 medicineWithQuantity.getContractMedicineAmount()
                         ))
                         .collect(Collectors.toList())
-                        : Collections.emptyList()
+                        : Collections.emptyList(),
+                districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
         );
     }
+
 
     public Page<ContractDTO> getPendingReviewContracts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());

@@ -5,6 +5,7 @@ import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.dto.DistrictDTO;
 import com.example.user_management_service.model.dto.RegionDTO;
+import com.example.user_management_service.model.dto.RegionDistrictDTO;
 import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.RegionRepository;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,4 +100,33 @@ public class DistrictRegionService {
         return districtRepository.findById(districtId).get().getRegion();
     }
 
+    public RegionDistrictDTO regionDistrictDTO(Long districtId){
+        District district = districtRepository.findById(districtId).orElseThrow();
+        return new RegionDistrictDTO(
+                district.getRegion().getId(),
+                district.getRegion().getName(),
+                district.getRegion().getNameUzCyrillic(),
+                district.getRegion().getNameUzLatin(),
+                district.getRegion().getNameRussian(),
+                district.getId(),
+                district.getName(),
+                district.getNameUzCyrillic(),
+                district.getNameUzLatin(),
+                district.getNameRussian()
+        );
+    }
+    public RegionDistrictDTO regionDistrictDTO(District district){
+        return new RegionDistrictDTO(
+                district.getRegion().getId(),
+                district.getRegion().getName(),
+                district.getRegion().getNameUzCyrillic(),
+                district.getRegion().getNameUzLatin(),
+                district.getRegion().getNameRussian(),
+                district.getId(),
+                district.getName(),
+                district.getNameUzCyrillic(),
+                district.getNameUzLatin(),
+                district.getNameRussian()
+        );
+    }
 }

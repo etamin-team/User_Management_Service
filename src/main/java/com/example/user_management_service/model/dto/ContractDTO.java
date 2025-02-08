@@ -34,4 +34,6 @@ public class ContractDTO {
     private Long  agentContractId;
 
     private List<MedicineWithQuantityDTO> medicinesWithQuantities;
+
+    private RegionDistrictDTO regionDistrictDTO;
 }
