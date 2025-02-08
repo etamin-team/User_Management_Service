@@ -2,10 +2,7 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
-import com.example.user_management_service.model.dto.ContractAmountDTO;
-import com.example.user_management_service.model.dto.OutOfContractAmountDTO;
-import com.example.user_management_service.model.dto.RecipeDto;
-import com.example.user_management_service.model.dto.TemplateDto;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.ContractService;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
@@ -84,5 +81,12 @@ public class DoctorController {
         OutOfContractAmountDTO contractAmountDTO = contractService.getOutOfContractsByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
+
+    @GetMapping("/statistics/{doctorId}")
+    public ResponseEntity<DoctorRecipeStatsDTO> getDoctorRecipeStatsDTOByDoctorId(@PathVariable UUID doctorId) {
+        DoctorRecipeStatsDTO contractAmountDTO = contractService.getDoctorRecipeStatsDTOByDoctorId(doctorId);
+        return ResponseEntity.ok(contractAmountDTO);
+    }
+
 
 }

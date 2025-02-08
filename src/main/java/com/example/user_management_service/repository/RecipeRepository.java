@@ -44,5 +44,26 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("endDate") LocalDate endDate,
             @Param("medicineId") Long medicineId);
 
+    @Query("SELECT COUNT(r) FROM Recipe r " +
+            "WHERE r.doctorId.userId = :doctorId " +
+            "AND EXTRACT(YEAR FROM r.dateCreation) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")
+    Integer countRecipesCreatedThisMonthByDoctor(@Param("doctorId") UUID doctorId);
+
+
+
+    @Query(value = """
+    SELECT COALESCE(AVG(recipe_count), 0) 
+    FROM (
+        SELECT COUNT(r.recipe_id) AS recipe_count 
+        FROM recipes r 
+        WHERE r.doctor_id = :doctorId 
+        AND r.date_creation >= CURRENT_DATE - INTERVAL '12 months' 
+        GROUP BY EXTRACT(YEAR FROM r.date_creation), EXTRACT(MONTH FROM r.date_creation)
+    ) AS monthly_counts
+    """, nativeQuery = true)
+    Double averageRecipesLast12MonthsByDoctor(@Param("doctorId") UUID doctorId);
+
+
 
 }

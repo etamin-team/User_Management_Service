@@ -29,6 +29,7 @@ public class ContractService {
     private final FieldWithQuantityRepository fieldWithQuantityRepository;
     private final OutOfContractMedicineAmountRepository outOfContractMedicineAmountRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+    private final RecipeRepository recipeRepository;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
@@ -390,5 +391,13 @@ public class ContractService {
 
         contract.setStatus(GoalStatus.DECLINED);
         contractRepository.save(contract);
+    }
+
+    public DoctorRecipeStatsDTO getDoctorRecipeStatsDTOByDoctorId(UUID doctorId) {
+        DoctorRecipeStatsDTO doctorRecipeStatsDTO=new DoctorRecipeStatsDTO();
+        doctorRecipeStatsDTO.setDoctorId(doctorId);
+        doctorRecipeStatsDTO.setRecipesCreatedThisMonth(recipeRepository.countRecipesCreatedThisMonthByDoctor(doctorId));
+        doctorRecipeStatsDTO.setAverageRecipesPerMonth(recipeRepository.averageRecipesLast12MonthsByDoctor(doctorId));
+        return doctorRecipeStatsDTO;
     }
 }

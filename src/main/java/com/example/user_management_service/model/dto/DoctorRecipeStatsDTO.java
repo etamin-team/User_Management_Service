@@ -13,11 +13,11 @@ import java.util.UUID;
  */
 
 
-//@Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class DoctorRecipeStatsDTO {
-//    private UUID doctorId;
-//    private Integer recipesCreatedThisMonth;
-//    private Integer averageRecipesPerMonth;
-//}
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class DoctorRecipeStatsDTO {
+    private UUID doctorId;
+    private Integer recipesCreatedThisMonth;
+    private Double averageRecipesPerMonth;
+}
