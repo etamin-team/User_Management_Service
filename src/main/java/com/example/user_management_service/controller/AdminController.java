@@ -31,7 +31,6 @@ public class AdminController {
 
     private final AdminService adminService;
     private final PasswordResetService passwordResetService;
-    private final DataBaseService dataBaseService;
     private final RecipeService recipeService;
     private final ContractService contractService;
 
@@ -194,27 +193,6 @@ public class AdminController {
     // Doctor Contract
 
 
-    // Create a new Contract
-    @PostMapping("/doctor/new-contract")
-    public ResponseEntity<ContractDTO> createContract(@RequestBody ContractDTO contractDTO) {
-        ContractDTO createdContract = adminService.createContract(contractDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdContract);
-    }
-
-    // Update an existing Contract
-    @PutMapping("/doctor/update-contract/{contractId}")
-    public ResponseEntity<ContractDTO> updateContract(@PathVariable Long contractId, @RequestBody ContractDTO contractDTO) {
-        ContractDTO updatedContract = adminService.updateContract(contractId, contractDTO);
-        return ResponseEntity.ok(updatedContract);
-    }
-
-    // Delete a Contract
-    @DeleteMapping("/doctor/delete-contract/{contractId}")
-    public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
-        adminService.deleteContract(contractId);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/doctor/contracts/pending-review")
     public ResponseEntity<Page<ContractDTO>> getPendingReviewContracts(
             @RequestParam(defaultValue = "0") int page,
@@ -222,6 +200,7 @@ public class AdminController {
         Page<ContractDTO> contracts = contractService.getPendingReviewContracts(page, size);
         return ResponseEntity.ok(contracts);
     }
+
 
     @GetMapping("/doctor/contract/contract-id/{contractId}")
     public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
@@ -233,8 +212,6 @@ public class AdminController {
         ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
-
-
 
     @PatchMapping("/contract/{id}/user-enable")
     public ResponseEntity<String> enableContract(@PathVariable Long id) {
