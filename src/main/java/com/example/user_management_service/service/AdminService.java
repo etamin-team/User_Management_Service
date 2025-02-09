@@ -329,10 +329,19 @@ public class AdminService {
     //agent contract
 
     public AgentContractDTO createAgentContract(AgentContractDTO agentContractDTO) {
+
+        System.out.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
         if (agentContractRepository.getContractsByMedAgentUserId(agentContractDTO.getMedAgentId()).isPresent()) {
             throw new AgentContractExistsException("Agent has already assigned contract agentId:" + agentContractDTO.getMedAgentId());
         }
-
+        System.err.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
+        System.err.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
+        System.err.println("-------------------------------------------");
+        System.out.println("-------------------------------------------");
+        System.err.println("-------------------------------------------");
         AgentContract agentContract = new AgentContract();
         agentContract.setCreatedAt(LocalDate.now());
         agentContract.setStartDate(agentContractDTO.getStartDate());
