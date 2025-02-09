@@ -15,5 +15,5 @@ public interface AgentContractRepository extends JpaRepository<AgentContract, Lo
     @Query("SELECT ac FROM AgentContract ac WHERE ac.medAgent.userId = :medAgentId "+
             "AND ac.startDate <= CURRENT_DATE " +
             "AND ac.endDate >= CURRENT_DATE")
-    Optional<AgentContract> findByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
+    Optional<AgentContract> getContractsByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
 }

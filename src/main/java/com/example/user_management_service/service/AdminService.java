@@ -329,9 +329,10 @@ public class AdminService {
     //agent contract
 
     public AgentContractDTO createAgentContract(AgentContractDTO agentContractDTO) {
-        if (agentContractRepository.findByMedAgentUserId(agentContractDTO.getMedAgentId()).isPresent()) {
+        if (agentContractRepository.getContractsByMedAgentUserId(agentContractDTO.getMedAgentId()).isPresent()) {
             throw new AgentContractExistsException("Agent has already assigned contract agentId:" + agentContractDTO.getMedAgentId());
         }
+
         AgentContract agentContract = new AgentContract();
         agentContract.setCreatedAt(LocalDate.now());
         agentContract.setStartDate(agentContractDTO.getStartDate());
@@ -407,7 +408,7 @@ public class AdminService {
                                                       ManagerGoal managerGoal,
                                                       AgentContract agentContract) {
         if (!fieldIds.contains(dto.getFieldName())) {
-            return null;
+            throw new AgentContractExistsException("Field with name " + dto.getFieldName() + " not found in managerGoalFields");
         }
 
         ContractFieldAmount contractFieldAmount = fieldGoalQuantityRepository
@@ -608,7 +609,7 @@ public class AdminService {
     }
 
     public AgentContractDTO getAgentContractByMedAgentId(UUID medAgentId) {
-        Optional<AgentContract> agentContractOptional = agentContractRepository.findByMedAgentUserId(medAgentId); // You will need to write this query in the repository
+        Optional<AgentContract> agentContractOptional = agentContractRepository.getContractsByMedAgentUserId(medAgentId); // You will need to write this query in the repository
         if (agentContractOptional.isEmpty()) {
             throw new IllegalStateException("Agent Contract not found for medAgentId: " + medAgentId);
         }
