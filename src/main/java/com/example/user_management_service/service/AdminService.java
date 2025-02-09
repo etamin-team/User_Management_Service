@@ -407,7 +407,7 @@ public class AdminService {
                                                       ManagerGoal managerGoal,
                                                       AgentContract agentContract) {
         if (!fieldIds.contains(dto.getFieldName())) {
-            throw new AgentContractExistsException("Field with name " + dto.getFieldName() + " not found in managerGoalFields");
+            return null;
         }
 
         ContractFieldAmount contractFieldAmount = fieldGoalQuantityRepository
