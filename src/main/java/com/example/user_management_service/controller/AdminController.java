@@ -160,35 +160,6 @@ public class AdminController {
 
 
 
-    @GetMapping("/med-agent/contract/contract-id/{agentContractId}")
-    public ResponseEntity<AgentContractDTO> getAgentContractById(@PathVariable Long agentContractId) {
-        AgentContractDTO agentContractDTO = adminService.getAgentContractById(agentContractId);
-        return ResponseEntity.ok(agentContractDTO);
-    }
-
-    @GetMapping("/med-agent/contract/agent-id/{medAgentId}")
-    public ResponseEntity<AgentContractDTO> getAgentContractmedAgentId(@PathVariable UUID medAgentId) {
-        AgentContractDTO agentContractDTO = adminService.getAgentContractByMedAgentId(medAgentId);
-        return ResponseEntity.ok(agentContractDTO);
-    }
-
-    @GetMapping("/med-agent/doctor/contract/all")
-    public ResponseEntity<Page<ContractDTO>> getAllContractsByAgent(
-            @RequestParam UUID agentId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTO> contracts = contractService.getAllContractsByAgent(agentId, page, size);
-        return ResponseEntity.ok(contracts);
-    }
-
-
-
-    @GetMapping("/med-agent/statistics/{medAgentId}")
-    public ResponseEntity<MedAgentStatusDTO> getDoctorRecipeStatsDTOByMedAgentId(@PathVariable UUID medAgentId) {
-        MedAgentStatusDTO contractAmountDTO = adminService.getMedAgentStatusInfo(medAgentId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
-
 
     // Doctor Contract
 
@@ -201,17 +172,6 @@ public class AdminController {
         return ResponseEntity.ok(contracts);
     }
 
-
-    @GetMapping("/doctor/contract/contract-id/{contractId}")
-    public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
-        ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
-    @GetMapping("/doctor/contract/doctor-id/{doctorId}")
-    public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
-        ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
 
     @PatchMapping("/contract/{id}/user-enable")
     public ResponseEntity<String> enableContract(@PathVariable Long id) {
