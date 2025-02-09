@@ -32,16 +32,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
     @ExceptionHandler(ManagerGoalExistException.class)
-    public ResponseEntity<Map<String, String>> handleManagerGoalExistException(ContractNotFoundException ex) {
+    public ResponseEntity<Map<String, String>> handleManagerGoalExistException(ManagerGoalExistException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
     @ExceptionHandler(AgentContractExistsException.class)
-    public ResponseEntity<Map<String, String>> handleAgentContractExistsException(ContractNotFoundException ex) {
+    public ResponseEntity<Map<String, String>> handleAgentContractExistsException(AgentContractExistsException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+    }
+    @ExceptionHandler(AgentContractException.class)
+    public ResponseEntity<Map<String, String>> handleAgentContractException(AgentContractException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
     @ExceptionHandler(DoctorContractExistsException.class)
-    public ResponseEntity<Map<String, String>> handleDoctorContractExistsException(ContractNotFoundException ex) {
+    public ResponseEntity<Map<String, String>> handleDoctorContractExistsException(DoctorContractExistsException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
 

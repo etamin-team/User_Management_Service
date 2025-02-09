@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.AgentContractException;
 import com.example.user_management_service.exception.AgentContractExistsException;
 import com.example.user_management_service.exception.ContractNotFoundException;
 import com.example.user_management_service.model.*;
@@ -336,13 +337,13 @@ public class AdminService {
         agentContract.setStartDate(agentContractDTO.getStartDate());
         agentContract.setEndDate(agentContractDTO.getEndDate());
         agentContract.setMedAgent(userRepository.findById(agentContractDTO.getMedAgentId())
-                .orElseThrow(() -> new AgentContractExistsException("Manager not found")));
+                .orElseThrow(() -> new AgentContractException("Manager not found")));
         agentContract.setManager(userRepository.findById(agentContractDTO.getManagerId())
-                .orElseThrow(() -> new AgentContractExistsException("Manager not found")));
+                .orElseThrow(() -> new AgentContractException("Manager not found")));
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow();
         if (agentContractDTO.getManagerGoalId() != null) {
             agentContract.setManagerGoal(managerGoalRepository.findById(agentContractDTO.getManagerGoalId())
-                    .orElseThrow(() -> new AgentContractExistsException("Manager Goal not found")));
+                    .orElseThrow(() -> new AgentContractException("Manager Goal not found")));
         }
 //        agentContract.setDistrictGoalQuantity(districtGoalQuantityRepository.findById());
 
@@ -379,15 +380,15 @@ public class AdminService {
                                                             Set<Long> medicineIds,
                                                             AgentContract agentContract) {
         if (!medicineIds.contains(dto.getMedicineId())) {
-            throw new AgentContractExistsException("Medicine with ID " + dto.getMedicineId() + " not found in managerGoalQuantities");
+            throw new AgentContractException("Medicine with ID " + dto.getMedicineId() + " not found in managerGoalQuantities");
         }
 
         ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(dto.getMedicineId(), agentContract.getManagerGoal().getGoalId())
-                .orElseThrow(() -> new AgentContractExistsException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
+                .orElseThrow(() -> new AgentContractException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
 
         MedicineWithQuantity medicineWithQuantity = new MedicineWithQuantity();
         medicineWithQuantity.setMedicine(medicineRepository.findById(dto.getMedicineId())
-                .orElseThrow(() -> new AgentContractExistsException("Medicine not found")));
+                .orElseThrow(() -> new AgentContractException("Medicine not found")));
         medicineWithQuantity.setQuote(dto.getQuote());
         medicineWithQuantity.setContractMedicineAmount(medicineGoalQuantity);
 
@@ -411,7 +412,7 @@ public class AdminService {
 
         ContractFieldAmount contractFieldAmount = fieldGoalQuantityRepository
                 .findContractFieldAmountByFieldAndGoalId(dto.getFieldName(), managerGoal.getGoalId())
-                .orElseThrow(() -> new AgentContractExistsException("ContractFieldAmount not found for field ID " + dto.getId()));
+                .orElseThrow(() -> new AgentContractException("ContractFieldAmount not found for field ID " + dto.getId()));
 
         FieldWithQuantity fieldWithQuantity = new FieldWithQuantity();
         fieldWithQuantity.setField(dto.getFieldName());
@@ -432,14 +433,14 @@ public class AdminService {
 
     public AgentContractDTO updateAgentContract(Long contractId, AgentContractDTO agentContractDTO) {
         AgentContract agentContract = agentContractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("AgentContract not found"));
+                .orElseThrow(() -> new AgentContractException("AgentContract not found"));
 
         agentContract.setStartDate(agentContractDTO.getStartDate());
         agentContract.setEndDate(agentContractDTO.getEndDate());
 
         // Update the MedAgent (you can add more logic here if needed)
         agentContract.setMedAgent(userRepository.findById(agentContractDTO.getMedAgentId())
-                .orElseThrow(() -> new RuntimeException("Manager not found")));
+                .orElseThrow(() -> new AgentContractException("Manager not found")));
 
         ManagerGoal managerGoal = managerGoalRepository.getById(agentContractDTO.getManagerGoalId());
 
@@ -453,7 +454,7 @@ public class AdminService {
         agentContract.setMedicinesWithQuantities(agentContractDTO.getMedicineWithQuantityDTOS().stream()
                 .map(dto -> {
                     if (!medicineIds.contains(dto.getMedicineId())) {
-                        throw new RuntimeException("Medicine with ID " + dto.getMedicineId() + " not found in managerGoalQuantities");
+                        throw new AgentContractException("Medicine with ID " + dto.getMedicineId() + " not found in managerGoalQuantities");
                     }
 
                     // Check if the new quantity is already in the manager goal's quantities
@@ -463,12 +464,12 @@ public class AdminService {
                     if (isNewQuantity) {
                         // If it's a new quantity, add it and set logic here
                         ContractMedicineAmount medicineGoalQuantity = medicineWithQuantityRepository.findById(dto.getMedicineId())
-                                .orElseThrow(() -> new RuntimeException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()))
+                                .orElseThrow(() -> new AgentContractException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()))
                                 .getContractMedicineAmount();
 
                         MedicineWithQuantity medicineWithQuantity = new MedicineWithQuantity();
                         medicineWithQuantity.setMedicine(medicineRepository.findById(dto.getMedicineId())
-                                .orElseThrow(() -> new RuntimeException("Medicine not found")));
+                                .orElseThrow(() -> new AgentContractException("Medicine not found")));
                         medicineWithQuantity.setQuote(dto.getQuote());
                         medicineWithQuantity.setContractMedicineAmount(medicineGoalQuantity);
                         ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
@@ -480,7 +481,7 @@ public class AdminService {
                     } else {
                         // If the quantity already exists, update it here
                         MedicineWithQuantity existingMedicineWithQuantity = medicineWithQuantityRepository.findById(dto.getMedicineId())
-                                .orElseThrow(() -> new RuntimeException("MedicineWithQuantity not found for medicine ID " + dto.getMedicineId()));
+                                .orElseThrow(() -> new AgentContractException("MedicineWithQuantity not found for medicine ID " + dto.getMedicineId()));
 
                         existingMedicineWithQuantity.setQuote(dto.getQuote());
                         // Update other fields if necessary
@@ -498,11 +499,11 @@ public class AdminService {
         agentContract.setFieldWithQuantities(agentContractDTO.getFieldWithQuantityDTOS().stream()
                 .map(dto -> {
                     if (!fieldIds.contains(dto.getFieldName())) {
-                        throw new RuntimeException("Field with name " + dto.getFieldName() + " not found in managerGoalFields");
+                        throw new AgentContractException("Field with name " + dto.getFieldName() + " not found in managerGoalFields");
                     }
 
                     ContractFieldAmount contractFieldAmount = contractFieldAmountRepository.findById(dto.getId())
-                            .orElseThrow(() -> new RuntimeException("ContractFieldAmount not found for field ID " + dto.getId()));
+                            .orElseThrow(() -> new AgentContractException("ContractFieldAmount not found for field ID " + dto.getId()));
 
                     FieldWithQuantity fieldWithQuantity = new FieldWithQuantity();
                     fieldWithQuantity.setField(dto.getFieldName());
@@ -522,7 +523,7 @@ public class AdminService {
         // Update the manager goal if it has changed
         if (agentContractDTO.getManagerGoalId() != null) {
             agentContract.setManagerGoal(managerGoalRepository.findById(agentContractDTO.getManagerGoalId())
-                    .orElseThrow(() -> new RuntimeException("Manager Goal not found")));
+                    .orElseThrow(() -> new AgentContractException("Manager Goal not found")));
         }
 
         AgentContract savedContract = agentContractRepository.save(agentContract);
@@ -531,7 +532,7 @@ public class AdminService {
 
     public void deleteAgentContract(Long contractId) {
         if (!agentContractRepository.existsById(contractId)) {
-            throw new RuntimeException("Agent Contract not found");
+            throw new AgentContractException("Agent Contract not found");
         }
         agentContractRepository.deleteById(contractId);
     }
