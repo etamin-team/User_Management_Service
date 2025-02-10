@@ -189,8 +189,13 @@ public class ContractService {
 
                     if (existingMedicineWithQuantityDoctor != null) {
                         // Update existing medicine quantity
-                        existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
-                        return existingMedicineWithQuantityDoctor;
+                        if (dto.getQuote()>=existingMedicineWithQuantityDoctor.getQuote()||dto.getQuote()>=dto.getContractMedicineAmount().getAmount()){
+                            existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
+                            return existingMedicineWithQuantityDoctor;
+                        }else {
+                            throw new DoctorContractException("Contract Medicine Quote does not match Contract Medicine Quote");
+                        }
+
                     } else {
                         // Add new medicine with quantity
                         MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
@@ -202,10 +207,10 @@ public class ContractService {
                 })
                 .collect(Collectors.toList()));
 
-        // Save the updated contract
+
         Contract savedContract = contractRepository.save(contract);
 
-        // Convert to DTO and return
+
         return convertToDTO(savedContract);
     }
 
@@ -230,7 +235,7 @@ public class ContractService {
                 contract.getStartDate(),
                 contract.getEndDate(),
                 contract.getDoctor() != null && contract.getDoctor().getFieldName() != null
-                        ? null //here is the problem
+                        ? null
                         : null,
                 contract.getAgentContract() != null && contract.getAgentContract().getMedAgent() != null
                         ? contract.getAgentContract().getMedAgent().getUserId()
@@ -289,12 +294,8 @@ public class ContractService {
             if (medicineEntry != null && medicineEntry.getQuote() > medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                 // Medicine exists in contract, update amounts
                 ContractMedicineAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
-                ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
-                ContractMedicineAmount managerAmount = medicineEntry.getContractMedicineAmount();
-
                 doctorAmount.setAmount(doctorAmount.getAmount() + 1);
-                medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
-                managerAmount.setAmount(managerAmount.getAmount() + 1);
+                contractMedicineAmountRepository.save(doctorAmount);
             } else {
                 // Check if the medicine is already in out-of-contract list
                 Optional<OutOfContractMedicineAmount> existingMedicine = outOfContractMedicines.stream()
@@ -305,6 +306,7 @@ public class ContractService {
                     // If medicine exists, increment the amount
                     OutOfContractMedicineAmount outOfContractMedicine = existingMedicine.get();
                     outOfContractMedicine.setAmount(outOfContractMedicine.getAmount() + 1);
+                    outOfContractMedicineAmountRepository.save(outOfContractMedicine);
                 } else {
                     // If medicine does not exist, create a new entry
                     Medicine medicine = medicineRepository.findById(medicineId)
@@ -318,9 +320,14 @@ public class ContractService {
                     outOfContractMedicineAmountRepository.save(newOutOfContractMedicine);
                 }
             }
-        }
+            ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
+            ContractMedicineAmount managerAmount = medicineEntry.getContractMedicineAmount();
 
-        contractRepository.save(contract);
+            medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
+            managerAmount.setAmount(managerAmount.getAmount() + 1);
+            contractMedicineAmountRepository.save(medAgentAmount);
+            contractMedicineAmountRepository.save(managerAmount);
+        }
     }
 
 
