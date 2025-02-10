@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class LastRecipeDTO {
     private UserFullNameDTO doctorName;
     private WorkPlaceDTO workPlaceDTO;
     private LocalDate dateOfCreation;
-    private List<String> medicineName;
+    private List<Medicine> medicines;
 
 }
 

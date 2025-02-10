@@ -15,10 +15,10 @@ import lombok.Setter;
 public class DistrictGoalQuantityDTO {
     private Long id;
     private Long districtId;
-    private String districtName;
     private Long quote;
     private Long managerGoalId;
     private ContractDistrictAmount contractDistrictAmount;
+    private RegionDistrictDTO regionDistrictDTO;
 
 }
 

@@ -3,6 +3,7 @@ package com.example.user_management_service.model.dto;
 
 
 import com.example.user_management_service.model.ContractMedicineAmount;
+import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,8 @@ import lombok.Setter;
 public class MedicineWithQuantityDTO {
 
     private Long medicineId;
-    private String medicineName;
     private Long quote;
+    private Long agentContractId;
     private ContractMedicineAmount contractMedicineAmount;
-
+    private Medicine medicine;
 }

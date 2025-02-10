@@ -25,7 +25,8 @@ public class RecipeService {
 
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
-    private final ContractService contractService;;
+    private final ContractService contractService;
+    ;
     private final UserRepository userRepository;
 
 
@@ -86,7 +87,6 @@ public class RecipeService {
     }
 
 
-
     private LastRecipeDTO mapToLastRecipeDTO(Recipe recipe) {
 
         return new LastRecipeDTO(
@@ -94,9 +94,12 @@ public class RecipeService {
                 convertToUserFullNameDTO(recipe.getDoctorId()),
                 convertToDTO(recipe.getDoctorId().getWorkplace()),
                 recipe.getDateCreation(),
-                recipe.getPreparations().stream().map(Preparation::getName).toList()
+                recipe.getPreparations().stream().map((preparation -> (
+                        preparation.getMedicine()
+                ))).toList()
         );
     }
+
     public WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
         return new WorkPlaceDTO(
                 workPlace.getId(),
@@ -111,7 +114,8 @@ public class RecipeService {
         );
 
     }
-    private UserFullNameDTO convertToUserFullNameDTO(User user){
+
+    private UserFullNameDTO convertToUserFullNameDTO(User user) {
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());
     }
 }

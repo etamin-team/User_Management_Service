@@ -22,8 +22,18 @@ public class Medicine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
+
+    @Column(name = "name_uz_c")
+    private String nameUzCyrillic;
+
+    @Column(name = "name_uz_l")
+    private String nameUzLatin;
+
+    @Column(name = "name_ru")
+    private String nameRussian;
+
 
     @Column(name = "image_url")
     private String imageUrl;

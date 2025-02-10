@@ -235,10 +235,11 @@ public class ContractService {
                         .filter(Objects::nonNull) // Avoid NullPointerException inside stream
                         .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
                                 medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
-                                medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getName() : null,
                                 medicineWithQuantity.getQuote(),
-                                medicineWithQuantity.getContractMedicineAmount()
-                        ))
+                                medicineWithQuantity.getAgentContract().getId(),
+                                medicineWithQuantity.getContractMedicineAmount(),
+                                medicineWithQuantity.getMedicine()
+                                ))
                         .collect(Collectors.toList())
                         : Collections.emptyList(),
                 districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
@@ -344,7 +345,7 @@ public class ContractService {
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(),med.getMedicine().getName(), med.getContractMedicineAmount().getAmount(), med.getContractMedicineAmount())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(), med.getQuote(),med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(),med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
@@ -368,8 +369,8 @@ public class ContractService {
         contractDTO.setAgentId(contract.getAgentContract() != null ? contract.getAgentContract().getId() : null);
 
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getId(), med.getMedicine().getName(),
-                        med.getContractMedicineAmount().getAmount(), med.getContractMedicineAmount())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDTO( med.getMedicine().getId(),
+                        med.getQuote(),med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(),med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
