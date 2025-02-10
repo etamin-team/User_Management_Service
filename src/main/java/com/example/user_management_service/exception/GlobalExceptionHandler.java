@@ -51,6 +51,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DoctorContractExistsException.class)
     public ResponseEntity<Map<String, String>> handleDoctorContractExistsException(DoctorContractExistsException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+    @ExceptionHandler(DoctorContractException.class)
+    public ResponseEntity<Map<String, String>> handleDoctorContractException(DoctorContractException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
 

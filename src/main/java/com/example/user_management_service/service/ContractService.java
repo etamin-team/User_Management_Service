@@ -1,7 +1,6 @@
 package com.example.user_management_service.service;
 
-import com.example.user_management_service.exception.ContractNotFoundException;
-import com.example.user_management_service.exception.DoctorContractExistsException;
+import com.example.user_management_service.exception.*;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
@@ -48,16 +47,16 @@ public class ContractService {
         }
         // Fetch the agent contract based on the agentId
         AgentContract agentContract = agentContractRepository.findById(contractDTO.getAgentContractId())
-                .orElseThrow(() -> new RuntimeException("AgentContract not found"));
+                .orElseThrow(() -> new AgentContractExistsException("AgentContract not found"));
         ManagerGoal managerGoal = agentContract.getManagerGoal();
         if (managerGoal == null) {
-            throw new IllegalStateException("AgentContract does not have an associated ManagerGoal.");
+            throw new DoctorContractException("AgentContract does not have an associated ManagerGoal.");
         }
 
         // Fetch fields from ManagerGoal
         List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
-            throw new IllegalStateException("No fields found in ManagerGoal.");
+            throw new DoctorContractException("No fields found in ManagerGoal.");
         }
 
         List<FieldWithQuantity> fieldWithQuantities = agentContract.getFieldWithQuantities();
@@ -106,7 +105,7 @@ public class ContractService {
         agentContractRepository.save(agentContract);
         // Fetch the doctor based on doctorId
         User doctor = userRepository.findById(contractDTO.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+                .orElseThrow(() -> new DoctorContractException("Doctor not found"));
 
         // Create a new Contract instance
 
@@ -121,7 +120,7 @@ public class ContractService {
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
-                            .orElseThrow(() -> new RuntimeException("Medicine not found"));
+                            .orElseThrow(() -> new DoctorContractException("Medicine not found"));
 
                     MedicineWithQuantityDoctor medicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                     medicineWithQuantityDoctor.setMedicine(medicine);
@@ -134,13 +133,13 @@ public class ContractService {
                     medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineAmount);
 
                     ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), agentContract.getManagerGoal().getGoalId())
-                            .orElseThrow(() -> new RuntimeException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
+                            .orElseThrow(() -> new DoctorContractException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
                     medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
                     contractMedicineAmountRepository.save(medicineGoalQuantity);
 
 
                     ContractMedicineAmount contractMedicineMedAgentAmount = medicineWithQuantityRepository
-                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentContract.getId()).orElseThrow(() -> new RuntimeException("No ContractMedicineAmount found for the given Medicine and AgentContract"));
+                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentContract.getId()).orElseThrow(() -> new DoctorContractException("No ContractMedicineAmount found for the given Medicine and AgentContract"));
                     medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(contractMedicineMedAgentAmount);
                     contractMedicineAmountRepository.save(contractMedicineMedAgentAmount);
 
@@ -160,21 +159,21 @@ public class ContractService {
     public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
         // Fetch the existing Contract entity
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+                .orElseThrow(() -> new DoctorContractException("Contract not found"));
 
         // Update contract details
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
         contract.setAgentContract(agentContractRepository.findById(contractDTO.getAgentContractId())
-                .orElseThrow(() -> new RuntimeException("AgentContract not found")));
+                .orElseThrow(() -> new DoctorContractException("AgentContract not found")));
         contract.setDoctor(userRepository.findById(contractDTO.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Doctor not found")));
+                .orElseThrow(() -> new DoctorContractException("Doctor not found")));
 
         // Update or add medicines with quantities
         contract.setMedicineWithQuantityDoctors(contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
-                            .orElseThrow(() -> new RuntimeException("Medicine not found"));
+                            .orElseThrow(() -> new DoctorContractException("Medicine not found"));
 
                     MedicineWithQuantityDoctor existingMedicineWithQuantityDoctor = contract.getMedicineWithQuantityDoctors().stream()
                             .filter(m -> m.getMedicine().getId().equals(dto.getMedicineId()))
@@ -206,14 +205,14 @@ public class ContractService {
     // Delete a Contract
     public void deleteContract(Long contractId) {
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+                .orElseThrow(() -> new DoctorContractException("Contract not found"));
 
         contractRepository.delete(contract);
     }
 
     private ContractDTO convertToDTO(Contract contract) {
         if (contract == null) {
-            throw new IllegalArgumentException("Contract cannot be null");
+            throw new DoctorContractException("Contract cannot be null");
         }
 
         return new ContractDTO(
