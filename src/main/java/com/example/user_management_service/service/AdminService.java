@@ -93,9 +93,9 @@ public class AdminService {
         }
         ManagerGoal managerGoal = new ManagerGoal();
         managerGoal.setManagerId(userRepository.findById(managerGoalDTO.getManagerId())
-                .orElseThrow(() -> new RuntimeException("Manager not found")));
+                .orElseThrow(() -> new ManagerGoalException("Manager not found")));
         managerGoal.setAdmin(userRepository.findById(managerGoalDTO.getAdminId())
-                .orElseThrow(() -> new RuntimeException("Admin  not found")));
+                .orElseThrow(() -> new ManagerGoalException("Admin  not found")));
         managerGoal.setCreatedAt(LocalDate.now());
         managerGoal.setStartDate(managerGoalDTO.getStartDate());
         managerGoal.setEndDate(managerGoalDTO.getEndDate());
