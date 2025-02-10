@@ -105,7 +105,7 @@ public class AdminService {
         managerGoal.setFieldGoalQuantities(managerGoalDTO.getFieldGoalQuantities().stream()
                 .map(dto -> {
                     ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
-                    contractFieldAmount.setAmount(0L); // Or set it based on your logic
+                    contractFieldAmount.setAmount(0L);
                     contractFieldAmountRepository.save(contractFieldAmount);
                     FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
                     fieldGoalQuantity.setField(dto.getFieldName());
@@ -125,7 +125,7 @@ public class AdminService {
                     MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
                     medicineGoalQuantity.setQuote(dto.getQuote());
                     medicineGoalQuantity.setManagerGoal(managerGoal);
-                    Medicine medicine = medicineRepository.getOne(dto.getMedicine().getId());
+                    Medicine medicine = medicineRepository.findById(dto.getMedicine().getId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
                     medicineGoalQuantity.setMedicine(medicine);
                     medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
                     medicineGoalQuantityRepository.save(medicineGoalQuantity);
@@ -136,8 +136,8 @@ public class AdminService {
         managerGoal.setDistrictGoalQuantities(managerGoalDTO.getDistrictGoalQuantities().stream()
                 .map(dto -> {
                     ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
-                    contractDistrictAmount.setAmount(0L); // Or set it based on your logic
-                    contractDistrictAmountRepository.save(contractDistrictAmount); // Save it to generate ID
+                    contractDistrictAmount.setAmount(0L);
+                    contractDistrictAmountRepository.save(contractDistrictAmount);
                     DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
                     districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
                     districtGoalQuantity.setQuote(dto.getQuote());
@@ -154,78 +154,88 @@ public class AdminService {
 
 
     public Optional<ManagerGoalDTO> updateManagerGoal(Long id, ManagerGoalDTO updateGoalDTO) {
-        return managerGoalRepository.findById(id)
-                .map(existingGoal -> {
-                    existingGoal.setStartDate(updateGoalDTO.getStartDate());
-                    existingGoal.setEndDate(updateGoalDTO.getEndDate());
+        return managerGoalRepository.findById(id).map(existingGoal -> {
+            existingGoal.setStartDate(updateGoalDTO.getStartDate());
+            existingGoal.setEndDate(updateGoalDTO.getEndDate());
 
-                    existingGoal.setFieldGoalQuantities(updateGoalDTO.getFieldGoalQuantities().stream()
-                            .map(dto -> {
-                                FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
-                                fieldGoalQuantity.setField(dto.getFieldName());
-                                fieldGoalQuantity.setQuote(dto.getQuote());
-                                fieldGoalQuantity.setManagerGoal(existingGoal);
+            // Update or create FieldGoalQuantities
+            List<FieldGoalQuantity> updatedFieldGoals = updateGoalDTO.getFieldGoalQuantities().stream()
+                    .map(dto -> {
+                        FieldGoalQuantity fieldGoalQuantity = existingGoal.getFieldGoalQuantities().stream()
+                                .filter(fgq -> fgq.getField().equals(dto.getFieldName()))
+                                .findFirst()
+                                .orElseGet(() -> new FieldGoalQuantity());
 
-                                ContractFieldAmount contractFieldAmount = dto.getId() != null
-                                        ? contractFieldAmountRepository.findById(dto.getId()).orElse(null)
-                                        : null;
-                                if (contractFieldAmount == null) {
-                                    contractFieldAmount = new ContractFieldAmount();
-                                    contractFieldAmount.setAmount(0L);
-                                    contractFieldAmountRepository.save(contractFieldAmount);
-                                }
-                                fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
-                                return fieldGoalQuantity;
-                            })
-                            .collect(Collectors.toList()));
+                        fieldGoalQuantity.setField(dto.getFieldName());
+                        fieldGoalQuantity.setQuote(dto.getQuote());
+                        fieldGoalQuantity.setManagerGoal(existingGoal);
 
-                    existingGoal.setMedicineGoalQuantities(updateGoalDTO.getMedicineGoalQuantities().stream()
-                            .map(dto -> {
-                                MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
-                                medicineGoalQuantity.setId(dto.getMedicine().getId());
-                                medicineGoalQuantity.setQuote(dto.getQuote());
-                                medicineGoalQuantity.setManagerGoal(existingGoal);
-                                Medicine medicine = medicineRepository.findById(dto.getMedicine().getId()).orElseThrow(()->new ManagerGoalException("Medicine name not found with ID: "+dto.getMedicine().getId()));
-                                medicineGoalQuantity.setMedicine(medicine);
+                        if (fieldGoalQuantity.getContractFieldAmount() == null) {
+                            ContractFieldAmount contractFieldAmount = dto.getId() != null
+                                    ? contractFieldAmountRepository.findById(dto.getId()).orElse(new ContractFieldAmount())
+                                    : new ContractFieldAmount();
+                            contractFieldAmount.setAmount(contractFieldAmount.getAmount() == null ? 0L : contractFieldAmount.getAmount());
+                            contractFieldAmountRepository.save(contractFieldAmount);
+                            fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
+                        }
+                        return fieldGoalQuantity;
+                    }).collect(Collectors.toList());
+            existingGoal.setFieldGoalQuantities(updatedFieldGoals);
 
-                                ContractMedicineAmount contractMedicineAmount = dto.getMedicine().getId() != null
-                                        ? contractMedicineAmountRepository.findById(dto.getMedicine().getId()).orElse(null)
-                                        : null;
-                                if (contractMedicineAmount == null) {
-                                    contractMedicineAmount = new ContractMedicineAmount();
-                                    contractMedicineAmount.setAmount(0L);
-                                    contractMedicineAmountRepository.save(contractMedicineAmount);
-                                }
-                                medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
-                                return medicineGoalQuantity;
-                            })
-                            .collect(Collectors.toList()));
+            // Update or create MedicineGoalQuantities
+            List<MedicineGoalQuantity> updatedMedicineGoals = updateGoalDTO.getMedicineGoalQuantities().stream()
+                    .map(dto -> {
+                        MedicineGoalQuantity medicineGoalQuantity = existingGoal.getMedicineGoalQuantities().stream()
+                                .filter(mgq -> mgq.getMedicine().getId().equals(dto.getMedicine().getId()))
+                                .findFirst()
+                                .orElseGet(() -> new MedicineGoalQuantity());
 
-                    existingGoal.setDistrictGoalQuantities(updateGoalDTO.getDistrictGoalQuantities().stream()
-                            .map(dto -> {
-                                DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
-                                districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
-                                districtGoalQuantity.setQuote(dto.getQuote());
-                                districtGoalQuantity.setManagerGoal(existingGoal);
+                        medicineGoalQuantity.setQuote(dto.getQuote());
+                        medicineGoalQuantity.setManagerGoal(existingGoal);
+                        Medicine medicine = medicineRepository.findById(dto.getMedicine().getId())
+                                .orElseThrow(() -> new ManagerGoalException("Medicine name not found with ID: " + dto.getMedicine().getId()));
+                        medicineGoalQuantity.setMedicine(medicine);
 
-                                ContractDistrictAmount contractDistrictAmount = dto.getId() != null
-                                        ? contractDistrictAmountRepository.findById(dto.getId()).orElse(null)
-                                        : null;
-                                if (contractDistrictAmount == null) {
-                                    contractDistrictAmount = new ContractDistrictAmount();
-                                    contractDistrictAmount.setAmount(0L);
-                                    contractDistrictAmountRepository.save(contractDistrictAmount);
-                                }
-                                districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
-                                return districtGoalQuantity;
-                            })
-                            .collect(Collectors.toList()));
+                        if (medicineGoalQuantity.getContractMedicineAmount() == null) {
+                            ContractMedicineAmount contractMedicineAmount = dto.getMedicine().getId() != null
+                                    ? contractMedicineAmountRepository.findById(dto.getMedicine().getId()).orElse(new ContractMedicineAmount())
+                                    : new ContractMedicineAmount();
+                            contractMedicineAmount.setAmount(contractMedicineAmount.getAmount() == null ? 0L : contractMedicineAmount.getAmount());
+                            contractMedicineAmountRepository.save(contractMedicineAmount);
+                            medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
+                        }
+                        return medicineGoalQuantity;
+                    }).collect(Collectors.toList());
+            existingGoal.setMedicineGoalQuantities(updatedMedicineGoals);
 
-                    ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
-                    return convertToDTO(updatedGoal);
-                });
+            // Update or create DistrictGoalQuantities
+            List<DistrictGoalQuantity> updatedDistrictGoals = updateGoalDTO.getDistrictGoalQuantities().stream()
+                    .map(dto -> {
+                        DistrictGoalQuantity districtGoalQuantity = existingGoal.getDistrictGoalQuantities().stream()
+                                .filter(dgq -> dgq.getDistrict().getId().equals(dto.getDistrictId()))
+                                .findFirst()
+                                .orElseGet(() -> new DistrictGoalQuantity());
+
+                        districtGoalQuantity.setQuote(dto.getQuote());
+                        districtGoalQuantity.setManagerGoal(existingGoal);
+                        districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
+
+                        if (districtGoalQuantity.getContractDistrictAmount() == null) {
+                            ContractDistrictAmount contractDistrictAmount = dto.getId() != null
+                                    ? contractDistrictAmountRepository.findById(dto.getId()).orElse(new ContractDistrictAmount())
+                                    : new ContractDistrictAmount();
+                            contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() == null ? 0L : contractDistrictAmount.getAmount());
+                            contractDistrictAmountRepository.save(contractDistrictAmount);
+                            districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
+                        }
+                        return districtGoalQuantity;
+                    }).collect(Collectors.toList());
+            existingGoal.setDistrictGoalQuantities(updatedDistrictGoals);
+
+            ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
+            return convertToDTO(updatedGoal);
+        });
     }
-
 
     public boolean deleteManagerGoal(Long id) {
         if (managerGoalRepository.existsById(id)) {
