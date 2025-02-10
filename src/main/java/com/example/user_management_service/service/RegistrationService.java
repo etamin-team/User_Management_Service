@@ -7,10 +7,7 @@ import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.exception.InvalidTokenException;
 import com.example.user_management_service.message.sms.SmsService;
 import com.example.user_management_service.model.*;
-import com.example.user_management_service.model.dto.AuthRequest;
-import com.example.user_management_service.model.dto.DoctorSignUpRequest;
-import com.example.user_management_service.model.dto.RegisterRequest;
-import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.AuthRandomNumberResponse;
 import com.example.user_management_service.role.Role;
@@ -53,6 +50,7 @@ public class RegistrationService {
     private final SmsService smsService;
 
     private final VerificationNumberRepository verificationNumberRepository;
+    private final UserService userService;
 
     public List<WorkPlaceDTO> getAllWorkPlaces() {
         return convertToDTOs(workPlaceRepository.findAll());
@@ -100,21 +98,21 @@ public class RegistrationService {
         registerRequest.setPosition(request.getPosition());
         registerRequest.setGender(request.getGender());
 
-        boolean registered =  register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null);
+        boolean registered =  register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null)!=null;
 
         return registered ? AuthRandomNumberResponse.SUCCESS : AuthRandomNumberResponse.FAILED;
 
     }
 
 
-    public boolean register(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
+    public UserDTO register(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
         User user = createUserRequest(request, role);
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
         user.setCreatorId(String.valueOf(creatorId));
-        userRepository.save(user);
-        return true;
+        User save = userRepository.save(user);
+        return userService.convertToDTO(save) ;
     }
 
     private User createUserRequest(RegisterRequest request, Role role) {

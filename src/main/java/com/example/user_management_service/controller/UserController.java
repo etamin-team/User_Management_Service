@@ -48,9 +48,9 @@ public class UserController {
     }
 
     @PostMapping("/register-doctor")
-    public ResponseEntity<Void> registerDoctor(@RequestBody RegisterRequest request) {
-        boolean isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED,roleService.getCurrentUserId());
-        return ResponseEntity.status(isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<UserDTO> registerDoctor(@RequestBody RegisterRequest request) {
+        UserDTO isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED,roleService.getCurrentUserId());
+        return ResponseEntity.ok(isRegistered);
     }
 
     @PostMapping("/register-admin")
@@ -78,7 +78,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") String userId) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") UUID userId) {
         UserDTO user = userService.getUserById(userId);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
@@ -199,7 +199,7 @@ public class UserController {
 
 
     private ResponseEntity<String> registerUser(RegisterRequest request, String roleName, Role role) {
-        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED,roleService.getCurrentUserId());
+        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED,roleService.getCurrentUserId())!=null;
         HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }
