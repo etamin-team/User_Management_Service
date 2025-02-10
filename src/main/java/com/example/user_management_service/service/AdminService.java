@@ -125,7 +125,7 @@ public class AdminService {
                     MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
                     medicineGoalQuantity.setQuote(dto.getQuote());
                     medicineGoalQuantity.setManagerGoal(managerGoal);
-                    Medicine medicine = medicineRepository.findById(dto.getMedicine().getId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
+                    Medicine medicine = medicineRepository.findById(dto.getId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
                     medicineGoalQuantity.setMedicine(medicine);
                     medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
                     medicineGoalQuantityRepository.save(medicineGoalQuantity);
@@ -186,7 +186,7 @@ public class AdminService {
             List<MedicineGoalQuantity> updatedMedicineGoals = updateGoalDTO.getMedicineGoalQuantities().stream()
                     .map(dto -> {
                         MedicineGoalQuantity medicineGoalQuantity = existingGoal.getMedicineGoalQuantities().stream()
-                                .filter(mgq -> mgq.getMedicine().getId().equals(dto.getMedicine().getId()))
+                                .filter(mgq -> mgq.getMedicine().getId().equals(dto.getId()))
                                 .findFirst()
                                 .orElseGet(() -> new MedicineGoalQuantity());
 
@@ -364,7 +364,7 @@ public class AdminService {
 
         Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
                 .stream()
-                .map(mq -> mq.getMedicine().getId())
+                .map(mq -> mq.getId())
                 .collect(Collectors.toSet());
 
         agentContract.setMedicinesWithQuantities(agentContractDTO.getMedicineWithQuantityDTOS().stream()
@@ -457,7 +457,7 @@ public class AdminService {
         // Get existing medicine IDs from ManagerGoal for comparison
         Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
                 .stream()
-                .map(mq -> mq.getMedicine().getId())
+                .map(mq -> mq.getId())
                 .collect(Collectors.toSet());
 
         // Update the medicines with quantities, comparing with the existing manager goal medicines
