@@ -30,6 +30,7 @@ public class ContractService {
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private final RecipeRepository recipeRepository;
     private final DistrictRegionService districtRegionService;
+    private final ContractDistrictAmountRepository contractDistrictAmountRepository;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
@@ -42,8 +43,8 @@ public class ContractService {
     // Doctor Contract
 
     public ContractDTO createContract(ContractDTO contractDTO) {
-        if (contractRepository.findActiveContractByDoctorId(contractDTO.getDoctorId()).isPresent()){
-            throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:"+contractDTO.getDoctorId());
+        if (contractRepository.findActiveContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
+            throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:" + contractDTO.getDoctorId());
         }
         // Fetch the agent contract based on the agentId
         AgentContract agentContract = agentContractRepository.findById(contractDTO.getAgentContractId())
@@ -52,6 +53,15 @@ public class ContractService {
         if (managerGoal == null) {
             throw new DoctorContractException("AgentContract does not have an associated ManagerGoal.");
         }
+        // Fetch the doctor based on doctorId
+        User doctor = userRepository.findById(contractDTO.getDoctorId())
+                .orElseThrow(() -> new DoctorContractException("Doctor not found"));
+        if (doctor.getDistrict().getId()!=agentContract.getDistrictGoalQuantity().getDistrict().getId()){
+            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
+        }
+        ContractDistrictAmount contractDistrictAmount = agentContract.getDistrictGoalQuantity().getContractDistrictAmount();
+        contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
+        contractDistrictAmountRepository.save(contractDistrictAmount);
 
         // Fetch fields from ManagerGoal
         List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
@@ -103,12 +113,9 @@ public class ContractService {
 
         agentContract.setFieldWithQuantities(fieldWithQuantities);
         agentContractRepository.save(agentContract);
-        // Fetch the doctor based on doctorId
-        User doctor = userRepository.findById(contractDTO.getDoctorId())
-                .orElseThrow(() -> new DoctorContractException("Doctor not found"));
+
 
         // Create a new Contract instance
-
         Contract contract = new Contract();
         contract.setDoctor(doctor);
         contract.setAgentContract(agentContract);
@@ -238,7 +245,7 @@ public class ContractService {
                                 medicineWithQuantity.getAgentContract().getId(),
                                 medicineWithQuantity.getContractMedicineAmount(),
                                 medicineWithQuantity.getMedicine()
-                                ))
+                        ))
                         .collect(Collectors.toList())
                         : Collections.emptyList(),
                 districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
@@ -251,11 +258,13 @@ public class ContractService {
         Page<Contract> contracts = contractRepository.findByStatus(GoalStatus.PENDING_REVIEW, pageable);
         return contracts.map(this::convertToDTO);
     }
+
     public Page<ContractDTO> getAllContractsByAgent(UUID agentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return contractRepository.findAllContractsByAgent(agentId, pageable)
                 .map(this::convertToDTO);
     }
+
     public void saveContractMedicineAmount(UUID doctorId, List<Long> medicineIds) {
         // Fetch active contract for the doctor
         Contract contract = contractRepository.findActiveContractByDoctorId(doctorId)
@@ -277,7 +286,7 @@ public class ContractService {
         for (Long medicineId : medicineIds) {
             MedicineWithQuantityDoctor medicineEntry = medicineMap.get(medicineId);
 
-            if (medicineEntry != null&&medicineEntry.getQuote()>medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
+            if (medicineEntry != null && medicineEntry.getQuote() > medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                 // Medicine exists in contract, update amounts
                 ContractMedicineAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
                 ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
@@ -315,7 +324,7 @@ public class ContractService {
     }
 
 
-    public OutOfContractAmountDTO getOutOfContractsByDoctorId(UUID doctorId){
+    public OutOfContractAmountDTO getOutOfContractsByDoctorId(UUID doctorId) {
         List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).stream()
                 .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
                 .collect(Collectors.toList());
@@ -325,6 +334,7 @@ public class ContractService {
                 outOfContractMedicineAmountDTOs
         );
     }
+
     public ContractAmountDTO getContractById(Long contractId) {
         Optional<Contract> contractOptional = contractRepository.findById(contractId);
         if (contractOptional.isEmpty()) {
@@ -344,7 +354,7 @@ public class ContractService {
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(), med.getQuote(),med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(),med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(), med.getQuote(), med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
@@ -368,8 +378,8 @@ public class ContractService {
         contractDTO.setAgentId(contract.getAgentContract() != null ? contract.getAgentContract().getId() : null);
 
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO( med.getMedicine().getId(),
-                        med.getQuote(),med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(),med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(),
+                        med.getQuote(), med.getDoctorContract().getAgentContract().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
@@ -403,7 +413,7 @@ public class ContractService {
     }
 
     public DoctorRecipeStatsDTO getDoctorRecipeStatsDTOByDoctorId(UUID doctorId) {
-        DoctorRecipeStatsDTO doctorRecipeStatsDTO=new DoctorRecipeStatsDTO();
+        DoctorRecipeStatsDTO doctorRecipeStatsDTO = new DoctorRecipeStatsDTO();
         doctorRecipeStatsDTO.setDoctorId(doctorId);
         doctorRecipeStatsDTO.setRecipesCreatedThisMonth(recipeRepository.countRecipesCreatedThisMonthByDoctor(doctorId));
         doctorRecipeStatsDTO.setAverageRecipesPerMonth(recipeRepository.averageRecipesLast12MonthsByDoctor(doctorId));

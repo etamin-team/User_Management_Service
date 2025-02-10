@@ -140,7 +140,9 @@ public class RegistrationService {
         newUser.setLastUpdateDate(LocalDateTime.now());
         newUser.setDateOfBirth(request.getBirthDate());
         if (role.equals(Role.DOCTOR)||role.equals(Role.MEDAGENT)) {
-            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).get();
+            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).orElseThrow(
+                    () -> new DataNotFoundException("Work Place Not Found")
+            );
             newUser.setWorkplace(workPlace);
         }
 
