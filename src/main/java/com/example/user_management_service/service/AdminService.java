@@ -125,7 +125,7 @@ public class AdminService {
                     MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
                     medicineGoalQuantity.setQuote(dto.getQuote());
                     medicineGoalQuantity.setManagerGoal(managerGoal);
-                    Medicine medicine = medicineRepository.findById(dto.getId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
+                    Medicine medicine = medicineRepository.findById(dto.getMedicineId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
                     medicineGoalQuantity.setMedicine(medicine);
                     medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
                     medicineGoalQuantityRepository.save(medicineGoalQuantity);
@@ -186,13 +186,13 @@ public class AdminService {
             List<MedicineGoalQuantity> updatedMedicineGoals = updateGoalDTO.getMedicineGoalQuantities().stream()
                     .map(dto -> {
                         MedicineGoalQuantity medicineGoalQuantity = existingGoal.getMedicineGoalQuantities().stream()
-                                .filter(mgq -> mgq.getMedicine().getId().equals(dto.getId()))
+                                .filter(mgq -> mgq.getMedicine().getId().equals(dto.getMedicineId()))
                                 .findFirst()
                                 .orElseGet(() -> new MedicineGoalQuantity());
 
                         medicineGoalQuantity.setQuote(dto.getQuote());
                         medicineGoalQuantity.setManagerGoal(existingGoal);
-                        Medicine medicine = medicineRepository.findById(dto.getMedicine().getId())
+                        Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                                 .orElseThrow(() -> new ManagerGoalException("Medicine name not found with ID: " + dto.getMedicine().getId()));
                         medicineGoalQuantity.setMedicine(medicine);
 
