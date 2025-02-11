@@ -32,7 +32,7 @@ public class UserDTO {
     private Field fieldName;
     private Gender gender;
     private UserStatus status;
-    private UUID creatorId;
+    private String creatorId;
     private Long workplaceId;
     private Long districtId;
     private Role role;

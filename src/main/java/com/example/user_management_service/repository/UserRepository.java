@@ -62,12 +62,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
            AND (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
            AND (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
-       
+
     )
 """)
     List<User> findUsersByFilters(
             @Param("role") Role role,
-            @Param("creatorId") UUID creatorId,
+            @Param("creatorId") String creatorId,
             @Param("regionId") Long regionId,
             @Param("districtId") Long districtId,
             @Param("workplaceId") Long workplaceId,

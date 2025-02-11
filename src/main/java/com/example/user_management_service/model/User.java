@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NaturalId;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -69,7 +68,7 @@ public class User implements UserDetails {
     private String profilePictureUrl;
 
     @Column(name = "creator_id")
-    private UUID creatorId;
+    private String creatorId;
 
     @Column(name = "reset_token")
     private Integer resetToken;
@@ -85,7 +84,7 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "field_name")
-    private Field fieldName;
+    private Field fieldName = Field.NONE;
 
 
     @Enumerated(EnumType.STRING)

@@ -33,7 +33,7 @@ public class UserService {
 
 
     public boolean changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findById(UUID.fromString(changePasswordRequest.getUserId())).orElse(null);
+        User user = userRepository.findById(UUID.fromString(changePasswordRequest.getUserId())).orElseThrow(()-> new DataNotFoundException("User not found by ID " + changePasswordRequest.getUserId()));
 
         if (user != null) {
 
@@ -78,7 +78,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -92,7 +92,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MANAGER, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -106,7 +106,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -121,7 +121,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.ADMIN, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -135,7 +135,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MEDAGENT, String.valueOf(creatorId), regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();

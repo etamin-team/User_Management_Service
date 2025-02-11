@@ -110,7 +110,7 @@ public class RegistrationService {
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
-        user.setCreatorId(creatorId);
+        user.setCreatorId(String.valueOf(creatorId));
         User save = userRepository.save(user);
         return userService.convertToDTO(save) ;
     }
@@ -132,7 +132,6 @@ public class RegistrationService {
         newUser.setCreatedDate(LocalDateTime.now());
         newUser.setRole(role);
         newUser.setEmail(request.getEmail());
-        newUser.setFieldName(request.getFieldName());
         newUser.setPosition(request.getPosition());
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
@@ -142,6 +141,9 @@ public class RegistrationService {
                     () -> new DataNotFoundException("Work Place Not Found")
             );
             newUser.setWorkplace(workPlace);
+        }
+        if (role.equals(Role.DOCTOR)){
+            newUser.setFieldName(request.getFieldName());
         }
 
         return newUser;
@@ -165,7 +167,7 @@ public class RegistrationService {
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
-        user.setCreatorId(creatorId);
+        user.setCreatorId(String.valueOf(creatorId));
         return user;
     }
 
