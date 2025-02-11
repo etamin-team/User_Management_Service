@@ -56,7 +56,7 @@ public class ContractService {
         // Fetch the doctor based on doctorId
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
-        if (doctor.getDistrict().getId()!=agentContract.getDistrictGoalQuantity().getDistrict().getId()){
+        if (doctor.getDistrict().getId() != agentContract.getDistrictGoalQuantity().getDistrict().getId()) {
             throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
         }
         ContractDistrictAmount contractDistrictAmount = agentContract.getDistrictGoalQuantity().getContractDistrictAmount();
@@ -189,10 +189,10 @@ public class ContractService {
 
                     if (existingMedicineWithQuantityDoctor != null) {
                         // Update existing medicine quantity
-                        if (dto.getQuote()>=existingMedicineWithQuantityDoctor.getQuote()||dto.getQuote()>=dto.getContractMedicineAmount().getAmount()){
+                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= dto.getContractMedicineAmount().getAmount()) {
                             existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
                             return existingMedicineWithQuantityDoctor;
-                        }else {
+                        } else {
                             throw new DoctorContractException("Contract Medicine Quote does not match Contract Medicine Quote");
                         }
 
@@ -278,7 +278,7 @@ public class ContractService {
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contract.getMedicineWithQuantityDoctors();
 
         if (medicineWithQuantityDoctors == null || medicineWithQuantityDoctors.isEmpty()) {
-            throw new IllegalStateException("No medicines found for the contract of doctor ID: " + doctorId);
+            throw new DoctorContractException("No medicines found for the contract of doctor ID: " + doctorId);
         }
 
         // Convert existing medicines to a map for quick lookup
@@ -286,7 +286,7 @@ public class ContractService {
                 .collect(Collectors.toMap(m -> m.getMedicine().getId(), m -> m));
 
         // Fetch existing out-of-contract medicines
-        List<OutOfContractMedicineAmount> outOfContractMedicines = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId);
+        List<OutOfContractMedicineAmount> outOfContractMedicines = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).orElse(null);
 
         for (Long medicineId : medicineIds) {
             MedicineWithQuantityDoctor medicineEntry = medicineMap.get(medicineId);
@@ -294,7 +294,17 @@ public class ContractService {
             if (medicineEntry != null && medicineEntry.getQuote() > medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                 // Medicine exists in contract, update amounts
                 ContractMedicineAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
+                ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
+                ContractMedicineAmount managerAmount = medicineEntry.getContractMedicineAmount();
+
+                medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
+                managerAmount.setAmount(managerAmount.getAmount() + 1);
                 doctorAmount.setAmount(doctorAmount.getAmount() + 1);
+
+                contractMedicineAmountRepository.save(medAgentAmount);
+                contractMedicineAmountRepository.save(managerAmount);
+
+
                 contractMedicineAmountRepository.save(doctorAmount);
             } else {
                 // Check if the medicine is already in out-of-contract list
@@ -315,24 +325,18 @@ public class ContractService {
                     OutOfContractMedicineAmount newOutOfContractMedicine = new OutOfContractMedicineAmount();
                     newOutOfContractMedicine.setAmount(1L);
                     newOutOfContractMedicine.setDoctor(contract.getDoctor());
+                    newOutOfContractMedicine.setCreatedAt(LocalDate.now());
                     newOutOfContractMedicine.setMedicine(medicine);
 
                     outOfContractMedicineAmountRepository.save(newOutOfContractMedicine);
                 }
             }
-            ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
-            ContractMedicineAmount managerAmount = medicineEntry.getContractMedicineAmount();
-
-            medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
-            managerAmount.setAmount(managerAmount.getAmount() + 1);
-            contractMedicineAmountRepository.save(medAgentAmount);
-            contractMedicineAmountRepository.save(managerAmount);
         }
     }
 
 
     public OutOfContractAmountDTO getOutOfContractsByDoctorId(UUID doctorId) {
-        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).stream()
+        List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).orElse(null).stream()
                 .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
                 .collect(Collectors.toList());
 
@@ -345,7 +349,7 @@ public class ContractService {
     public ContractAmountDTO getContractById(Long contractId) {
         Optional<Contract> contractOptional = contractRepository.findById(contractId);
         if (contractOptional.isEmpty()) {
-            throw new IllegalStateException("Contract not found");
+            throw new ContractNotFoundException("Contract not found");
         }
 
         Contract contract = contractOptional.get();
@@ -371,7 +375,7 @@ public class ContractService {
     public ContractAmountDTO getContractByDoctorId(UUID doctorId) {
         Optional<Contract> contractOptional = contractRepository.findActiveContractByDoctorId(doctorId);
         if (contractOptional.isEmpty()) {
-            throw new IllegalStateException("Contract not found for doctorId: " + doctorId);
+            throw new ContractNotFoundException("ENABLED Contract not found for doctorId: " + doctorId);
         }
 
         Contract contract = contractOptional.get();
@@ -412,7 +416,7 @@ public class ContractService {
                 .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));
 
         if (contract.getStatus() == GoalStatus.DECLINED) {
-            throw new IllegalStateException("Contract is already declined.");
+            throw new DoctorContractException("Contract is already declined.");
         }
 
         contract.setStatus(GoalStatus.DECLINED);
