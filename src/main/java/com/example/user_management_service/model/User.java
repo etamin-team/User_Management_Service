@@ -69,7 +69,7 @@ public class User implements UserDetails {
     private String profilePictureUrl;
 
     @Column(name = "creator_id")
-    private String creatorId;
+    private UUID creatorId;
 
     @Column(name = "reset_token")
     private Integer resetToken;

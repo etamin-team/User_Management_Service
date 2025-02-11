@@ -110,7 +110,7 @@ public class RegistrationService {
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
-        user.setCreatorId(String.valueOf(creatorId));
+        user.setCreatorId(creatorId);
         User save = userRepository.save(user);
         return userService.convertToDTO(save) ;
     }
@@ -165,7 +165,7 @@ public class RegistrationService {
         user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
-        user.setCreatorId(String.valueOf(creatorId));
+        user.setCreatorId(creatorId);
         return user;
     }
 
