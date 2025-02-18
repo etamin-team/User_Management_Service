@@ -21,4 +21,5 @@ public interface OutOfContractMedicineAmountRepository extends JpaRepository<Out
             AND o.created_at < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
             """, nativeQuery = true)
     Optional<List<OutOfContractMedicineAmount>> findAllForDoctorThisMonth(@Param("doctorId") UUID doctorId);
+
 }

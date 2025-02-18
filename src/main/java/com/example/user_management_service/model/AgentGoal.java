@@ -39,10 +39,6 @@ public class AgentGoal {
     private DistrictGoalQuantity districtGoalQuantity;
 
 
-    @Column(name = "total_amount")
-    private Double totalAmount;
-
-
     @Column(name = "created_at")
     private LocalDate createdAt;
 

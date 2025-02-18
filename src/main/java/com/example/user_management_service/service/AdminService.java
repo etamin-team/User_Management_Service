@@ -720,7 +720,11 @@ public class AdminService {
     // Doctor Contract
 
     public ContractDTO createContract(ContractDTO contractDTO) {
-        return contractService.createContract(contractDTO);
+       if (contractDTO.getManagerId()!=null){
+            return contractService.managerCreateContract(contractDTO);
+        }else {
+            return contractService.medAgentCreateContractIfGoalExists(contractDTO);
+        }
     }
 
     public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {

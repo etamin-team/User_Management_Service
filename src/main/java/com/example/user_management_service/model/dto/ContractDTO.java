@@ -29,9 +29,9 @@ public class ContractDTO {
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private Long fieldId;
     private UUID agentId;
     private Long  agentContractId;
+    private UUID  managerId;
 
     private List<MedicineWithQuantityDTO> medicinesWithQuantities;
 
