@@ -28,10 +28,10 @@ public class AgentGoal {
     @Column(name = "goal_id")
     private Long id;
 
-    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL)
     private List<FieldWithQuantity> fieldWithQuantities;
 
-    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL)
     private List<MedicineWithQuantity> medicinesWithQuantities;
 
     @ManyToOne

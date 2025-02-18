@@ -136,26 +136,25 @@ public class AdminController {
     }
 
 
-    // Med Agent Contract
+    // Med Agent Goal
 
-    @PostMapping("/med-agent/new-contract")
-    public ResponseEntity<AgentContractDTO> createAgentContract(@RequestBody AgentContractDTO agentContractDTO) {
-        AgentContractDTO createdContract = adminService.createAgentContract(agentContractDTO);
+    @PostMapping("/med-agent/new-goal")
+    public ResponseEntity<AgentContractDTO> createAgentGoal(@RequestBody AgentContractDTO agentContractDTO) {
+        AgentContractDTO createdContract = adminService.createAgentGoal(agentContractDTO);
         return ResponseEntity.ok(createdContract);
     }
 
-    // Update an existing Agent Contract
-    @PutMapping("/med-agent/contract/{contractId}")
-    public ResponseEntity<AgentContractDTO> updateAgentContract(@PathVariable Long contractId,
+    @PutMapping("/med-agent/goal/{goalId}")
+    public ResponseEntity<AgentContractDTO> updateAgentGoal(@PathVariable Long goalId,
                                                                 @RequestBody   AgentContractDTO agentContractDTO) {
-        AgentContractDTO updatedContract = adminService.updateAgentContract(contractId, agentContractDTO);
+        AgentContractDTO updatedContract = adminService.updateAgentGoal(goalId, agentContractDTO);
         return ResponseEntity.ok(updatedContract);
     }
 
-    // Delete an Agent Contract
-    @DeleteMapping("/med-agent/contract/{contractId}")
-    public ResponseEntity<Void> deleteAgentContract(@PathVariable Long contractId) {
-        adminService.deleteAgentContract(contractId);
+    // Delete an Agent Goal
+    @DeleteMapping("/med-agent/goal/{goalId}")
+    public ResponseEntity<Void> deleteAgentGoal(@PathVariable Long goalId) {
+        adminService.deleteAgentGoal(goalId);
         return ResponseEntity.noContent().build();
     }
 
