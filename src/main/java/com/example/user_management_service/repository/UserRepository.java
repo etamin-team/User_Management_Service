@@ -60,8 +60,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
     AND (
            (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
-           AND (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
-           AND (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+           OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+           OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
 
     )
 """)

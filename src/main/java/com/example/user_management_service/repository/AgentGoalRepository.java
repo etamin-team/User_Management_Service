@@ -1,6 +1,6 @@
 package com.example.user_management_service.repository;
 
-import com.example.user_management_service.model.AgentContract;
+import com.example.user_management_service.model.AgentGoal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,9 +11,9 @@ import java.util.UUID;
 
 
 @Repository
-public interface AgentContractRepository extends JpaRepository<AgentContract, Long> {
-    @Query("SELECT ac FROM AgentContract ac WHERE ac.medAgent.userId = :medAgentId "+
+public interface AgentGoalRepository extends JpaRepository<AgentGoal, Long> {
+    @Query("SELECT ac FROM AgentGoal ac WHERE ac.medAgent.userId = :medAgentId "+
             "AND ac.startDate <= CURRENT_DATE " +
             "AND ac.endDate >= CURRENT_DATE")
-    Optional<AgentContract> getContractsByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
+    Optional<AgentGoal> getGoalsByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
 }

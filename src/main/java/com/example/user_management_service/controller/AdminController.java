@@ -106,9 +106,10 @@ public class AdminController {
             @PathVariable Long id,
             @RequestBody ManagerGoalDTO updateGoalDTO
     ) {
-        return adminService.updateManagerGoal(id, updateGoalDTO)
+        ResponseEntity<ManagerGoalDTO> managerGoalDTOResponseEntity = adminService.updateManagerGoal(id, updateGoalDTO)
                 .map(updatedGoal -> new ResponseEntity<>(updatedGoal, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return managerGoalDTOResponseEntity;
     }
 
     @DeleteMapping("/manager/goal/{id}")

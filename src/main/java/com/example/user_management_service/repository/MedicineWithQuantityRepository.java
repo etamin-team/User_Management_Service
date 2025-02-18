@@ -12,8 +12,8 @@ import java.util.Optional;
 @Repository
 public interface MedicineWithQuantityRepository extends JpaRepository<MedicineWithQuantity, Long> {
 
-    @Query("SELECT mwq.contractMedicineAmount FROM MedicineWithQuantity mwq WHERE mwq.medicine.id = :medicineId AND mwq.agentContract.id = :contractId")
+    @Query("SELECT mwq.contractMedicineAmount FROM MedicineWithQuantity mwq WHERE mwq.medicine.id = :medicineId AND mwq.agentGoal.id = :goalId")
     Optional<ContractMedicineAmount> findContractMedicineAmountByMedicineIdAndContractId(
             @Param("medicineId") Long medicineId,
-            @Param("contractId") Long contractId);
+            @Param("goalId") Long goalId);
 }

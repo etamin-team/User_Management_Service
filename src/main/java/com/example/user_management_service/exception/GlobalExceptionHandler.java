@@ -35,12 +35,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleManagerGoalExistException(ManagerGoalExistException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
-    @ExceptionHandler(AgentContractExistsException.class)
-    public ResponseEntity<Map<String, String>> handleAgentContractExistsException(AgentContractExistsException ex) {
+    @ExceptionHandler(AgentGoalExistsException.class)
+    public ResponseEntity<Map<String, String>> handleAgentContractExistsException(AgentGoalExistsException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
-    @ExceptionHandler(AgentContractException.class)
-    public ResponseEntity<Map<String, String>> handleAgentContractException(AgentContractException ex) {
+    @ExceptionHandler(AgentGoalException.class)
+    public ResponseEntity<Map<String, String>> handleAgentContractException(AgentGoalException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 

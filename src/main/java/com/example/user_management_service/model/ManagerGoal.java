@@ -26,13 +26,13 @@ public class ManagerGoal {
 
 
 
-    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
     private List<FieldGoalQuantity> fieldGoalQuantities;
 
-    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
     private List<MedicineGoalQuantity> medicineGoalQuantities;
 
-    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
     private List<DistrictGoalQuantity> districtGoalQuantities;
 
 

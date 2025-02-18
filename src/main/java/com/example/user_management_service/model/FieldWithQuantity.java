@@ -27,8 +27,8 @@ public class FieldWithQuantity {
     private Long quote;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private AgentContract agentContract;
+    @JoinColumn(name = "goal_id")
+    private AgentGoal agentGoal;
 
     @ManyToOne
     @JoinColumn(name = "contract_field_amount_id", referencedColumnName = "id")

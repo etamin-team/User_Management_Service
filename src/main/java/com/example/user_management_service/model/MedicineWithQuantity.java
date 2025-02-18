@@ -36,6 +36,6 @@ public class MedicineWithQuantity {
     private ContractMedicineAmount contractMedicineMedAgentAmount;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private AgentContract agentContract;
+    @JoinColumn(name = "goal_id")
+    private AgentGoal agentGoal;
 }

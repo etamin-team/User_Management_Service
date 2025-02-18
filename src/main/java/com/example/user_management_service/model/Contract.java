@@ -57,6 +57,6 @@ public class Contract {
     private User medAgent;
 
     @ManyToOne
-    @JoinColumn(name = "agent_contract_id", referencedColumnName = "contract_id")
-    private AgentContract agentContract;
+    @JoinColumn(name = "agent_goal_id", referencedColumnName = "goal_id")
+    private AgentGoal agentGoal;
 }

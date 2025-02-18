@@ -108,7 +108,7 @@ public class RecipeService {
                 workPlace.getDescription(),
                 workPlace.getPhone(),
                 workPlace.getEmail(),
-                workPlace.getMedicalInstitutionType(), // Include MedicalInstitutionType here
+                workPlace.getMedicalInstitutionType(),
                 workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );

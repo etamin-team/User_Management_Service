@@ -5,8 +5,8 @@ package com.example.user_management_service.exception;
  * By Sardor Tokhirov
  * Time-9:59 PM (GMT+5)
  */
-public class AgentContractException extends RuntimeException{
-    public AgentContractException(String message) {
+public class AgentGoalException extends RuntimeException{
+    public AgentGoalException(String message) {
         super(message);
     }
 }

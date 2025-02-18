@@ -16,24 +16,22 @@ import java.util.List;
  */
 
 @Entity
-@Table(name = "agent_contracts")
+@Table(name = "agent_goals")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class AgentContract {
+public class AgentGoal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "contract_id")
+    @Column(name = "goal_id")
     private Long id;
 
-
-
-    @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FieldWithQuantity> fieldWithQuantities;
 
-    @OneToMany(mappedBy = "agentContract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantity> medicinesWithQuantities;
 
     @ManyToOne

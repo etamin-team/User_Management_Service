@@ -64,15 +64,15 @@ public class MedAgentController {
         return ResponseEntity.ok(contractAmountDTO);
     }
 
-    @GetMapping("/contract/contract-id/{agentContractId}")
-    public ResponseEntity<AgentContractDTO> getAgentContractById(@PathVariable Long agentContractId) {
-        AgentContractDTO agentContractDTO = adminService.getAgentContractById(agentContractId);
+    @GetMapping("/goal/goal-id/{agentGoalId}")
+    public ResponseEntity<AgentContractDTO> getAgentGoalById(@PathVariable Long agentGoalId) {
+        AgentContractDTO agentContractDTO = adminService.getAgentGoalById(agentGoalId);
         return ResponseEntity.ok(agentContractDTO);
     }
 
-    @GetMapping("/contract/agent-id/{medAgentId}")
-    public ResponseEntity<AgentContractDTO> getAgentContractmedAgentId(@PathVariable UUID medAgentId) {
-        AgentContractDTO agentContractDTO = adminService.getAgentContractByMedAgentId(medAgentId);
+    @GetMapping("/goal/agent-id/{medAgentId}")
+    public ResponseEntity<AgentContractDTO> getAgentGoalMedAgentId(@PathVariable UUID medAgentId) {
+        AgentContractDTO agentContractDTO = adminService.getAgentGoalByMedAgentId(medAgentId);
         return ResponseEntity.ok(agentContractDTO);
     }
 

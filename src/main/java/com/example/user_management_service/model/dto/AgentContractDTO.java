@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * DTO to represent an AgentContract.
+ * DTO to represent an AgentGoal.
  */
 @AllArgsConstructor
 @NoArgsConstructor
