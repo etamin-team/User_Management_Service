@@ -1,10 +1,9 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.Medicine;
-import com.example.user_management_service.model.dto.ContractDTO;
-import com.example.user_management_service.model.dto.SalesDTO;
-import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
 import com.example.user_management_service.service.SalesService;
@@ -40,7 +39,6 @@ public class DataBaseController {
     }
 
 
-
     // medicine
     @PostMapping("/medicine")
     public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody Medicine medicine) {
@@ -71,9 +69,6 @@ public class DataBaseController {
     }
 
 
-
-
-
     // contracts
     @GetMapping("/contracts/{contractId}")
     public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
@@ -94,7 +89,6 @@ public class DataBaseController {
     }
 
 
-
     /// Sales
     @PostMapping("/sales/load-data")
     public ResponseEntity<String> loadData(@RequestBody List<SalesDTO> salesDTOS) {
@@ -106,6 +100,7 @@ public class DataBaseController {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         }
     }
+
     @PutMapping("/sales/{salesId}")
     public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesDTO salesDTO) {
         try {
@@ -151,12 +146,32 @@ public class DataBaseController {
         dataBaseService.updateWorkPlace(id, workPlaceDTO);
         return ResponseEntity.ok("Workplace updated successfully!");
     }
+
     @DeleteMapping("/workplaces/{id}")
     public ResponseEntity<String> deleteWorkPlace(@PathVariable Long id) {
         dataBaseService.deleteWorkPlace(id);
         return ResponseEntity.ok("Workplace deleted successfully!");
     }
 
+    @GetMapping("/workplaces")
+    public ResponseEntity<List<WorkPlaceListDTO>> getAllWorkPlaces(
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) MedicalInstitutionType medicalInstitutionType) {
 
+        List<WorkPlaceListDTO> workplaces = dataBaseService.findWorkPlacesByFilters(districtId, regionId, medicalInstitutionType);
+        return ResponseEntity.ok(workplaces);
+    }
 
+    @GetMapping("/workplaces/{workplaceId}")
+    public ResponseEntity<WorkPlaceListDTO> getWorkPlaceById(@PathVariable Long workplaceId) {
+
+        WorkPlaceListDTO workplaces = dataBaseService.getWorkPlaceById(workplaceId);
+        return ResponseEntity.ok(workplaces);
+    }
+    @GetMapping("/workplaces/statistics/{workplaceId}")
+    public ResponseEntity<WorkPlaceStatisticsInfoDTO> getWorkPlaceDoctorsById(@PathVariable Long workplaceId) {
+        WorkPlaceStatisticsInfoDTO statisticsInfoDTO = dataBaseService.getWorkPlaceStats(workplaceId);
+        return ResponseEntity.ok(statisticsInfoDTO);
+    }
 }

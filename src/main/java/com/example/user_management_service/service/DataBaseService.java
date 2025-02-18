@@ -1,11 +1,10 @@
 package com.example.user_management_service.service;
 
-import com.example.user_management_service.model.Contract;
-import com.example.user_management_service.model.District;
-import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.model.dto.WorkPlaceListDTO;
+import com.example.user_management_service.model.dto.WorkPlaceStatisticsInfoDTO;
 import com.example.user_management_service.repository.ContractRepository;
-import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.UserRepository;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Date-12/29/2024
@@ -28,13 +28,17 @@ public class DataBaseService {
     private final MedicineRepository medicineRepository;
     private final WorkPlaceRepository workPlaceRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final DistrictRegionService districtRegionService;
 
     @Autowired
-    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository) {
+    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService) {
         this.contractRepository = contractRepository;
         this.medicineRepository = medicineRepository;
         this.workPlaceRepository = workPlaceRepository;
         this.userRepository = userRepository;
+        this.userService = userService;
+        this.districtRegionService = districtRegionService;
     }
 
     // Create or update a Medicine (save)
@@ -61,6 +65,7 @@ public class DataBaseService {
         return contractRepository.findById(contractId)
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
     }
+
     public List<Contract> getAllContracts() {
         return contractRepository.findAll();
     }
@@ -68,9 +73,6 @@ public class DataBaseService {
     public void deleteContract(Long contractId) {
         contractRepository.deleteById(contractId);
     }
-
-
-
 
 
     public void createWorkPlace(WorkPlaceDTO workPlaceDTO) {
@@ -84,7 +86,7 @@ public class DataBaseService {
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());
         workPlace.setMedicalInstitutionType(workPlaceDTO.getMedicalInstitutionType());
-        workPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId()!=null?userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new RuntimeException("ChiefDoctor not found")):null);
+        workPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId() != null ? userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new RuntimeException("ChiefDoctor not found")) : null);
         District district = new District();
         district.setId(workPlaceDTO.getDistrictId());
         workPlace.setDistrict(district);
@@ -114,4 +116,36 @@ public class DataBaseService {
     }
 
 
+    public List<WorkPlaceListDTO> findWorkPlacesByFilters(Long districtId, Long regionId, MedicalInstitutionType medicalInstitutionType) {
+        List<WorkPlace> workplaces = workPlaceRepository.findByFilters(districtId, regionId, medicalInstitutionType);
+        return workplaces.stream()
+                .map(workPlace -> new WorkPlaceListDTO(
+                        workPlace.getId(),
+                        workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
+                        districtRegionService.regionDistrictDTO(workPlace.getDistrict()),
+                        workPlace.getMedicalInstitutionType(),
+                        workPlace.getAddress(),
+                        workPlace.getDescription(),
+                        workPlace.getPhone(),
+                        workPlace.getEmail()))
+                .collect(Collectors.toList());
+
+    }
+
+    public WorkPlaceListDTO getWorkPlaceById(Long workplaceId) {
+        WorkPlace workPlace=workPlaceRepository.findById(workplaceId).orElse(null);
+        return new WorkPlaceListDTO(
+                workPlace.getId(),
+                workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
+                districtRegionService.regionDistrictDTO(workPlace.getDistrict()),
+                workPlace.getMedicalInstitutionType(),
+                workPlace.getAddress(),
+                workPlace.getDescription(),
+                workPlace.getPhone(),
+                workPlace.getEmail());
+    }
+
+    public WorkPlaceStatisticsInfoDTO getWorkPlaceStats(Long workplaceId) {
+        return null;
+    }
 }
