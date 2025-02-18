@@ -61,8 +61,9 @@ public class DoctorController {
 
 
     @PostMapping("/save-recipe")
-    public void saveRecipe(@RequestBody RecipeDto recipe) {
+    public ResponseEntity<Boolean> saveRecipe(@RequestBody RecipeDto recipe) {
         recipeService.saveRecipe(recipe);
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping("/contract/contract-id/{contractId}")
