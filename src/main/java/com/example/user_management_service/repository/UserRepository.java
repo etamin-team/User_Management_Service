@@ -47,6 +47,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     }
 
 
+    @Query("SELECT u FROM User u WHERE u.workplace.id = :workPlaceId AND u.role = :role ")
+    List<User> findDoctorsByWorkPlaceId(@Param("workPlaceId") Long workPlaceId, @Param("role") Role role);
 
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status ORDER BY u.createdDate DESC")
     Page<User> findDoctorsByStatus(@Param("role") Role role, @Param("status") UserStatus status, Pageable pageable);

@@ -1,20 +1,17 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.model.*;
-import com.example.user_management_service.model.dto.WorkPlaceDTO;
-import com.example.user_management_service.model.dto.WorkPlaceListDTO;
-import com.example.user_management_service.model.dto.WorkPlaceStatisticsInfoDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.ContractRepository;
-import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
+import com.example.user_management_service.role.Role;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -133,7 +130,7 @@ public class DataBaseService {
     }
 
     public WorkPlaceListDTO getWorkPlaceById(Long workplaceId) {
-        WorkPlace workPlace=workPlaceRepository.findById(workplaceId).orElse(null);
+        WorkPlace workPlace = workPlaceRepository.findById(workplaceId).orElse(null);
         return new WorkPlaceListDTO(
                 workPlace.getId(),
                 workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
@@ -146,6 +143,26 @@ public class DataBaseService {
     }
 
     public WorkPlaceStatisticsInfoDTO getWorkPlaceStats(Long workplaceId) {
-        return null;
+        WorkPlaceStatisticsInfoDTO workPlaceStatisticsInfoDTO = new WorkPlaceStatisticsInfoDTO();
+        List<User> userList = userRepository.findDoctorsByWorkPlaceId(workplaceId, Role.DOCTOR);
+
+        workPlaceStatisticsInfoDTO.setAllDoctors(userList.size());
+
+        Map<Field,FieldStatistics> fieldStatisticsMap=new HashMap();
+
+
+
+        for (Field field : Field.values()) {
+            fieldStatisticsMap.put(field, new FieldStatistics(0, 0, 0));
+        }
+
+        for (User user : userList) {
+            Field field = user.getFieldName();
+            fieldStatisticsMap.get(field).incrementAllDoctors();
+        }
+        workPlaceStatisticsInfoDTO.setFieldList(new ArrayList<>(fieldStatisticsMap.values()));
+
+
+        return workPlaceStatisticsInfoDTO;
     }
 }
