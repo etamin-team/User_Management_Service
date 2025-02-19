@@ -7,12 +7,19 @@ import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+
 
 /**
  * Date-12/24/2024
@@ -28,6 +35,7 @@ public class RecipeService {
     private final ContractService contractService;
     ;
     private final UserRepository userRepository;
+    private final UserService userService;
 
 
     public void saveRecipe(RecipeDto recipeDto) {
@@ -118,4 +126,73 @@ public class RecipeService {
     private UserFullNameDTO convertToUserFullNameDTO(User user) {
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());
     }
+
+    public List<RecipeDto> filterRecipes(String nameQuery, UUID regionId, UUID districtId, Long  medicineId, Field doctorField, LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo,int page,
+                                         int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreation").descending());
+
+        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1,name2,name3,
+         regionId, districtId,
+                medicineId, doctorField, lastAnalysisFrom, lastAnalysisTo, pageable
+        );
+
+        return recipes.stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
+    private RecipeDto convertToDto(Recipe recipe) {
+        return new RecipeDto(
+                recipe.getDoctorId().getUserId(),
+                recipe.getFirstName(),
+                recipe.getLastName(),
+                recipe.getDateOfBirth(),
+                recipe.getPhoneNumber(),
+                recipe.getPhoneNumberPrefix(),
+                recipe.getDateCreation(),
+                recipe.getDiagnosis(),
+                recipe.getComment(),
+                recipe.getTelegramId(),
+                recipe.getDoctorId().getDistrict().getId(), // Getting district ID from Doctor
+                recipe.getPreparations().stream().map(this::convertPreparationToDto).collect(Collectors.toList()),
+                userService.convertToDTO(recipe.getDoctorId())
+        );
+    }
+
+    private PreparationDto convertPreparationToDto(Preparation preparation) {
+        return new PreparationDto(
+                preparation.getName(),
+                preparation.getAmount(),
+                preparation.getQuantity(),
+                preparation.getTimesInDay(),
+                preparation.getDays(),
+                preparation.getType(),
+                preparation.getMedicine().getId(), // Medicine ID
+                preparation.getMedicine() // Medicine entity itself (if required)
+        );
+    }
+
+    private String[] prepareNameParts(String nameQuery) {
+        if (nameQuery == null || nameQuery.trim().isEmpty()) {
+            return new String[0]; // Return empty array if no name query is provided
+        }
+
+        String[] nameParts = nameQuery.split(" ");
+        List<String> cleanParts = new ArrayList<>();
+        for (String part : nameParts) {
+            if (part != null && !part.trim().isEmpty()) {
+                cleanParts.add(part.trim());
+            }
+        }
+
+        return cleanParts.toArray(new String[0]);
+    }
+
 }

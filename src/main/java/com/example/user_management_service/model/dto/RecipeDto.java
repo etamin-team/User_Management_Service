@@ -26,4 +26,6 @@ public class RecipeDto {
     private Long telegramId;
     private Long districtId;
     private List<PreparationDto> preparations;
+
+    private UserDTO doctor;
 }

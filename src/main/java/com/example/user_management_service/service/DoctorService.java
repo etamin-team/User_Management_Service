@@ -117,7 +117,7 @@ public class DoctorService {
                 preparation.getTimesInDay(),
                 preparation.getDays(),
                 preparation.getType(),
-                preparation.getMedicine() != null ? preparation.getMedicine().getId() : null
+                preparation.getMedicine() != null ? preparation.getMedicine().getId() : null,preparation.getMedicine()
         );
     }
     private Template convertToEntity(TemplateDto templateDto) {

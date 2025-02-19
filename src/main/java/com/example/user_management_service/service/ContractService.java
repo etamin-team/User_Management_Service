@@ -451,7 +451,7 @@ public class ContractService {
 
     public OutOfContractAmountDTO getOutOfContractsByDoctorId(UUID doctorId) {
         List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmountDTOs = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).orElse(null).stream()
-                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine().getId())) // mapping to DTO
+                .map(amount -> new OutOfContractMedicineAmountDTO(amount.getId(), amount.getAmount(), amount.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         return new OutOfContractAmountDTO(

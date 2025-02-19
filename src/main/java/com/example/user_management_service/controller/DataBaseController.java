@@ -1,14 +1,19 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.AdminService;
 import com.example.user_management_service.service.DataBaseService;
+import com.example.user_management_service.service.RecipeService;
 import com.example.user_management_service.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Date-12/26/2024
@@ -31,11 +37,13 @@ public class DataBaseController {
 
     private final DataBaseService dataBaseService;
     private final SalesService salesService;
+    private final RecipeService recipeService;
 
     @Autowired
-    public DataBaseController(DataBaseService dataBaseService, SalesService salesService) {
+    public DataBaseController(DataBaseService dataBaseService, SalesService salesService, RecipeService recipeService) {
         this.dataBaseService = dataBaseService;
         this.salesService = salesService;
+        this.recipeService = recipeService;
     }
 
 
@@ -174,4 +182,30 @@ public class DataBaseController {
         WorkPlaceStatisticsInfoDTO statisticsInfoDTO = dataBaseService.getWorkPlaceStats(workplaceId);
         return ResponseEntity.ok(statisticsInfoDTO);
     }
+
+
+
+
+    //Recipes
+
+
+    @GetMapping("/recipes")
+    public ResponseEntity<Page<RecipeDto>> filterRecipes(
+            @RequestParam(required = false) String nameQuery,
+            @RequestParam(required = false) UUID regionId,
+            @RequestParam(required = false) UUID districtId,
+            @RequestParam(required = false) Long medicineId,
+            @RequestParam(required = false) Field doctorField,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastAnalysisFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastAnalysisTo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<RecipeDto> recipes = recipeService.filterRecipes(
+                nameQuery, regionId, districtId, medicineId, doctorField,
+                lastAnalysisFrom, lastAnalysisTo, page, size
+        );
+        return ResponseEntity.ok(new PageImpl<>(recipes, PageRequest.of(page, size), recipes.size()));
+    }
+
 }
