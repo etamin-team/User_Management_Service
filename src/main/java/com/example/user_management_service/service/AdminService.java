@@ -438,6 +438,7 @@ public class AdminService {
         System.out.println("-------------------------------");
         System.out.println("sssssssssssssssssssssssssssssssss");
         AgentGoal savedContract = agentGoalRepository.save(agentGoal);
+        System.out.println("qqqqqqqqqqqqqqqqqqqqqqqllllllllllllllllllllllllllllllllaaaaaaaaaaaaaaaaaammmmmmmmmmmmm");
         return convertToDTO(savedContract);
     }
 
