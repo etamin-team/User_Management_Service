@@ -664,25 +664,25 @@ public class AdminService {
                 agentGoal.getStartDate(),
                 agentGoal.getEndDate(),
                 agentGoal.getMedAgent() != null ? agentGoal.getMedAgent().getUserId() : null,
-                agentGoal.getMedicinesWithQuantities() != null ? agentGoal.getMedicinesWithQuantities().stream()
-                        .map(mq -> new MedicineWithQuantityDTO(
-                                mq.getMedicine().getId(),
-                                mq.getQuote(),
-                                mq.getAgentGoal().getId(),
-                                mq.getContractMedicineAmount(),
-                                mq.getMedicine()
-                        )).collect(Collectors.toList()) : List.of(),
-                agentGoal.getFieldWithQuantities() != null ? agentGoal.getFieldWithQuantities().stream()
-                        .map(fq -> new FieldWithQuantityDTO(
-                                fq.getId(),
-                                fq.getField(),
-                                fq.getQuote(),
-                                fq.getContractFieldAmount()
-                        )).collect(Collectors.toList()) : List.of(),
-//                agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
-//                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
-//                agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
-                null,null,null
+//                agentGoal.getMedicinesWithQuantities() != null ? agentGoal.getMedicinesWithQuantities().stream()
+//                        .map(mq -> new MedicineWithQuantityDTO(
+//                                mq.getMedicine().getId(),
+//                                mq.getQuote(),
+//                                mq.getAgentGoal().getId(),
+//                                mq.getContractMedicineAmount(),
+//                                mq.getMedicine()
+//                        )).collect(Collectors.toList()) : List.of(),
+//                agentGoal.getFieldWithQuantities() != null ? agentGoal.getFieldWithQuantities().stream()
+//                        .map(fq -> new FieldWithQuantityDTO(
+//                                fq.getId(),
+//                                fq.getField(),
+//                                fq.getQuote(),
+//                                fq.getContractFieldAmount()
+//                        )).collect(Collectors.toList()) : List.of(),
+                null,null,
+                agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
+                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
+                agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
         );
     }
 
