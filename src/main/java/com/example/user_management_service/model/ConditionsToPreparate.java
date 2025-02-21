@@ -24,16 +24,16 @@ public class ConditionsToPreparate {
     private Long id;
 
     @Column(name = "min_percentage")
-    private Integer minPercentage;
+    private Double minPercentage;
 
     @Column(name = "min_percentage_val")
-    private Integer minPercentageVal;
+    private Double minPercentageVal;
 
     @Column(name = "max_percentage")
-    private Integer maxPercentage;
+    private Double maxPercentage;
 
     @Column(name = "max_percentage_val")
-    private Integer maxPercentageVal;
+    private Double maxPercentageVal;
 
     @ElementCollection
     @CollectionTable(name = "percentage_vals", joinColumns = @JoinColumn(name = "id"))
@@ -48,16 +48,16 @@ public class ConditionsToPreparate {
     private LocalDate endDate;
 
     @Column(name = "su")
-    private Integer su;
+    private Double su;
 
     @Column(name = "sb")
-    private Integer sb;
+    private Double sb;
 
     @Column(name = "gz")
-    private Integer gz;
+    private Double gz;
 
     @Column(name = "kb")
-    private Integer kb;
+    private Double kb;
 
 
 }

@@ -67,8 +67,8 @@ public class ConditionsToPreparateService {
                 entity.getMaxPercentage(),
                 entity.getMaxPercentageVal(),
                 entity.getPercentageVals().stream()
-                        .map(pv -> new PercentageValDto(pv.getMinPercentage(), pv.getMinPercentageVal(),
-                                pv.getMaxPercentage(), pv.getMaxPercentageVal()))
+                        .map(pv -> new PercentageValDto(pv.getMinPercentage(),
+                                pv.getMaxPercentage(), pv.getPercentageVal()))
                         .collect(Collectors.toList()),
                 entity.getStartDate(),
                 entity.getEndDate(),
@@ -88,8 +88,8 @@ public class ConditionsToPreparateService {
         entity.setMaxPercentageVal(dto.getMaxPercentageVal());
         entity.setPercentageVals(dto.getPercentageVals().stream()
                 .map(pv -> new com.example.user_management_service.model.PercentageVal(
-                        pv.getMinPercentage(), pv.getMinPercentageVal(),
-                        pv.getMaxPercentage(), pv.getMaxPercentageVal()))
+                        pv.getMinPercentage(),
+                        pv.getMaxPercentage(), pv.getPercentageVal()))
                 .collect(Collectors.toList()));
         entity.setStartDate(dto.getStartDate());
         entity.setEndDate(dto.getEndDate());

@@ -10,8 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PercentageValDto {
-    private Integer minPercentage;
-    private Integer minPercentageVal;
-    private Integer maxPercentage;
-    private Integer maxPercentageVal;
+    private Double minPercentage;
+    private Double maxPercentage;
+    private Double percentageVal;
 }

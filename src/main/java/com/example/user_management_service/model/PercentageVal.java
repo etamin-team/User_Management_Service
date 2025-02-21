@@ -22,15 +22,13 @@ import java.util.List;
 public class PercentageVal {
 
     @Column(name = "min_percentage")
-    private Integer minPercentage;
+    private Double minPercentage;
 
-    @Column(name = "min_percentage_val")
-    private Integer minPercentageVal;
 
     @Column(name = "max_percentage")
-    private Integer maxPercentage;
+    private Double maxPercentage;
 
-    @Column(name = "max_percentage_val")
-    private Integer maxPercentageVal;
+    @Column(name = "percentage_val")
+    private Double percentageVal;
 
 }

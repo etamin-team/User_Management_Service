@@ -18,15 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 public class ConditionsToPreparateDto {
     private Long id;
-    private Integer minPercentage;
-    private Integer minPercentageVal;
-    private Integer maxPercentage;
-    private Integer maxPercentageVal;
+    private Double minPercentage;
+    private Double minPercentageVal;
+    private Double maxPercentage;
+    private Double maxPercentageVal;
     private List<PercentageValDto> percentageVals;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Integer su;
-    private Integer sb;
-    private Integer gz;
-    private Integer kb;
+    private Double su;
+    private Double sb;
+    private Double gz;
+    private Double kb;
 }
