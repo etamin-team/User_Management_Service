@@ -455,9 +455,8 @@ public class AdminService {
             ContractMedicineAmount contractMedAgentMedicineAmount = new ContractMedicineAmount();
             contractMedAgentMedicineAmount.setAmount(0L);
             contractMedicineAmountRepository.save(contractMedAgentMedicineAmount);
-            medicineWithQuantity.setAgentGoal(agentGoal);
-
             medicineWithQuantity.setContractMedicineMedAgentAmount(contractMedAgentMedicineAmount);
+            medicineWithQuantity.setAgentGoal(agentGoal);
             medicineWithQuantityRepository.save(medicineWithQuantity);
             return medicineWithQuantity;
         }
@@ -657,7 +656,7 @@ public class AdminService {
                                 mq.getMedicine().getId(),
                                 mq.getQuote(),
                                 mq.getAgentGoal().getId(),
-                                mq.getContractMedicineAmount(),
+                                mq.getContractMedicineMedAgentAmount(),
                                 mq.getMedicine()
                         )).collect(Collectors.toList()) : List.of(),
                 agentGoal.getFieldWithQuantities() != null ? agentGoal.getFieldWithQuantities().stream()
@@ -665,7 +664,7 @@ public class AdminService {
                                 fq.getId(),
                                 fq.getField(),
                                 fq.getQuote(),
-                                fq.getContractFieldAmount()
+                                fq.getContractFieldMedAgentAmount()
                         )).collect(Collectors.toList()) : List.of(),
                 agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
                 agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
