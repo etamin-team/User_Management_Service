@@ -398,13 +398,15 @@ public class AdminService {
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
 
-//        Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
-//                .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
-//                        agentGoal.getMedAgent().getDistrict().getId());
-//        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElse(null));
+        Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
+                .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
+                        agentGoal.getMedAgent().getDistrict().getId());
+        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElse(null));
         agentGoal.setManagerGoal(managerGoal);
         agentGoalRepository.save(agentGoal);
-
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("------mmmmmmmmmmmmmmmmm--");
         Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
                 .stream()
                 .map(mq -> mq.getMedicine().getId())
@@ -414,7 +416,9 @@ public class AdminService {
                 .map(dto -> createMedicineWithQuantity(dto, medicineIds, agentGoal))
                 .collect(Collectors.toList()));
 
-
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("lllllllllllllllllllllllllllllllllll");
         Set<Field> fieldIds = managerGoal.getFieldGoalQuantities()
                 .stream()
                 .map(fq -> fq.getField())
@@ -423,8 +427,9 @@ public class AdminService {
         agentGoal.setFieldWithQuantities(agentContractDTO.getFieldWithQuantityDTOS().stream()
                 .map(dto -> createFieldWithQuantity(dto, fieldIds, managerGoal, agentGoal))
                 .collect(Collectors.toList()));
-
-
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("sssssssssssssssssssssssssssssssss");
         AgentGoal savedContract = agentGoalRepository.save(agentGoal);
         return convertToDTO(savedContract);
     }
