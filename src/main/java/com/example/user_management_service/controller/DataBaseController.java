@@ -110,7 +110,7 @@ public class DataBaseController {
     }
 
     @PutMapping("/sales/{salesId}")
-    public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesDTO salesDTO) {
+    public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesDistrictDTO salesDTO) {
         try {
             salesService.updateSales(salesId, salesDTO);
             return ResponseEntity.ok("Sales data updated successfully.");
@@ -130,13 +130,13 @@ public class DataBaseController {
     }
 
     @GetMapping("/sales/data")
-    public ResponseEntity<Page<SalesDTO>> getSalesInfoByMedicine(
+    public ResponseEntity<Page<SalesByRegionAndDistrictDTO>> getSalesInfoByMedicine(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<SalesDTO> salesInfo = salesService.getSalesData(startDate, endDate, page, size);
+        Page<SalesByRegionAndDistrictDTO> salesInfo = salesService.getSalesData(startDate, endDate, page, size);
         return ResponseEntity.ok(salesInfo);
     }
 
@@ -185,10 +185,7 @@ public class DataBaseController {
 
 
 
-
     //Recipes
-
-
     @GetMapping("/recipes")
     public ResponseEntity<Page<RecipeDto>> filterRecipes(
             @RequestParam(required = false) String nameQuery,

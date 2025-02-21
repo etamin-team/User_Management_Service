@@ -1,25 +1,24 @@
 package com.example.user_management_service.model.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.List;
+/**
+ * Date-2/21/2025
+ * By Sardor Tokhirov
+ * Time-12:58 PM (GMT+5)
+ */
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesDTO {
-
-    private Long medicineId;
-    private Long cip;
-    private String group;
-    private LocalDate startDate;
-    private LocalDate endDate;
+public class SalesDistrictDTO {
+    private Long id;
+    private Long districtId;
     private Long allDirectSales;
     private Long allSecondarySales;
-    private List<SalesDistrictDTO> sales;
+    private Long quote;
+    private Long total;
 
 }

@@ -22,17 +22,34 @@ public class Sales {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sales_date", nullable = false)
-    private LocalDate salesDate;
-
-    @Column(name = "groups", nullable = false)
+    @Column(name = "groups")
     private   String groups;
+
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
+    @Column(name = "all_direct_sales")
+    private Long allDirectSales;
+
+    @Column(name = "all_secondary_sales")
+    private Long allSecondarySales;
+
+    @Column(name = "quote")
+    private Long quote;
+
+    @Column(name = "total")
+    private Long total;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "medicine_id", nullable = false)
     private Medicine medicine;
 
-    @OneToMany(mappedBy = "sales", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SalesByRegion> salesByRegion;
+    @ManyToOne
+    @JoinColumn(name = "district_id", referencedColumnName = "id")
+    private District district;
+
 }
 

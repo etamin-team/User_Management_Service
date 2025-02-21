@@ -666,9 +666,7 @@ public class AdminService {
                                 fq.getContractFieldMedAgentAmount()
                         )).collect(Collectors.toList()) : List.of(),
                 agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
-                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
-                agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
-        );
+                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null);
     }
 
 
@@ -689,7 +687,6 @@ public class AdminService {
         agentContractDTO.setMedAgentId(agentGoal.getMedAgent().getUserId());
         agentContractDTO.setManagerId(agentGoal.getManager().getUserId());
         agentContractDTO.setManagerGoalId(agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null);
-        agentContractDTO.setDistrictId(agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null);
 
         // Mapping MedicineWithQuantity to MedicineWithQuantityDTO
         List<MedicineWithQuantityDTO> medicineWithQuantityDTOS = agentGoal.getMedicinesWithQuantities().stream()
@@ -728,7 +725,6 @@ public class AdminService {
         agentContractDTO.setMedAgentId(agentGoal.getMedAgent().getUserId());
         agentContractDTO.setManagerId(agentGoal.getManager().getUserId());
         agentContractDTO.setManagerGoalId(agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null);
-        agentContractDTO.setDistrictId(agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null);
 
         // Mapping MedicineWithQuantity to MedicineWithQuantityDTO
         List<MedicineWithQuantityDTO> medicineWithQuantityDTOS = agentGoal.getMedicinesWithQuantities().stream()
