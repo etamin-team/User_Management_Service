@@ -43,12 +43,12 @@ public class Sales {
     @Column(name = "total")
     private Long total;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "medicine_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 
-    @ManyToOne
-    @JoinColumn(name = "district_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "district_id", nullable = false)
     private District district;
 
 }

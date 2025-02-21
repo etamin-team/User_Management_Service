@@ -5,10 +5,8 @@ import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.service.AdminService;
-import com.example.user_management_service.service.DataBaseService;
-import com.example.user_management_service.service.RecipeService;
-import com.example.user_management_service.service.SalesService;
+import com.example.user_management_service.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,18 +31,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/db")
 @CrossOrigin(origins = "*")
+@AllArgsConstructor
 public class DataBaseController {
 
     private final DataBaseService dataBaseService;
     private final SalesService salesService;
     private final RecipeService recipeService;
+    private final ConditionsToPreparateService conditionsToPreparateService;
 
-    @Autowired
-    public DataBaseController(DataBaseService dataBaseService, SalesService salesService, RecipeService recipeService) {
-        this.dataBaseService = dataBaseService;
-        this.salesService = salesService;
-        this.recipeService = recipeService;
-    }
 
 
     // medicine
@@ -203,6 +197,36 @@ public class DataBaseController {
                 lastAnalysisFrom, lastAnalysisTo, page, size
         );
         return ResponseEntity.ok(new PageImpl<>(recipes, PageRequest.of(page, size), recipes.size()));
+    }
+
+
+
+    //ConditionsToPreparate
+
+    @PostMapping("/conditions")
+    public ResponseEntity<ConditionsToPreparateDto> create(@RequestBody ConditionsToPreparateDto dto) {
+        return ResponseEntity.ok(conditionsToPreparateService.save(dto));
+    }
+
+    @GetMapping("/conditions")
+    public ResponseEntity<List<ConditionsToPreparateDto>> getAll() {
+        return ResponseEntity.ok(conditionsToPreparateService.getAll());
+    }
+
+    @GetMapping("/conditions/{id}")
+    public ResponseEntity<ConditionsToPreparateDto> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(conditionsToPreparateService.getById(id));
+    }
+
+    @PutMapping("/conditions/{id}")
+    public ResponseEntity<ConditionsToPreparateDto> update(@PathVariable Long id, @RequestBody ConditionsToPreparateDto dto) {
+        return ResponseEntity.ok(conditionsToPreparateService.update(id, dto));
+    }
+
+    @DeleteMapping("/conditions/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        conditionsToPreparateService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

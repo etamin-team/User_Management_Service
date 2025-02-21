@@ -40,8 +40,5 @@ public class SalesByRegion {
     @Column(name = "total_sales", nullable = false)
     private Integer totalSales;
 
-    @Column(name = "sales_date", nullable = false)
-    private LocalDate salesDate;
-
 
 }

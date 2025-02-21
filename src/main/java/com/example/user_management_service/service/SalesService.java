@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.SalesLoadException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.SalesByRegionAndDistrictDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
@@ -36,11 +37,11 @@ public class SalesService {
     public void saveSalesDTOList(List<SalesDTO> salesDTOS) {
         for (SalesDTO salesDTO : salesDTOS) {
             Medicine medicine = medicineRepository.findById(salesDTO.getMedicineId())
-                    .orElseThrow(() -> new RuntimeException("Medicine not found"));
+                    .orElseThrow(() -> new SalesLoadException("Medicine not found with id:" + salesDTO.getMedicineId()));
 
             for (SalesDistrictDTO districtDTO : salesDTO.getSales()) {
                 District district = districtRepository.findById(districtDTO.getDistrictId())
-                        .orElseThrow(() -> new RuntimeException("District not found"));
+                        .orElseThrow(() -> new SalesLoadException("District not found with id:" + districtDTO.getDistrictId()));
 
                 Sales sales = new Sales();
                 sales.setMedicine(medicine);

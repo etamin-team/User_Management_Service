@@ -453,6 +453,7 @@ public class AdminService {
             medicineWithQuantity.setQuote(dto.getQuote());
             ContractMedicineAmount contractMedAgentMedicineAmount = new ContractMedicineAmount();
             contractMedAgentMedicineAmount.setAmount(0L);
+
             contractMedicineAmountRepository.save(contractMedAgentMedicineAmount);
             medicineWithQuantity.setContractMedicineMedAgentAmount(contractMedAgentMedicineAmount);
             medicineWithQuantity.setAgentGoal(agentGoal);
