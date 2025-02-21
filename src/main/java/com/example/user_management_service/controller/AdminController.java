@@ -140,9 +140,7 @@ public class AdminController {
 
     @PostMapping("/med-agent/new-goal")
     public ResponseEntity<AgentContractDTO> createAgentGoal(@RequestBody AgentContractDTO agentContractDTO) {
-        System.out.println("-------------------------------");
-        System.out.println("-------------------------------");
-        System.out.println("------Nnnnnnnnnnnnnnnnnnnnn--");
+
         AgentContractDTO createdContract = adminService.createAgentGoal(agentContractDTO);
         return ResponseEntity.ok(createdContract);
     }
