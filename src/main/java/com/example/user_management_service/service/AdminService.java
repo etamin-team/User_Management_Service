@@ -398,8 +398,6 @@ public class AdminService {
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
 
-        agentGoal.setManagerGoal(managerGoal);
-
         Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
                 .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
                         agentGoal.getMedAgent().getDistrict().getId());
@@ -669,7 +667,7 @@ public class AdminService {
                                 fq.getContractFieldAmount()
                         )).collect(Collectors.toList()) : List.of(),
                 agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
-                agentGoal.getManager().getUserId() != null ? agentGoal.getManager().getUserId() : null,
+                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
                 agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
         );
     }
