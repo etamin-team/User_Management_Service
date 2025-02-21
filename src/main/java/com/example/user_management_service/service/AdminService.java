@@ -379,7 +379,9 @@ public class AdminService {
 
     public AgentContractDTO createAgentGoal(AgentContractDTO agentContractDTO) {
         boolean isManagerGoalPresent = agentGoalRepository.getNullEndDateGoalByAgentId((agentContractDTO.getMedAgentId())).isPresent();
-
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("------Nnnnnnnnnnnnnnnnnnnnn--");
         if (isManagerGoalPresent) {
             AgentGoal agentGoal = agentGoalRepository.getNullEndDateGoalByAgentId((agentContractDTO.getMedAgentId())).orElseThrow(() -> new AgentGoalException("No Manager Goals found for managerId: " + agentContractDTO.getMedAgentId()));
             agentGoal.setEndDate(LocalDate.now());
@@ -397,7 +399,9 @@ public class AdminService {
         agentGoal.setManager(userRepository.findById(agentContractDTO.getManagerId())
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
-
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("------ssssssssssssssssss--");
         Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
                 .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
                         agentGoal.getMedAgent().getDistrict().getId());
