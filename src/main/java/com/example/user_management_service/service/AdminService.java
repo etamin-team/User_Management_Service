@@ -398,12 +398,11 @@ public class AdminService {
         agentGoal.setManager(userRepository.findById(agentContractDTO.getManagerId())
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
-
+        agentGoal.setManagerGoal(managerGoal);
         DistrictGoalQuantity districtGoalQuantity = districtGoalQuantityRepository
                 .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
                         agentGoal.getMedAgent().getDistrict().getId()).orElse(null);
         agentGoal.setDistrictGoalQuantity(districtGoalQuantity);
-        agentGoal.setManagerGoal(managerGoal);
         agentGoalRepository.save(agentGoal);
 
         Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
