@@ -21,30 +21,30 @@ public class UserManagementServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserManagementServiceApplication.class, args);
     }
-
-    @Bean
-    CommandLineRunner createChiefUser(UserRepository userRepository) {
-        return args -> {
-            try {
-                User chiefUser = new User();
-                chiefUser.setFirstName("Samandar");
-                chiefUser.setLastName("Gaybullayev");
-                chiefUser.setMiddleName("");
-                chiefUser.setDateOfBirth(LocalDate.of(1980, 1, 1));
-                chiefUser.setStatus(UserStatus.ENABLED);
-                chiefUser.setPassword(new BCryptPasswordEncoder().encode("string"));
-                chiefUser.setRole(Role.CHIEF);
-                chiefUser.setRoleRank(Role.CHIEF.getRank());
-                chiefUser.setPhoneNumber("930530732");
-                chiefUser.setNumber("string");
-                chiefUser.setPhonePrefix("+998");
-                String userId= String.valueOf(userRepository.save(chiefUser).getUserId());
-                System.out.println("Chief user created successfully! chiefId: "+userId);
-            }catch (Exception e){
-                throw new IllegalStateException("No authenticated user found.");
-            }
-
-        };
-    }
+//
+//    @Bean
+//    CommandLineRunner createChiefUser(UserRepository userRepository) {
+//        return args -> {
+//            try {
+//                User chiefUser = new User();
+//                chiefUser.setFirstName("Samandar");
+//                chiefUser.setLastName("Gaybullayev");
+//                chiefUser.setMiddleName("");
+//                chiefUser.setDateOfBirth(LocalDate.of(1980, 1, 1));
+//                chiefUser.setStatus(UserStatus.ENABLED);
+//                chiefUser.setPassword(new BCryptPasswordEncoder().encode("string"));
+//                chiefUser.setRole(Role.CHIEF);
+//                chiefUser.setRoleRank(Role.CHIEF.getRank());
+//                chiefUser.setPhoneNumber("930530732");
+//                chiefUser.setNumber("string");
+//                chiefUser.setPhonePrefix("+998");
+//                String userId= String.valueOf(userRepository.save(chiefUser).getUserId());
+//                System.out.println("Chief user created successfully! chiefId: "+userId);
+//            }catch (Exception e){
+//                throw new IllegalStateException("No authenticated user found.");
+//            }
+//
+//        };
+//    }
 
 }
