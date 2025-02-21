@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -80,5 +81,11 @@ public class MedAgentController {
     public ResponseEntity<MedAgentStatusDTO> getDoctorRecipeStatsDTOByMedAgentId(@PathVariable UUID medAgentId) {
         MedAgentStatusDTO contractAmountDTO = adminService.getMedAgentStatusInfo(medAgentId);
         return ResponseEntity.ok(contractAmountDTO);
+    }
+
+    @GetMapping("/{medAgentId}/contracts")
+    public ResponseEntity<List<ContractDTO>> getContractsByMedAgent(@PathVariable UUID medAgentId) {
+        List<ContractDTO> contracts = contractService.getContractsByMedAgent(medAgentId);
+        return ResponseEntity.ok(contracts);
     }
 }

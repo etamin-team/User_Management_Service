@@ -61,5 +61,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND EXTRACT(MONTH FROM c.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE)")
     Integer countContractsCreatedThisMonthByMedAgent(@Param("medAgentId") UUID medAgentId);
 
+    @Query("SELECT c FROM Contract c WHERE c.medAgent.userId = :agentId")
+    List<Contract> findAllByMedAgentId(@Param("agentId") UUID agentId);
 
 }

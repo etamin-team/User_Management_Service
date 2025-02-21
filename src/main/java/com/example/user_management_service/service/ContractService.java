@@ -542,4 +542,9 @@ public class ContractService {
         return doctorRecipeStatsDTO;
     }
 
+    public List<ContractDTO> getContractsByMedAgent(UUID medAgentId) {
+        List<Contract> contracts = contractRepository.findAllByMedAgentId(medAgentId);
+        return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
 }
