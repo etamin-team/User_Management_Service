@@ -405,10 +405,10 @@ public class AdminService {
         System.out.println("-------------------------------");
         System.out.println("-------------------------------");
         System.out.println("------ssssssssssssssssss--");
-        Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
-                .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
-                        agentGoal.getMedAgent().getDistrict().getId());
-        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElse(null));
+//        Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
+//                .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
+//                        agentGoal.getMedAgent().getDistrict().getId());
+//        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElse(null));
         agentGoal.setManagerGoal(managerGoal);
         agentGoalRepository.save(agentGoal);
         System.out.println("-------------------------------");
