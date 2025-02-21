@@ -679,9 +679,10 @@ public class AdminService {
                                 fq.getQuote(),
                                 fq.getContractFieldAmount()
                         )).collect(Collectors.toList()) : List.of(),
-                agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
-                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
-                agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
+//                agentGoal.getManagerGoal() != null ? agentGoal.getManagerGoal().getGoalId() : null,
+//                agentGoal.getManager() != null ? agentGoal.getManager().getUserId() : null,
+//                agentGoal.getDistrictGoalQuantity() != null ? agentGoal.getDistrictGoalQuantity().getId() : null
+                null,null,null
         );
     }
 
