@@ -542,7 +542,17 @@ public class AdminService {
 
     private MedicineWithQuantity processMedicineWithQuantity(MedicineWithQuantityDTO dto, Set<Long> medicineIds, ManagerGoal managerGoal, AgentGoal agentGoal) {
         if (!medicineIds.contains(dto.getMedicineId())) {
-            throw new AgentGoalException("Medicine with ID " + dto.getMedicineId() + " not found in managerGoalQuantities");
+            MedicineWithQuantity medicineWithQuantity = new MedicineWithQuantity();
+            medicineWithQuantity.setMedicine(medicineRepository.findById(dto.getMedicineId())
+                    .orElseThrow(() -> new AgentGoalException("Medicine not found")));
+            medicineWithQuantity.setQuote(dto.getQuote());
+            ContractMedicineAmount contractMedAgentMedicineAmount = new ContractMedicineAmount();
+            contractMedAgentMedicineAmount.setAmount(0L);
+            contractMedicineAmountRepository.save(contractMedAgentMedicineAmount);
+
+            medicineWithQuantity.setContractMedicineMedAgentAmount(contractMedAgentMedicineAmount);
+            medicineWithQuantityRepository.save(medicineWithQuantity);
+            return medicineWithQuantity;
         }
 
         boolean isNewQuantity = managerGoal.getMedicineGoalQuantities().stream()
@@ -580,7 +590,16 @@ public class AdminService {
 
     private FieldWithQuantity processFieldWithQuantity(FieldWithQuantityDTO dto, Set<Field> fieldIds, ManagerGoal managerGoal, AgentGoal agentGoal) {
         if (!fieldIds.contains(dto.getFieldName())) {
-            throw new AgentGoalException("Field with name " + dto.getFieldName() + " not found in managerGoalFields");
+            FieldWithQuantity fieldWithQuantity = new FieldWithQuantity();
+            fieldWithQuantity.setField(dto.getFieldName());
+            fieldWithQuantity.setQuote(dto.getQuote());
+            ContractFieldAmount contractFieldMedAgentAmount = new ContractFieldAmount();
+            contractFieldMedAgentAmount.setAmount(0L);
+            contractFieldAmountRepository.save(contractFieldMedAgentAmount);
+            fieldWithQuantity.setContractFieldMedAgentAmount(contractFieldMedAgentAmount);
+            fieldWithQuantity.setAgentGoal(agentGoal);
+            fieldWithQuantityRepository.save(fieldWithQuantity);
+            return fieldWithQuantity;
         }
 
         boolean isNewQuantity = managerGoal.getFieldGoalQuantities().stream()
