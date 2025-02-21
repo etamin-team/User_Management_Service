@@ -10,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,13 @@ public class AdminService {
     }
 
     public ManagerGoalDTO createManagerGoal(ManagerGoalDTO managerGoalDTO) {
+        boolean isManagerGoalPresent= managerGoalRepository.getNullEndDateGoalByManagerId(managerGoalDTO.getManagerId()).isPresent();
+
+        if (isManagerGoalPresent) {
+            ManagerGoal managerGoal = managerGoalRepository.getNullEndDateGoalByManagerId(managerGoalDTO.getManagerId()).orElseThrow(() -> new ManagerGoalException("No Manager Goals found for managerId: " + managerGoalDTO.getManagerId()));
+            managerGoal.setEndDate(LocalDate.now());
+            managerGoalRepository.save(managerGoal);
+        }
         if (managerGoalRepository.getGoalsByManagerId(managerGoalDTO.getManagerId()).isPresent()) {
             throw new ManagerGoalException("Manager has already assigned goalId:" + managerGoalDTO.getManagerId());
         }
@@ -326,8 +334,13 @@ public class AdminService {
     }
 
     public ManagerGoalDTO getManagerGoalsByManagerId(UUID managerId) {
-        ManagerGoal managerGoal = managerGoalRepository.getGoalsByManagerId(managerId)
-                .orElseThrow(() -> new ManagerGoalException("No Manager Goals found for managerId: " + managerId));
+        boolean isManagerGoalPresent= managerGoalRepository.getNullEndDateGoalByManagerId(managerId).isPresent();
+        ManagerGoal managerGoal;
+        if (!isManagerGoalPresent){
+               managerGoal=managerGoalRepository.getGoalsByManagerId(managerId).orElseThrow(() -> new ManagerGoalException("No Manager Goals found for managerId: " + managerId));
+        }else {
+            managerGoal=managerGoalRepository.getNullEndDateGoalByManagerId(managerId).orElseThrow(() -> new ManagerGoalException("No Manager Goals found for managerId: " + managerId));
+        }
         ManagerGoalDTO managerGoalDTO = new ManagerGoalDTO();
         managerGoalDTO.setGoalId(managerGoal.getGoalId());
         managerGoalDTO.setCreatedAt(managerGoal.getCreatedAt());
@@ -363,6 +376,13 @@ public class AdminService {
 
 
     public AgentContractDTO createAgentGoal(AgentContractDTO agentContractDTO) {
+        boolean isManagerGoalPresent= agentGoalRepository.getNullEndDateGoalByAgentId((agentContractDTO.getMedAgentId())).isPresent();
+
+        if (isManagerGoalPresent) {
+            AgentGoal agentGoal = agentGoalRepository.getNullEndDateGoalByAgentId((agentContractDTO.getMedAgentId())).orElseThrow(() -> new AgentGoalException("No Manager Goals found for managerId: " + agentContractDTO.getMedAgentId()));
+            agentGoal.setEndDate(LocalDate.now());
+            agentGoalRepository.save(agentGoal);
+        }
         if (agentGoalRepository.getGoalsByMedAgentUserId(agentContractDTO.getMedAgentId()).isPresent()) {
             throw new AgentGoalExistsException("Agent has already assigned contract agentId: " + agentContractDTO.getMedAgentId());
         }
@@ -381,7 +401,7 @@ public class AdminService {
         Optional<DistrictGoalQuantity> districtGoalQuantity = districtGoalQuantityRepository
                 .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
                         agentGoal.getMedAgent().getDistrict().getId());
-        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElseThrow(()-> new AgentGoalException("District Goal not found")));
+        agentGoal.setDistrictGoalQuantity(districtGoalQuantity.orElse(null));
         agentGoal.setManagerGoal(managerGoal);
         agentGoalRepository.save(agentGoal);
 
@@ -663,12 +683,13 @@ public class AdminService {
     }
 
     public AgentContractDTO getAgentGoalByMedAgentId(UUID medAgentId) {
-        Optional<AgentGoal> agentContractOptional = agentGoalRepository.getGoalsByMedAgentUserId(medAgentId); // You will need to write this query in the repository
-        if (agentContractOptional.isEmpty()) {
-            throw new IllegalStateException("Agent Contract not found for medAgentId: " + medAgentId);
+        boolean isAgentGoalPresent= agentGoalRepository.getNullEndDateGoalByAgentId(medAgentId).isPresent();
+        AgentGoal agentGoal;
+        if (!isAgentGoalPresent){
+            agentGoal=agentGoalRepository.getGoalsByMedAgentUserId(medAgentId).orElseThrow(() -> new AgentGoalException("No Agent Goals found for managerId: " + medAgentId));
+        }else {
+            agentGoal=agentGoalRepository.getNullEndDateGoalByAgentId(medAgentId).orElseThrow(() -> new AgentGoalException("No Agent Goals found for managerId: " + medAgentId));
         }
-
-        AgentGoal agentGoal = agentContractOptional.get();
 
         // Mapping AgentGoal to AgentContractDTO
         AgentContractDTO agentContractDTO = new AgentContractDTO();

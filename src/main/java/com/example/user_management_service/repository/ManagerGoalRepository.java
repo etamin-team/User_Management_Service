@@ -16,7 +16,12 @@ import java.util.UUID;
 public interface ManagerGoalRepository extends JpaRepository<ManagerGoal, Long> {
     @Query("SELECT m FROM ManagerGoal m WHERE m.managerId.userId = :managerId "+
             "AND m.startDate <= CURRENT_DATE " +
-            "AND m.endDate >= CURRENT_DATE")
+            "AND m.endDate > CURRENT_DATE")
     Optional<ManagerGoal> getGoalsByManagerId(@Param("managerId") UUID managerId);
+
+
+    @Query("SELECT m FROM ManagerGoal m WHERE m.managerId.userId = :managerId " +
+            "AND m.endDate IS NULL")
+    Optional<ManagerGoal> getNullEndDateGoalByManagerId(@Param("managerId") UUID managerId);
 
 }
