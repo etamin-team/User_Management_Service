@@ -378,6 +378,9 @@ public class AdminService {
 
 
     public AgentContractDTO createAgentGoal(AgentContractDTO agentContractDTO) {
+        System.out.println("-------------------------------");
+        System.out.println("-------------------------------");
+        System.out.println("------Nnnnnnnnnnnnnnnnnnnnn--");
         boolean isManagerGoalPresent = agentGoalRepository.getNullEndDateGoalByAgentId((agentContractDTO.getMedAgentId())).isPresent();
         System.out.println("-------------------------------");
         System.out.println("-------------------------------");
