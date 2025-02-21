@@ -28,5 +28,4 @@ public class AgentContractDTO {
     private List<FieldWithQuantityDTO> fieldWithQuantityDTOS;
     private Long managerGoalId;
     private UUID managerId;
-    private Long districtId;
 }
