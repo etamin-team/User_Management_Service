@@ -57,37 +57,36 @@ public class ContractService {
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
                 .anyMatch(id -> id.equals(doctor.getDistrict().getId()));
-        if (isDistrictIdMatches) {
-            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
+        if (!isDistrictIdMatches) {
+//            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
+            DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
+                    .stream()
+                    .filter(dq -> dq.getDistrict().getId().equals(doctor.getDistrict().getId()))
+                    .findFirst().get();
+
+
+            ContractDistrictAmount contractDistrictAmount = districtGoalQuantity.getContractDistrictAmount();
+            contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
+            contractDistrictAmountRepository.save(contractDistrictAmount);
         }
-        DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
-                .stream()
-                .filter(dq -> dq.getDistrict().getId().equals(doctor.getDistrict().getId()))
-                .findFirst().get();
-
-
-        ContractDistrictAmount contractDistrictAmount = districtGoalQuantity.getContractDistrictAmount();
-        contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
-        contractDistrictAmountRepository.save(contractDistrictAmount);
-
 
         List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
-            throw new DoctorContractException("No fields found in ManagerGoal.");
-        }
-
-
-        for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
-            if (fieldGoalQuantity.getField().equals(doctor.getFieldName())) {
-                ContractFieldAmount contractFieldAmount = fieldGoalQuantity.getContractFieldAmount();
-                contractFieldAmount.setAmount(contractFieldAmount.getAmount() + 1);
-                contractFieldAmountRepository.save(contractFieldAmount);
-                fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
-                fieldGoalQuantityRepository.save(fieldGoalQuantity);
+//            throw new DoctorContractException("No fields found in ManagerGoal.");
+        }else {
+            for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
+                if (fieldGoalQuantity.getField().equals(doctor.getFieldName())) {
+                    ContractFieldAmount contractFieldAmount = fieldGoalQuantity.getContractFieldAmount();
+                    contractFieldAmount.setAmount(contractFieldAmount.getAmount() + 1);
+                    contractFieldAmountRepository.save(contractFieldAmount);
+                    fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
+                    fieldGoalQuantityRepository.save(fieldGoalQuantity);
+                }
             }
+            managerGoal.setFieldGoalQuantities(fieldGoalQuantities);
+            managerGoalRepository.save(managerGoal);
         }
-        managerGoal.setFieldGoalQuantities(fieldGoalQuantities);
-        managerGoalRepository.save(managerGoal);
+
 
         //Contract
         Contract contract = new Contract();
@@ -142,64 +141,62 @@ public class ContractService {
         // Fetch the doctor based on doctorId
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
-        if (doctor.getDistrict().getId() != agentGoal.getDistrictGoalQuantity().getDistrict().getId()) {
-            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
+        if (agentGoal.getDistrictGoalQuantity()!=null&&agentGoal.getDistrictGoalQuantity().getDistrict()!=null&&doctor.getDistrict().getId() == agentGoal.getDistrictGoalQuantity().getDistrict().getId()) {
+            ContractDistrictAmount contractDistrictAmount = agentGoal.getDistrictGoalQuantity().getContractDistrictAmount();
+            contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
+            contractDistrictAmountRepository.save(contractDistrictAmount);
         }
-        ContractDistrictAmount contractDistrictAmount = agentGoal.getDistrictGoalQuantity().getContractDistrictAmount();
-        contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
-        contractDistrictAmountRepository.save(contractDistrictAmount);
 
         // Fetch fields from ManagerGoal
         List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
-            throw new DoctorContractException("No fields found in ManagerGoal.");
-        }
-
-        List<FieldWithQuantity> fieldWithQuantities = agentGoal.getFieldWithQuantities();
-        if (fieldWithQuantities == null) {
-            fieldWithQuantities = new ArrayList<>();
-        }
-
-        // Convert existing fields to a map for quick lookup
-        Map<Field, FieldWithQuantity> fieldMap = fieldWithQuantities.stream()
-                .collect(Collectors.toMap(FieldWithQuantity::getField, f -> f));
-
-        for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
-            Field field = fieldGoalQuantity.getField();
-            FieldWithQuantity fieldEntry = fieldMap.get(field);
-
-            if (fieldEntry != null) {
-                // Field already exists, update amounts
-                ContractFieldAmount contractFieldAmount = fieldEntry.getContractFieldAmount();
-                ContractFieldAmount medAgentAmount = fieldEntry.getContractFieldMedAgentAmount();
-
-                contractFieldAmount.setAmount(contractFieldAmount.getAmount() + 1);
-                medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
-            } else {
-                // Create new FieldWithQuantity entry
-                ContractFieldAmount newContractFieldAmount = new ContractFieldAmount();
-                newContractFieldAmount.setAmount(1l);
-                ContractFieldAmount newMedAgentFieldAmount = new ContractFieldAmount();
-                newMedAgentFieldAmount.setAmount(1l);
-
-
-                contractFieldAmountRepository.save(newContractFieldAmount);
-                contractFieldAmountRepository.save(newMedAgentFieldAmount);
-
-                FieldWithQuantity newFieldWithQuantity = new FieldWithQuantity();
-                newFieldWithQuantity.setField(field);
-                newFieldWithQuantity.setQuote(1l);
-                newFieldWithQuantity.setAgentGoal(agentGoal);
-                newFieldWithQuantity.setContractFieldAmount(newContractFieldAmount);
-                newFieldWithQuantity.setContractFieldMedAgentAmount(newMedAgentFieldAmount);
-
-                fieldWithQuantities.add(newFieldWithQuantity);
+//            throw new DoctorContractException("No fields found in ManagerGoal.");
+        }else {
+            List<FieldWithQuantity> fieldWithQuantities = agentGoal.getFieldWithQuantities();
+            if (fieldWithQuantities == null) {
+                fieldWithQuantities = new ArrayList<>();
             }
+
+            // Convert existing fields to a map for quick lookup
+            Map<Field, FieldWithQuantity> fieldMap = fieldWithQuantities.stream()
+                    .collect(Collectors.toMap(FieldWithQuantity::getField, f -> f));
+
+            for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
+                Field field = fieldGoalQuantity.getField();
+                FieldWithQuantity fieldEntry = fieldMap.get(field);
+
+                if (fieldEntry != null) {
+                    // Field already exists, update amounts
+                    ContractFieldAmount contractFieldAmount = fieldEntry.getContractFieldAmount();
+                    ContractFieldAmount medAgentAmount = fieldEntry.getContractFieldMedAgentAmount();
+
+                    contractFieldAmount.setAmount(contractFieldAmount.getAmount() + 1);
+                    medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
+                } else {
+                    // Create new FieldWithQuantity entry
+                    ContractFieldAmount newContractFieldAmount = new ContractFieldAmount();
+                    newContractFieldAmount.setAmount(1l);
+                    ContractFieldAmount newMedAgentFieldAmount = new ContractFieldAmount();
+                    newMedAgentFieldAmount.setAmount(1l);
+
+
+                    contractFieldAmountRepository.save(newContractFieldAmount);
+                    contractFieldAmountRepository.save(newMedAgentFieldAmount);
+
+                    FieldWithQuantity newFieldWithQuantity = new FieldWithQuantity();
+                    newFieldWithQuantity.setField(field);
+                    newFieldWithQuantity.setQuote(1l);
+                    newFieldWithQuantity.setAgentGoal(agentGoal);
+                    newFieldWithQuantity.setContractFieldAmount(newContractFieldAmount);
+                    newFieldWithQuantity.setContractFieldMedAgentAmount(newMedAgentFieldAmount);
+
+                    fieldWithQuantities.add(newFieldWithQuantity);
+                }
+            }
+
+            agentGoal.setFieldWithQuantities(fieldWithQuantities);
+            agentGoalRepository.save(agentGoal);
         }
-
-        agentGoal.setFieldWithQuantities(fieldWithQuantities);
-        agentGoalRepository.save(agentGoal);
-
 
         // Create a new Contract instance
         Contract contract = new Contract();
