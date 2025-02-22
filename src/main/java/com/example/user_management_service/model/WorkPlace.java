@@ -46,7 +46,7 @@ public class WorkPlace {
     private MedicalInstitutionType medicalInstitutionType;
 
     @ManyToOne
-    @JoinColumn(name = "chief_doctor_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "chief_id", referencedColumnName = "user_id")
     private User chiefDoctor;
 
     @ManyToOne
