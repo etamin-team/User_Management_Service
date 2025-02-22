@@ -125,7 +125,8 @@ public class DataBaseService {
                         workPlace.getAddress(),
                         workPlace.getDescription(),
                         workPlace.getPhone(),
-                        workPlace.getEmail()))
+                        workPlace.getEmail(),
+                        workPlace.getName()))
                 .collect(Collectors.toList());
 
     }
@@ -140,7 +141,8 @@ public class DataBaseService {
                 workPlace.getAddress(),
                 workPlace.getDescription(),
                 workPlace.getPhone(),
-                workPlace.getEmail());
+                workPlace.getEmail(),
+                workPlace.getName());
     }
 
     public WorkPlaceStatisticsInfoDTO getWorkPlaceStats(Long workplaceId) {

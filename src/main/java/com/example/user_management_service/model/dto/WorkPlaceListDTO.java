@@ -28,4 +28,5 @@ public class WorkPlaceListDTO {
     private String description;
     private String phone;
     private String email;
+    private String name;
 }
