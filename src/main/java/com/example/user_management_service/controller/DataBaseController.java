@@ -167,7 +167,6 @@ public class DataBaseController {
 
     @GetMapping("/workplaces/{workplaceId}")
     public ResponseEntity<WorkPlaceListDTO> getWorkPlaceById(@PathVariable Long workplaceId) {
-
         WorkPlaceListDTO workplaces = dataBaseService.getWorkPlaceById(workplaceId);
         return ResponseEntity.ok(workplaces);
     }
