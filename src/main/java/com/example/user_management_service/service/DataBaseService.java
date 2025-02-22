@@ -1,11 +1,9 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.DataBaseException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.repository.ContractRepository;
-import com.example.user_management_service.repository.MedicineRepository;
-import com.example.user_management_service.repository.UserRepository;
-import com.example.user_management_service.repository.WorkPlaceRepository;
+import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +25,17 @@ public class DataBaseService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final DistrictRegionService districtRegionService;
+    private final DistrictRepository districtRepository;
 
     @Autowired
-    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService) {
+    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService, DistrictRepository districtRepository) {
         this.contractRepository = contractRepository;
         this.medicineRepository = medicineRepository;
         this.workPlaceRepository = workPlaceRepository;
         this.userRepository = userRepository;
         this.userService = userService;
         this.districtRegionService = districtRegionService;
+        this.districtRepository = districtRepository;
     }
 
     // Create or update a Medicine (save)
@@ -80,13 +80,13 @@ public class DataBaseService {
     private WorkPlace convertToEntity(WorkPlaceDTO workPlaceDTO) {
         WorkPlace workPlace = new WorkPlace();
         workPlace.setName(workPlaceDTO.getName());
+        workPlace.setEmail(workPlaceDTO.getEmail());
+        workPlace.setPhone(workPlaceDTO.getPhone());
         workPlace.setAddress(workPlaceDTO.getAddress());
         workPlace.setDescription(workPlaceDTO.getDescription());
         workPlace.setMedicalInstitutionType(workPlaceDTO.getMedicalInstitutionType());
-        workPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId() != null ? userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new RuntimeException("ChiefDoctor not found")) : null);
-        District district = new District();
-        district.setId(workPlaceDTO.getDistrictId());
-        workPlace.setDistrict(district);
+        workPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId() != null ? userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new DataBaseException("ChiefDoctor not found")) : null);
+        workPlace.setDistrict(districtRepository.findById(workPlaceDTO.getDistrictId()).orElseThrow(() -> new DataBaseException("District not found")));
         return workPlace;
     }
 
@@ -98,18 +98,19 @@ public class DataBaseService {
         existingWorkPlace.setName(workPlaceDTO.getName());
         existingWorkPlace.setAddress(workPlaceDTO.getAddress());
         existingWorkPlace.setDescription(workPlaceDTO.getDescription());
+        existingWorkPlace.setMedicalInstitutionType(workPlaceDTO.getMedicalInstitutionType());
+        existingWorkPlace.setEmail(workPlaceDTO.getEmail());
+        existingWorkPlace.setPhone(workPlaceDTO.getPhone());
+        existingWorkPlace.setChiefDoctor(workPlaceDTO.getChiefDoctorId() != null ? userRepository.findById(workPlaceDTO.getChiefDoctorId()).orElseThrow(() -> new DataBaseException("ChiefDoctor not found")) : null);
+        existingWorkPlace.setDistrict(districtRepository.findById(workPlaceDTO.getDistrictId()).orElseThrow(() -> new DataBaseException("District not found")));
 
-        if (workPlaceDTO.getDistrictId() != null) {
-            District District = new District();
-            District.setId(workPlaceDTO.getDistrictId());
-            existingWorkPlace.setDistrict(District);
-        }
 
         workPlaceRepository.save(existingWorkPlace);
     }
 
     public void deleteWorkPlace(Long id) {
-        workPlaceRepository.deleteById(id);
+        WorkPlace workPlace = workPlaceRepository.findById(id).orElseThrow(()->new DataBaseException("WorkPlace doesn't exist with id: "+id));
+        workPlaceRepository.delete(workPlace);
     }
 
 
@@ -134,7 +135,7 @@ public class DataBaseService {
         return new WorkPlaceListDTO(
                 workPlace.getId(),
                 workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
-                districtRegionService.regionDistrictDTO(workPlace.getDistrict()),
+                workPlace.getDistrict()!=null? districtRegionService.regionDistrictDTO(workPlace.getDistrict()):null,
                 workPlace.getMedicalInstitutionType(),
                 workPlace.getAddress(),
                 workPlace.getDescription(),
