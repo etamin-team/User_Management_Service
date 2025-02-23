@@ -223,16 +223,19 @@ public class ContractService {
                     medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineAmount);
 
                     ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), agentGoal.getManagerGoal().getGoalId())
-                            .orElseThrow(() -> new DoctorContractException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
-                    medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
-                    contractMedicineAmountRepository.save(medicineGoalQuantity);
-
+                            .orElse(null);
+                    if (medicineGoalQuantity!=null){
+                        medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
+                        contractMedicineAmountRepository.save(medicineGoalQuantity);
+                    }
 
                     ContractMedicineAmount contractMedicineMedAgentAmount = medicineWithQuantityRepository
-                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentGoal.getId()).orElseThrow(() -> new DoctorContractException("No ContractMedicineAmount found for the given Medicine and AgentGoal"));
-                    medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(contractMedicineMedAgentAmount);
-                    contractMedicineAmountRepository.save(contractMedicineMedAgentAmount);
+                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentGoal.getId()).orElse(null);
+                 if (contractMedicineMedAgentAmount != null){
+                     medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(contractMedicineMedAgentAmount);
+                     contractMedicineAmountRepository.save(contractMedicineMedAgentAmount);
 
+                 }
                     medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
                     return medicineWithQuantityDoctor;
                 })
@@ -326,14 +329,14 @@ public class ContractService {
                 contract.getManager() != null && contract.getManager().getUserId() != null
                         ? contract.getManager().getUserId()
                         : null,
-                contract.getAgentGoal() != null && contract.getAgentGoal().getMedicinesWithQuantities() != null
-                        ? contract.getAgentGoal().getMedicinesWithQuantities().stream()
+                contract.getMedicineWithQuantityDoctors() != null
+                        ? contract.getMedicineWithQuantityDoctors().stream()
                         .filter(Objects::nonNull) // Avoid NullPointerException inside stream
                         .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
                                 medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
                                 medicineWithQuantity.getQuote(),
-                                medicineWithQuantity.getAgentGoal().getId(),
-                                medicineWithQuantity.getContractMedicineAmount(),
+                                medicineWithQuantity.getDoctorContract().getAgentGoal().getId(),
+                                medicineWithQuantity.getContractMedicineDoctorAmount(),
                                 medicineWithQuantity.getMedicine()
                         ))
                         .collect(Collectors.toList())

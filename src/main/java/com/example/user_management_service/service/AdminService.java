@@ -110,51 +110,57 @@ public class AdminService {
 
         managerGoalRepository.save(managerGoal);
 
-        managerGoal.setFieldGoalQuantities(managerGoalDTO.getFieldGoalQuantities().stream()
-                .map(dto -> {
-                    ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
-                    contractFieldAmount.setAmount(0L);
-                    contractFieldAmountRepository.save(contractFieldAmount);
-                    FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
-                    fieldGoalQuantity.setField(dto.getFieldName());
-                    fieldGoalQuantity.setQuote(dto.getQuote());
-                    fieldGoalQuantity.setManagerGoal(managerGoal);
-                    fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
-                    fieldGoalQuantityRepository.save(fieldGoalQuantity);
-                    return fieldGoalQuantity;
-                })
-                .collect(Collectors.toList()));
+        if (managerGoalDTO.getFieldGoalQuantities() != null) {
+            managerGoal.setFieldGoalQuantities(managerGoalDTO.getFieldGoalQuantities().stream()
+                    .map(dto -> {
+                        ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
+                        contractFieldAmount.setAmount(0L);
+                        contractFieldAmountRepository.save(contractFieldAmount);
+                        FieldGoalQuantity fieldGoalQuantity = new FieldGoalQuantity();
+                        fieldGoalQuantity.setField(dto.getFieldName());
+                        fieldGoalQuantity.setQuote(dto.getQuote());
+                        fieldGoalQuantity.setManagerGoal(managerGoal);
+                        fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
+                        fieldGoalQuantityRepository.save(fieldGoalQuantity);
+                        return fieldGoalQuantity;
+                    })
+                    .collect(Collectors.toList()));
+        }
 
-        managerGoal.setMedicineGoalQuantities(managerGoalDTO.getMedicineGoalQuantities().stream()
-                .map(dto -> {
-                    ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
-                    contractMedicineAmount.setAmount(0L);
-                    contractMedicineAmountRepository.save(contractMedicineAmount);
-                    MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
-                    medicineGoalQuantity.setQuote(dto.getQuote());
-                    medicineGoalQuantity.setManagerGoal(managerGoal);
-                    Medicine medicine = medicineRepository.findById(dto.getMedicineId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
-                    medicineGoalQuantity.setMedicine(medicine);
-                    medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
-                    medicineGoalQuantityRepository.save(medicineGoalQuantity);
-                    return medicineGoalQuantity;
-                })
-                .collect(Collectors.toList()));
+        if (managerGoalDTO.getMedicineGoalQuantities() != null) {
+            managerGoal.setMedicineGoalQuantities(managerGoalDTO.getMedicineGoalQuantities().stream()
+                    .map(dto -> {
+                        ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
+                        contractMedicineAmount.setAmount(0L);
+                        contractMedicineAmountRepository.save(contractMedicineAmount);
+                        MedicineGoalQuantity medicineGoalQuantity = new MedicineGoalQuantity();
+                        medicineGoalQuantity.setQuote(dto.getQuote());
+                        medicineGoalQuantity.setManagerGoal(managerGoal);
+                        Medicine medicine = medicineRepository.findById(dto.getMedicineId()).orElseThrow(() -> new ManagerGoalException("Medicine not found"));
+                        medicineGoalQuantity.setMedicine(medicine);
+                        medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
+                        medicineGoalQuantityRepository.save(medicineGoalQuantity);
+                        return medicineGoalQuantity;
+                    })
+                    .collect(Collectors.toList()));
+        }
 
-        managerGoal.setDistrictGoalQuantities(managerGoalDTO.getDistrictGoalQuantities().stream()
-                .map(dto -> {
-                    ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
-                    contractDistrictAmount.setAmount(0L);
-                    contractDistrictAmountRepository.save(contractDistrictAmount);
-                    DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
-                    districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
-                    districtGoalQuantity.setQuote(dto.getQuote());
-                    districtGoalQuantity.setManagerGoal(managerGoal);
-                    districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
-                    districtGoalQuantityRepository.save(districtGoalQuantity);
-                    return districtGoalQuantity;
-                })
-                .collect(Collectors.toList()));
+        if (managerGoalDTO.getDistrictGoalQuantities() != null) {
+            managerGoal.setDistrictGoalQuantities(managerGoalDTO.getDistrictGoalQuantities().stream()
+                    .map(dto -> {
+                        ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
+                        contractDistrictAmount.setAmount(0L);
+                        contractDistrictAmountRepository.save(contractDistrictAmount);
+                        DistrictGoalQuantity districtGoalQuantity = new DistrictGoalQuantity();
+                        districtGoalQuantity.setDistrict(districtRepository.getById(dto.getDistrictId()));
+                        districtGoalQuantity.setQuote(dto.getQuote());
+                        districtGoalQuantity.setManagerGoal(managerGoal);
+                        districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
+                        districtGoalQuantityRepository.save(districtGoalQuantity);
+                        return districtGoalQuantity;
+                    })
+                    .collect(Collectors.toList()));
+        }
 
         ManagerGoal savedGoal = managerGoalRepository.save(managerGoal);
         return convertToDTO(savedGoal);
@@ -171,95 +177,101 @@ public class AdminService {
         existingGoal.setStartDate(updateGoalDTO.getStartDate());
         existingGoal.setEndDate(updateGoalDTO.getEndDate());
 
+        if (updateGoalDTO.getFieldGoalQuantities() != null) {
+            List<FieldGoalQuantity> updatedFieldGoals = updateGoalDTO.getFieldGoalQuantities().stream()
+                    .map(dto -> {
+                        FieldGoalQuantity fieldGoalQuantity;
 
-        List<FieldGoalQuantity> updatedFieldGoals = updateGoalDTO.getFieldGoalQuantities().stream()
-                .map(dto -> {
-                    FieldGoalQuantity fieldGoalQuantity;
+                        if (dto.getId() == 0) {
+                            fieldGoalQuantity = new FieldGoalQuantity();
+                            ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
+                            contractFieldAmount.setAmount(0L);
+                            contractFieldAmountRepository.save(contractFieldAmount);
+                            fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
+                            fieldGoalQuantity.setField(dto.getFieldName());
+                        } else {
+                            fieldGoalQuantity = fieldGoalQuantityRepository.findById(dto.getId()).orElseThrow(() -> new EntityNotFoundException("Field not found with id: " + dto.getId()));
+                            if (fieldGoalQuantity.getManagerGoal().getGoalId() != id)
+                                throw new ManagerGoalException("Manager Goal id: " + id + " don't match with field goal id: " + fieldGoalQuantity.getManagerGoal().getGoalId());
+                        }
+                        if (dto.getQuote() > fieldGoalQuantity.getContractFieldAmount().getAmount()) {
+                            fieldGoalQuantity.setQuote(dto.getQuote());
+                        }
+                        fieldGoalQuantity.setManagerGoal(existingGoal);
+                        fieldGoalQuantityRepository.save(fieldGoalQuantity);
+                        return fieldGoalQuantity;
+                    }).collect(Collectors.toList());
+            existingGoal.setFieldGoalQuantities(updatedFieldGoals);
+        }
+        if (updateGoalDTO.getMedicineGoalQuantities()!=null){
+            List<MedicineGoalQuantity> updatedMedicineGoals = updateGoalDTO.getMedicineGoalQuantities().stream()
+                    .map(dto -> {
+                        MedicineGoalQuantity medicineGoalQuantity;
 
-                    if (dto.getId() == 0) {
-                        fieldGoalQuantity = new FieldGoalQuantity();
-                        ContractFieldAmount contractFieldAmount = new ContractFieldAmount();
-                        contractFieldAmount.setAmount(0L);
-                        contractFieldAmountRepository.save(contractFieldAmount);
-                        fieldGoalQuantity.setContractFieldAmount(contractFieldAmount);
-                        fieldGoalQuantity.setField(dto.getFieldName());
-                    } else {
-                        fieldGoalQuantity = fieldGoalQuantityRepository.findById(dto.getId()).orElseThrow(() -> new EntityNotFoundException("Field not found with id: " + dto.getId()));
-                        if (fieldGoalQuantity.getManagerGoal().getGoalId() != id)
-                            throw new ManagerGoalException("Manager Goal id: " + id + " don't match with field goal id: " + fieldGoalQuantity.getManagerGoal().getGoalId());
-                    }
-                    if (dto.getQuote() > fieldGoalQuantity.getContractFieldAmount().getAmount()) {
-                        fieldGoalQuantity.setQuote(dto.getQuote());
-                    }
-                    fieldGoalQuantity.setManagerGoal(existingGoal);
-                    fieldGoalQuantityRepository.save(fieldGoalQuantity);
-                    return fieldGoalQuantity;
-                }).collect(Collectors.toList());
-        existingGoal.setFieldGoalQuantities(updatedFieldGoals);
+                        if (dto.getMedicineId() == 0) {
+                            medicineGoalQuantity = new MedicineGoalQuantity();
+                            ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
+                            contractMedicineAmount.setAmount(0L);
+                            contractMedicineAmountRepository.save(contractMedicineAmount);
+                            medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
+                        } else {
+                            medicineGoalQuantity = medicineGoalQuantityRepository.findById(dto.getId())
+                                    .orElseThrow(() -> new EntityNotFoundException("Medicine goal not found with id: " + dto.getId()));
+                            if (medicineGoalQuantity.getManagerGoal().getGoalId() != id)
+                                throw new ManagerGoalException("Manager Goal id: " + id + " doesn't match with medicine goal id: " + medicineGoalQuantity.getManagerGoal().getGoalId());
+                        }
 
-        List<MedicineGoalQuantity> updatedMedicineGoals = updateGoalDTO.getMedicineGoalQuantities().stream()
-                .map(dto -> {
-                    MedicineGoalQuantity medicineGoalQuantity;
+                        Medicine medicine = medicineRepository.findById(dto.getMedicineId())
+                                .orElseThrow(() -> new ManagerGoalException("Medicine not found with ID: " + dto.getMedicineId()));
+                        medicineGoalQuantity.setMedicine(medicine);
 
-                    if (dto.getMedicineId() == 0) {
-                        medicineGoalQuantity = new MedicineGoalQuantity();
-                        ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
-                        contractMedicineAmount.setAmount(0L);
-                        contractMedicineAmountRepository.save(contractMedicineAmount);
-                        medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
-                    } else {
-                        medicineGoalQuantity = medicineGoalQuantityRepository.findById(dto.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("Medicine goal not found with id: " + dto.getId()));
-                        if (medicineGoalQuantity.getManagerGoal().getGoalId() != id)
-                            throw new ManagerGoalException("Manager Goal id: " + id + " doesn't match with medicine goal id: " + medicineGoalQuantity.getManagerGoal().getGoalId());
-                    }
+                        if (dto.getQuote() > medicineGoalQuantity.getContractMedicineAmount().getAmount()) {
+                            medicineGoalQuantity.setQuote(dto.getQuote());
+                        }
 
-                    Medicine medicine = medicineRepository.findById(dto.getMedicineId())
-                            .orElseThrow(() -> new ManagerGoalException("Medicine not found with ID: " + dto.getMedicineId()));
-                    medicineGoalQuantity.setMedicine(medicine);
+                        medicineGoalQuantity.setManagerGoal(existingGoal);
+                        medicineGoalQuantityRepository.save(medicineGoalQuantity);
+                        return medicineGoalQuantity;
+                    }).collect(Collectors.toList());
 
-                    if (dto.getQuote() > medicineGoalQuantity.getContractMedicineAmount().getAmount()) {
-                        medicineGoalQuantity.setQuote(dto.getQuote());
-                    }
+            existingGoal.setMedicineGoalQuantities(updatedMedicineGoals);
 
-                    medicineGoalQuantity.setManagerGoal(existingGoal);
-                    medicineGoalQuantityRepository.save(medicineGoalQuantity);
-                    return medicineGoalQuantity;
-                }).collect(Collectors.toList());
-
-        existingGoal.setMedicineGoalQuantities(updatedMedicineGoals);
+        }
 
 
-        List<DistrictGoalQuantity> updatedDistrictGoals = updateGoalDTO.getDistrictGoalQuantities().stream()
-                .map(dto -> {
-                    DistrictGoalQuantity districtGoalQuantity;
+        if ( updateGoalDTO.getDistrictGoalQuantities()!=null){
+            List<DistrictGoalQuantity> updatedDistrictGoals = updateGoalDTO.getDistrictGoalQuantities().stream()
+                    .map(dto -> {
+                        DistrictGoalQuantity districtGoalQuantity;
 
-                    if (dto.getDistrictId() == 0) {
-                        districtGoalQuantity = new DistrictGoalQuantity();
-                        ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
-                        contractDistrictAmount.setAmount(0L);
-                        contractDistrictAmountRepository.save(contractDistrictAmount);
-                        districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
-                    } else {
-                        districtGoalQuantity = districtGoalQuantityRepository.findById(dto.getId())
-                                .orElseThrow(() -> new EntityNotFoundException("District goal not found with id: " + dto.getId()));
-                        if (districtGoalQuantity.getManagerGoal().getGoalId() != id)
-                            throw new ManagerGoalException("Manager Goal id: " + id + " doesn't match with district goal id: " + districtGoalQuantity.getManagerGoal().getGoalId());
-                    }
+                        if (dto.getDistrictId() == 0) {
+                            districtGoalQuantity = new DistrictGoalQuantity();
+                            ContractDistrictAmount contractDistrictAmount = new ContractDistrictAmount();
+                            contractDistrictAmount.setAmount(0L);
+                            contractDistrictAmountRepository.save(contractDistrictAmount);
+                            districtGoalQuantity.setContractDistrictAmount(contractDistrictAmount);
+                        } else {
+                            districtGoalQuantity = districtGoalQuantityRepository.findById(dto.getId())
+                                    .orElseThrow(() -> new EntityNotFoundException("District goal not found with id: " + dto.getId()));
+                            if (districtGoalQuantity.getManagerGoal().getGoalId() != id)
+                                throw new ManagerGoalException("Manager Goal id: " + id + " doesn't match with district goal id: " + districtGoalQuantity.getManagerGoal().getGoalId());
+                        }
 
-                    districtGoalQuantity.setDistrict(districtRepository.findById(dto.getDistrictId())
-                            .orElseThrow(() -> new ManagerGoalException("District not found with ID: " + dto.getDistrictId())));
+                        districtGoalQuantity.setDistrict(districtRepository.findById(dto.getDistrictId())
+                                .orElseThrow(() -> new ManagerGoalException("District not found with ID: " + dto.getDistrictId())));
 
-                    if (dto.getQuote() > districtGoalQuantity.getContractDistrictAmount().getAmount()) {
-                        districtGoalQuantity.setQuote(dto.getQuote());
-                    }
+                        if (dto.getQuote() > districtGoalQuantity.getContractDistrictAmount().getAmount()) {
+                            districtGoalQuantity.setQuote(dto.getQuote());
+                        }
 
-                    districtGoalQuantity.setManagerGoal(existingGoal);
-                    districtGoalQuantityRepository.save(districtGoalQuantity);
-                    return districtGoalQuantity;
-                }).collect(Collectors.toList());
+                        districtGoalQuantity.setManagerGoal(existingGoal);
+                        districtGoalQuantityRepository.save(districtGoalQuantity);
+                        return districtGoalQuantity;
+                    }).collect(Collectors.toList());
 
-        existingGoal.setDistrictGoalQuantities(updatedDistrictGoals);
+            existingGoal.setDistrictGoalQuantities(updatedDistrictGoals);
+        }
+
 
         ManagerGoal updatedGoal = managerGoalRepository.save(existingGoal);
         return convertToDTO(updatedGoal);
@@ -278,15 +290,15 @@ public class AdminService {
         ManagerGoalDTO managerGoalDTO = new ManagerGoalDTO(
                 goal.getGoalId(),
                 goal.getManagerId().getUserId(),
-                goal.getFieldGoalQuantities().stream()
+                goal.getFieldGoalQuantities() != null ? goal.getFieldGoalQuantities().stream()
                         .map(q -> new FieldGoalQuantityDTO(q.getId(), q.getField(), q.getQuote(), q.getManagerGoal().getGoalId(), q.getContractFieldAmount()))
-                        .collect(Collectors.toList()),
-                goal.getMedicineGoalQuantities().stream()
+                        .collect(Collectors.toList()) : null,
+                goal.getMedicineGoalQuantities() != null ? goal.getMedicineGoalQuantities().stream()
                         .map(q -> new MedicineGoalQuantityDTO(q.getId(), q.getQuote(), q.getMedicine().getId(), q.getManagerGoal().getGoalId(), q.getContractMedicineAmount(), q.getMedicine()))
-                        .collect(Collectors.toList()),
-                goal.getDistrictGoalQuantities().stream()
+                        .collect(Collectors.toList()) : null,
+                goal.getDistrictGoalQuantities() != null ? goal.getDistrictGoalQuantities().stream()
                         .map(q -> new DistrictGoalQuantityDTO(q.getId(), q.getDistrict().getId(), q.getQuote(), q.getManagerGoal().getGoalId(), q.getContractDistrictAmount(), districtRegionService.regionDistrictDTO(q.getDistrict())))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toList()) : null,
                 goal.getCreatedAt(),
                 goal.getStartDate(),
                 goal.getEndDate(),
@@ -405,23 +417,36 @@ public class AdminService {
         agentGoal.setDistrictGoalQuantity(districtGoalQuantity);
         agentGoalRepository.save(agentGoal);
 
-        Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
-                .stream()
-                .map(mq -> mq.getMedicine().getId())
-                .collect(Collectors.toSet());
 
-        agentGoal.setMedicinesWithQuantities(agentContractDTO.getMedicineWithQuantityDTOS().stream()
-                .map(dto -> createMedicineWithQuantity(dto, medicineIds, agentGoal))
-                .collect(Collectors.toList()));
+        if (agentContractDTO.getMedicineWithQuantityDTOS()!=null && managerGoal.getMedicineGoalQuantities()!=null){
+            Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
+                    .stream()
+                    .map(mq -> mq.getMedicine().getId())
+                    .collect(Collectors.toSet());
+            agentGoal.setMedicinesWithQuantities(agentContractDTO.getMedicineWithQuantityDTOS().stream()
+                    .map(dto -> createMedicineWithQuantity(dto, medicineIds, agentGoal))
+                    .collect(Collectors.toList()));
+        } else if (agentContractDTO.getMedicineWithQuantityDTOS() != null) {
+            Set<Long> medicineIds = new HashSet<>();
+            agentGoal.setMedicinesWithQuantities(agentContractDTO.getMedicineWithQuantityDTOS().stream()
+                    .map(dto -> createMedicineWithQuantity(dto, medicineIds, agentGoal))
+                    .collect(Collectors.toList()));
+        }
 
-        Set<Field> fieldIds = managerGoal.getFieldGoalQuantities()
-                .stream()
-                .map(fq -> fq.getField())
-                .collect(Collectors.toSet());
-
-        agentGoal.setFieldWithQuantities(agentContractDTO.getFieldWithQuantityDTOS().stream()
-                .map(dto -> createFieldWithQuantity(dto, fieldIds, managerGoal, agentGoal))
-                .collect(Collectors.toList()));
+        if (agentContractDTO.getFieldWithQuantityDTOS()!=null && managerGoal.getFieldGoalQuantities()!=null){
+            Set<Field> fieldIds = managerGoal.getFieldGoalQuantities()
+                    .stream()
+                    .map(fq -> fq.getField())
+                    .collect(Collectors.toSet());
+            agentGoal.setFieldWithQuantities(agentContractDTO.getFieldWithQuantityDTOS().stream()
+                    .map(dto -> createFieldWithQuantity(dto, fieldIds, managerGoal, agentGoal))
+                    .collect(Collectors.toList()));
+        } else if (agentContractDTO.getFieldWithQuantityDTOS()!=null) {
+            Set<Field> fieldIds = new HashSet<>();
+            agentGoal.setFieldWithQuantities(agentContractDTO.getFieldWithQuantityDTOS().stream()
+                    .map(dto -> createFieldWithQuantity(dto, fieldIds, managerGoal, agentGoal))
+                    .collect(Collectors.toList()));
+        }
 
         AgentGoal savedContract = agentGoalRepository.save(agentGoal);
         return convertToDTO(savedContract);
