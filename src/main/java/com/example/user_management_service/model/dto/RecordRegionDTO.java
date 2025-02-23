@@ -15,10 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecordRegionDTO {
-
-    private Long quote;
-    private Long sales;
-
     List<StatsEmployeeDTO> employeeStatsList;
     List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactList;
     List<RecordWorkPlaceStatsDTO> recordWorkPlaceStatsDTOList;

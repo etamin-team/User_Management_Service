@@ -15,7 +15,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecordDTO {
 
-    private int id;
+    private Long quote;
+    private Long sales;
+
 
     private RecordRegionDTO recordRegionDTO;
 
