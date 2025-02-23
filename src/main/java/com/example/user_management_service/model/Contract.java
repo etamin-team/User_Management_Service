@@ -33,8 +33,6 @@ public class Contract {
     @Column(name = "status", nullable = false)
     private GoalStatus status = GoalStatus.PENDING_REVIEW;
 
-    @Column(name = "total_amount")
-    private Double totalAmount;
 
     @OneToMany(mappedBy = "doctorContract", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors;

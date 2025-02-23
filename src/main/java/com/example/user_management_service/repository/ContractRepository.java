@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.GoalStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -63,5 +64,59 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("SELECT c FROM Contract c WHERE c.medAgent.userId = :agentId")
     List<Contract> findAllByMedAgentId(@Param("agentId") UUID agentId);
+
+
+
+    @Query("SELECT c FROM Contract c " +
+            "JOIN c.doctor d " +
+            "WHERE (:query IS NULL OR " +
+            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.middleName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.email) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+    List<Contract> findContractsByFilters(@Param("query") String query,
+                                          @Param("districtId") Long districtId,
+                                          @Param("workplaceId") Long workplaceId,
+                                          @Param("fieldName") Field fieldName);
+
+    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
+            "FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "JOIN c.doctor d " +
+            "WHERE (:query IS NULL OR " +
+            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.email) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+    Long findTotalAllowed(@Param("query") String query,
+                          @Param("districtId") Long districtId,
+                          @Param("workplaceId") Long workplaceId,
+                          @Param("fieldName") Field fieldName);
+
+    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
+            "FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "JOIN c.doctor d " +
+            "WHERE (:query IS NULL OR " +
+            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.phoneNumber) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.email) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+    Long findTotalWritten(@Param("query") String query,
+                          @Param("districtId") Long districtId,
+                          @Param("workplaceId") Long workplaceId,
+                          @Param("fieldName") Field fieldName);
+
+
 
 }

@@ -307,7 +307,7 @@ public class ContractService {
         contractRepository.delete(contract);
     }
 
-    private ContractDTO convertToDTO(Contract contract) {
+    public ContractDTO convertToDTO(Contract contract) {
         if (contract == null) {
             throw new DoctorContractException("Contract cannot be null");
         }
