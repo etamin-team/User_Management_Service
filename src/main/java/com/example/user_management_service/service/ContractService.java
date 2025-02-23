@@ -118,6 +118,7 @@ public class ContractService {
                         medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
                         contractMedicineAmountRepository.save(medicineGoalQuantity);
                     }
+                    medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
                     return medicineWithQuantityDoctor;
                 })
                 .collect(Collectors.toList());
