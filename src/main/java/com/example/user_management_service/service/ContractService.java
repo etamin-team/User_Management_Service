@@ -259,10 +259,6 @@ public class ContractService {
         // Update contract details
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
-        contract.setAgentGoal(agentGoalRepository.findById(contractDTO.getAgentContractId())
-                .orElseThrow(() -> new DoctorContractException("AgentGoal not found")));
-        contract.setDoctor(userRepository.findById(contractDTO.getDoctorId())
-                .orElseThrow(() -> new DoctorContractException("Doctor not found")));
 
         // Update or add medicines with quantities
         contract.setMedicineWithQuantityDoctors(contractDTO.getMedicinesWithQuantities().stream()
