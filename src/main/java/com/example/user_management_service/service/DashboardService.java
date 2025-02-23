@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-2/22/2025
@@ -28,18 +29,19 @@ public class DashboardService {
     private ContractMedicineAmountRepository contractMedicineAmountRepository;
     private UserRepository userRepository;
 
-    public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, String query, Long medicineId, LocalDate startDate, LocalDate endDate) {
+    public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, UUID userId, Long medicineId, LocalDate startDate, LocalDate endDate) {
 //        if (medicineId != null) {
 //            return filterByMedicineId(medicineId, startDate, endDate);
-//        } else if (query != null) {
-//            return filterByQuery(query, startDate, endDate);
-//        } else if (field != null) {
-//            return filterByField(field, startDate, endDate);
-//        } else if (workplaceId != null) {
-//            return filterByWorkplaceId(workplaceId, startDate, endDate);
-//        } else if (districtId != null) {
-//            return filterByDistrictId(districtId, startDate, endDate);
 //        } else
+            if (userId != null) {
+            return filterByQuery(userId, startDate, endDate);
+        } else if (field != null) {
+            return filterByField(workplaceId,field, startDate, endDate);
+        } else if (workplaceId != null) {
+            return filterByWorkplaceId(workplaceId, startDate, endDate);
+        } else if (districtId != null) {
+            return filterByDistrictId(districtId, startDate, endDate);
+        } else
             if (regionId != null) {
             return filterByRegionId(regionId, startDate, endDate);
         }
@@ -60,19 +62,25 @@ public class DashboardService {
         return new RecordDTO();
     }
 
-    private RecordDTO filterByQuery(String query, LocalDate startDate, LocalDate endDate) {
-        // Implement logic for filtering by query
-        return new RecordDTO();
+    private RecordDTO filterByQuery(UUID userId, LocalDate startDate, LocalDate endDate) {
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByUserId(userId));
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByUserId(userId));
+        return recordDTO;
     }
 
-    private RecordDTO filterByField(Field field, LocalDate startDate, LocalDate endDate) {
-        // Implement logic for filtering by field
-        return new RecordDTO();
+    private RecordDTO filterByField(Long workPlaceId, Field field, LocalDate startDate, LocalDate endDate) {
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByWorkplaceAndField(workPlaceId,field.name()));
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByWorkplaceAndField(workPlaceId,field.name()));
+        return recordDTO;
     }
 
     private RecordDTO filterByWorkplaceId(Long workplaceId, LocalDate startDate, LocalDate endDate) {
-        // Implement logic for filtering by workplaceId
-        return new RecordDTO();
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrictAndWorkplace(workplaceId));
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
+        return recordDTO;
     }
 
     private RecordDTO filterByDistrictId(Long districtId, LocalDate startDate, LocalDate endDate) {

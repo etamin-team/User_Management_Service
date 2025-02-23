@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Date-2/22/2025
@@ -31,12 +32,12 @@ public class DashboardController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) Field field,
-            @RequestParam(required = false) String query,
+            @RequestParam(required = false) UUID userId,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, query, medicineId, startDate, endDate);
+        RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, userId, medicineId, startDate, endDate);
         return ResponseEntity.ok(records);
     }
 
