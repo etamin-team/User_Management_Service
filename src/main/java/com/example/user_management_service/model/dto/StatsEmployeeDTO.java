@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatsEmployeeDTO {
+    private Long id;
     private String name;
-    private int amount;
+    private String nameUzCyrillic;
+    private String nameUzLatin;
+    private String nameRussian;
+    private Long  amount;
 }

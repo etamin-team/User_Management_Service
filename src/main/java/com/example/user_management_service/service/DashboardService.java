@@ -1,7 +1,15 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.dto.RecordDTO;
+import com.example.user_management_service.model.dto.RecordDistrictDTO;
+import com.example.user_management_service.model.dto.RecordRegionDTO;
+import com.example.user_management_service.model.dto.StatsEmployeeDTO;
+import com.example.user_management_service.repository.ContractMedicineAmountRepository;
+import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
+import com.example.user_management_service.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -13,24 +21,38 @@ import java.util.List;
  * Time-7:22 PM (GMT+5)
  */
 @Service
+@AllArgsConstructor
 public class DashboardService {
 
+    private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+    private ContractMedicineAmountRepository contractMedicineAmountRepository;
+    private UserRepository userRepository;
 
     public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, String query, Long medicineId, LocalDate startDate, LocalDate endDate) {
-        if (medicineId != null) {
-            return filterByMedicineId(medicineId, startDate, endDate);
-        } else if (query != null) {
-            return filterByQuery(query, startDate, endDate);
-        } else if (field != null) {
-            return filterByField(field, startDate, endDate);
-        } else if (workplaceId != null) {
-            return filterByWorkplaceId(workplaceId, startDate, endDate);
-        } else if (districtId != null) {
-            return filterByDistrictId(districtId, startDate, endDate);
-        } else if (regionId != null) {
+//        if (medicineId != null) {
+//            return filterByMedicineId(medicineId, startDate, endDate);
+//        } else if (query != null) {
+//            return filterByQuery(query, startDate, endDate);
+//        } else if (field != null) {
+//            return filterByField(field, startDate, endDate);
+//        } else if (workplaceId != null) {
+//            return filterByWorkplaceId(workplaceId, startDate, endDate);
+//        } else if (districtId != null) {
+//            return filterByDistrictId(districtId, startDate, endDate);
+//        } else
+            if (regionId != null) {
             return filterByRegionId(regionId, startDate, endDate);
         }
-        return new RecordDTO();
+
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotes());
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmount());
+        List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
+        RecordRegionDTO recordRegionDTO= new RecordRegionDTO();
+        recordRegionDTO.setEmployeeStatsList(userCountByRegion);
+
+        recordDTO.setRecordRegionDTO(recordRegionDTO);
+        return recordDTO;
     }
 
     private RecordDTO filterByMedicineId(Long medicineId, LocalDate startDate, LocalDate endDate) {
@@ -59,8 +81,15 @@ public class DashboardService {
     }
 
     private RecordDTO filterByRegionId(Long regionId, LocalDate startDate, LocalDate endDate) {
-        // Implement logic for filtering by regionId
-        return new RecordDTO();
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByRegion(regionId));
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByRegion(regionId));
+        List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByDistrictInRegion(regionId);
+        RecordDistrictDTO recordDistrictDTO= new RecordDistrictDTO();
+        recordDistrictDTO.setEmployeeStatsList(userCountByRegion);
+
+        recordDTO.setRecordDistrictDTO(recordDistrictDTO);
+        return recordDTO;
     }
 
 }

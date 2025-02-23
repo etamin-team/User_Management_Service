@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.dto.StatsEmployeeDTO;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,23 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByNumber(String number);
 
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
+            "r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian, COUNT(u)) " +
+            "FROM User u " +
+            "JOIN u.district d " +
+            "JOIN d.region r " +
+            "GROUP BY r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian")
+    List<StatsEmployeeDTO> getUserCountByRegion();
+
+    @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
+            "d.id,d.name, d.nameUzCyrillic, d.nameUzLatin, d.nameRussian, COUNT(u)) " +
+            "FROM User u " +
+            "JOIN u.district d " +
+            "JOIN d.region r " +
+            "WHERE r.id = :regionId " +
+            "GROUP BY d.id, d.name, d.nameUzCyrillic, d.nameUzLatin, d.nameRussian")
+    List<StatsEmployeeDTO> getUserCountByDistrictInRegion(@Param("regionId") Long regionId);
 
 
     // Get users by role
