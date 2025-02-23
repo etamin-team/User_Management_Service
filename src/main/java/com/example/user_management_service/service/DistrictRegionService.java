@@ -8,6 +8,7 @@ import com.example.user_management_service.model.dto.RegionDTO;
 import com.example.user_management_service.model.dto.RegionDistrictDTO;
 import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.RegionRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,49 @@ public class DistrictRegionService {
 
     private final RegionRepository regionRepository;
     private final DistrictRepository districtRepository;
+    @Transactional
+    public RegionDTO addRegion(RegionDTO regionDTO) {
+        Region region = new Region();
+        region.setName(regionDTO.getName());
+        region.setNameUzCyrillic(regionDTO.getNameUzCyrillic());
+        region.setNameUzLatin(regionDTO.getNameUzLatin());
+        region.setNameRussian(regionDTO.getNameRussian());
+        region = regionRepository.save(region);
+        return new RegionDTO(region.getId(), region.getName(), region.getNameUzCyrillic(), region.getNameUzLatin(), region.getNameRussian(), null);
+    }
 
+    @Transactional
+    public List<RegionDTO> addRegions(List<RegionDTO> regionDTOs) {
+        List<Region> regions = regionDTOs.stream().map(dto -> {
+            Region region = new Region();
+            region.setName(dto.getName());
+            region.setNameUzCyrillic(dto.getNameUzCyrillic());
+            region.setNameUzLatin(dto.getNameUzLatin());
+            region.setNameRussian(dto.getNameRussian());
+            return region;
+        }).collect(Collectors.toList());
+        regions = regionRepository.saveAll(regions);
+        return regions.stream().map(region -> new RegionDTO(region.getId(), region.getName(), region.getNameUzCyrillic(), region.getNameUzLatin(), region.getNameRussian(), null)).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public DistrictDTO addDistrict(DistrictDTO districtDTO) {
+        Region region = regionRepository.findById(districtDTO.getRegionId())
+                .orElseThrow(() -> new RuntimeException("Region not found"));
+        District district = new District();
+        district.setName(districtDTO.getName());
+        district.setNameUzCyrillic(districtDTO.getNameUzCyrillic());
+        district.setNameUzLatin(districtDTO.getNameUzLatin());
+        district.setNameRussian(districtDTO.getNameRussian());
+        district.setRegion(region);
+        district = districtRepository.save(district);
+        return new DistrictDTO(district.getId(), district.getName(), district.getNameUzCyrillic(), district.getNameUzLatin(), district.getNameRussian(), region.getId());
+    }
+
+    @Transactional
+    public List<DistrictDTO> addDistricts(List<DistrictDTO> districtDTOs) {
+        return districtDTOs.stream().map(this::addDistrict).collect(Collectors.toList());
+    }
 
     // Method to map Region to RegionDTO
     private RegionDTO mapRegionToDTO(Region region) {

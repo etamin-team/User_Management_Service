@@ -33,6 +33,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class DataBaseController {
+    private final DistrictRegionService districtRegionService;
 
     private final DataBaseService dataBaseService;
     private final SalesService salesService;
@@ -228,4 +229,28 @@ public class DataBaseController {
         return ResponseEntity.noContent().build();
     }
 
+
+
+    //regions and districts
+
+
+    @PostMapping("/regions/add")
+    public ResponseEntity<RegionDTO> addRegion(@RequestBody RegionDTO regionDTO) {
+        return ResponseEntity.ok(districtRegionService.addRegion(regionDTO));
+    }
+
+    @PostMapping("/regions/add-bulk")
+    public ResponseEntity<List<RegionDTO>> addRegions(@RequestBody List<RegionDTO> regionDTOs) {
+        return ResponseEntity.ok(districtRegionService.addRegions(regionDTOs));
+    }
+
+    @PostMapping("/districts/add")
+    public ResponseEntity<DistrictDTO> addDistrict(@RequestBody DistrictDTO districtDTO) {
+        return ResponseEntity.ok(districtRegionService.addDistrict(districtDTO));
+    }
+
+    @PostMapping("/districts/add-bulk")
+    public ResponseEntity<List<DistrictDTO>> addDistricts(@RequestBody List<DistrictDTO> districtDTOs) {
+        return ResponseEntity.ok(districtRegionService.addDistricts(districtDTOs));
+    }
 }
