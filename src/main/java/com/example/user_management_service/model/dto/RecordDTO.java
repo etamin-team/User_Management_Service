@@ -16,4 +16,10 @@ import lombok.NoArgsConstructor;
 public class RecordDTO {
 
     private int id;
+
+    private RecordRegionDTO recordRegionDTO;
+
+    private RecordDistrictDTO recordDistrictDTO;
+
+    private RecordWorkPlaceDTO recordWorkPlaceDTO;
 }

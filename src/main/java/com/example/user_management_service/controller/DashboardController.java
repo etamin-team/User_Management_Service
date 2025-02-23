@@ -26,7 +26,7 @@ public class DashboardController {
     private DashboardService dashboardService;
 
     @GetMapping("/filter")
-    public ResponseEntity<List<RecordDTO>> getFilteredRecords(
+    public ResponseEntity<RecordDTO> getFilteredRecords(
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
@@ -36,7 +36,7 @@ public class DashboardController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
-        List<RecordDTO> records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, query, medicineId, startDate, endDate);
+        RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, query, medicineId, startDate, endDate);
         return ResponseEntity.ok(records);
     }
 

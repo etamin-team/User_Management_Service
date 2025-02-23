@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Date-2/22/2025
  * By Sardor Tokhirov
@@ -13,5 +15,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecordDistrictDTO {
-    private String districtName;
+    
+    private Long quote;
+    private Long sales;
+
+    List<StatsEmployeeDTO> employeeStatsList;
+    List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactList;
+    List<RecordWorkPlaceStatsDTO> recordWorkPlaceStatsDTOList;
 }
