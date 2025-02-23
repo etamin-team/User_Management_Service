@@ -51,7 +51,15 @@ public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<Med
             "WHERE   u.workplace_id = :workplaceId",
             nativeQuery = true)
     Long getTotalQuotesByDistrictAndWorkplace(
-
             @Param("workplaceId") Long workplaceId);
+
+    @Query(value = "SELECT COALESCE(SUM(m.quote), 0) " +
+            "FROM medicine_with_quantity_doctor m " +
+            "JOIN contracts c ON m.contract_id = c.contract_id " +
+            "JOIN users u ON c.doctor_id = u.user_id " +
+            "WHERE  u.district_id = :districtId",
+            nativeQuery = true)
+    Long getTotalQuotesByDistrict(
+            @Param("districtId") Long districtId);
 
 }

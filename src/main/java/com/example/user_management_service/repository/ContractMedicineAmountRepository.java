@@ -62,4 +62,15 @@ public interface ContractMedicineAmountRepository extends JpaRepository<Contract
             @Param("workplaceId") Long workplaceId);
 
 
+    @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
+            "FROM medicine_with_quantity_doctor m " +
+            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contracts c ON m.contract_id = c.contract_id " +
+            "JOIN users u ON c.doctor_id = u.user_id " +
+            "WHERE  u.district_id = :districtId",
+            nativeQuery = true)
+    Long getTotalContractMedicineDoctorAmountByDistrictId(
+
+            @Param("districtId") Long districtId);
+
 }

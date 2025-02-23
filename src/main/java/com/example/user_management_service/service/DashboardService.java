@@ -84,8 +84,11 @@ public class DashboardService {
     }
 
     private RecordDTO filterByDistrictId(Long districtId, LocalDate startDate, LocalDate endDate) {
-        // Implement logic for filtering by districtId
-        return new RecordDTO();
+        RecordDTO recordDTO= new RecordDTO();
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrict(districtId));
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
+        return recordDTO;
+
     }
 
     private RecordDTO filterByRegionId(Long regionId, LocalDate startDate, LocalDate endDate) {
