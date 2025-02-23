@@ -57,7 +57,7 @@ public class ContractService {
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
                 .anyMatch(id -> id.equals(doctor.getDistrict().getId()));
-        if (!isDistrictIdMatches) {
+        if (managerGoal.getDistrictGoalQuantities()!=null&&managerGoal.getDistrictGoalQuantities().size()>0&&!isDistrictIdMatches) {
 //            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
             DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
                     .stream()
@@ -95,7 +95,7 @@ public class ContractService {
         contract.setEndDate(contractDTO.getEndDate());
         contract.setCreatedAt(LocalDate.now());
         contract.setStatus(GoalStatus.APPROVED);
-
+        contract.setManager(managerGoal.getManagerId());
         contractRepository.save(contract);
 
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
@@ -112,11 +112,12 @@ public class ContractService {
                     contractMedicineAmount.setAmount(0L);
                     contractMedicineAmountRepository.save(contractMedicineAmount);
                     medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineAmount);
-
                     ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
-                            .orElseThrow(() -> new DoctorContractException("ContractMedicineAmount not found for medicine ID " + dto.getMedicineId()));
-                    medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
-                    medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
+                            .orElse(null);
+                    if (medicineGoalQuantity!=null){
+                        medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
+                        contractMedicineAmountRepository.save(medicineGoalQuantity);
+                    }
                     return medicineWithQuantityDoctor;
                 })
                 .collect(Collectors.toList());
@@ -206,6 +207,7 @@ public class ContractService {
         contract.setEndDate(contractDTO.getEndDate());
         contract.setCreatedAt(LocalDate.now());
         contract.setMedAgent(agentGoal.getMedAgent());
+        contract.setManager(managerGoal.getManagerId());
         contractRepository.save(contract);
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
@@ -312,37 +314,41 @@ public class ContractService {
         if (contract == null) {
             throw new DoctorContractException("Contract cannot be null");
         }
+        try {
+            return new ContractDTO(
+                    contract.getId(),
+                    contract.getDoctor() != null ? contract.getDoctor().getUserId() : null,
+                    contract.getStatus(),
+                    contract.getCreatedAt(),
+                    contract.getStartDate(),
+                    contract.getEndDate(),
+                    contract.getMedAgent() != null && contract.getMedAgent().getUserId() != null
+                            ? contract.getMedAgent().getUserId()
+                            : null,
+                    contract.getAgentGoal() != null && contract.getAgentGoal().getId() != null
+                            ? contract.getAgentGoal().getId()
+                            : null,
+                    contract.getManager() != null && contract.getManager().getUserId() != null
+                            ? contract.getManager().getUserId()
+                            : null,
+                    contract.getMedicineWithQuantityDoctors() != null
+                            ? contract.getMedicineWithQuantityDoctors().stream()
+                            .filter(Objects::nonNull) // Avoid NullPointerException inside stream
+                            .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
+                                    medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
+                                    medicineWithQuantity.getQuote(),
+                                    medicineWithQuantity.getDoctorContract().getAgentGoal()!=null?  medicineWithQuantity.getDoctorContract().getAgentGoal().getId():null,
+                                    medicineWithQuantity.getContractMedicineDoctorAmount(),
+                                    medicineWithQuantity.getMedicine()
+                            ))
+                            .collect(Collectors.toList())
+                            : Collections.emptyList(),
+                    districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
+            );
+        }catch (Exception e){
+            throw new DoctorContractException("Converting problem server error");
+        }
 
-        return new ContractDTO(
-                contract.getId(),
-                contract.getDoctor() != null ? contract.getDoctor().getUserId() : null,
-                contract.getStatus(),
-                contract.getCreatedAt(),
-                contract.getStartDate(),
-                contract.getEndDate(),
-                contract.getMedAgent() != null && contract.getMedAgent().getUserId() != null
-                        ? contract.getMedAgent().getUserId()
-                        : null,
-                contract.getAgentGoal() != null && contract.getAgentGoal().getId() != null
-                        ? contract.getAgentGoal().getId()
-                        : null,
-                contract.getManager() != null && contract.getManager().getUserId() != null
-                        ? contract.getManager().getUserId()
-                        : null,
-                contract.getMedicineWithQuantityDoctors() != null
-                        ? contract.getMedicineWithQuantityDoctors().stream()
-                        .filter(Objects::nonNull) // Avoid NullPointerException inside stream
-                        .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
-                                medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
-                                medicineWithQuantity.getQuote(),
-                                medicineWithQuantity.getDoctorContract().getAgentGoal().getId(),
-                                medicineWithQuantity.getContractMedicineDoctorAmount(),
-                                medicineWithQuantity.getMedicine()
-                        ))
-                        .collect(Collectors.toList())
-                        : Collections.emptyList(),
-                districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
-        );
     }
 
 
