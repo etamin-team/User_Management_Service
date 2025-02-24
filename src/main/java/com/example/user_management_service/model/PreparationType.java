@@ -6,9 +6,19 @@ package com.example.user_management_service.model;
  * Time-5:04 PM (GMT+5)
  */
 public enum PreparationType {
-    TABLETS,
-    CAPSULES,
     SYRUPS,
+    INJECTIONS,
+    TABLETS,
+    GEL,
+    SUPPOSITORIES,
+    CAPSULES,
     SUSPENSIONS,
-    EMULSIONS;
+    GRANULES,
+    LOZENGES,
+    SPRAY,
+    CREAM,
+    ORAL_DROPS,
+    AEROSOLS,
+    ORAL_SOLUTIONS,
+    SACHETS,
 }
