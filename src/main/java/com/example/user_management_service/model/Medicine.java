@@ -44,12 +44,12 @@ public class Medicine {
 
     private Integer prescription;
 
-    private String volume;
+    @Enumerated(EnumType.STRING)
+    private MedicineQuantity volume;
 
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type")
-    private MedicineQuantity type;
+    private PreparationType type;
 
     @Column(name = "su_percentage")
     private Double suPercentage;
