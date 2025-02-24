@@ -48,8 +48,8 @@ public class Sales {
     private Medicine medicine;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "district_id", nullable = false)
-    private District district;
+    @JoinColumn(name = "region_id", nullable = false)
+    private Region  region;
 
 }
 

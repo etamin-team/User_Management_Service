@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesByRegionAndDistrictDTO {
+public class SalesByRegionDTO {
     private Long id;
     private Long medicineId;
     private String group;
@@ -20,5 +20,5 @@ public class SalesByRegionAndDistrictDTO {
     private Long quote;
     private Long total;
 
-    private RegionDistrictDTO regionDTO;
+    private RegionDTO regionDTO;
 }

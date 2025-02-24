@@ -2,13 +2,10 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.SalesLoadException;
 import com.example.user_management_service.model.*;
-import com.example.user_management_service.model.dto.SalesByRegionAndDistrictDTO;
+import com.example.user_management_service.model.dto.SalesByRegionDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
-import com.example.user_management_service.model.dto.SalesDistrictDTO;
-import com.example.user_management_service.repository.DistrictRepository;
-import com.example.user_management_service.repository.MedicineRepository;
-import com.example.user_management_service.repository.SalesByRegionRepository;
-import com.example.user_management_service.repository.SalesRepository;
+import com.example.user_management_service.model.dto.SalesRegionDTO;
+import com.example.user_management_service.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -33,26 +30,27 @@ public class SalesService {
     private final MedicineRepository medicineRepository;
     private final DistrictRepository districtRepository;
     private final DistrictRegionService districtRegionService;
+    private final RegionRepository regionRepository;
 
     public void saveSalesDTOList(List<SalesDTO> salesDTOS) {
         for (SalesDTO salesDTO : salesDTOS) {
             Medicine medicine = medicineRepository.findById(salesDTO.getMedicineId())
                     .orElseThrow(() -> new SalesLoadException("Medicine not found with id:" + salesDTO.getMedicineId()));
 
-            for (SalesDistrictDTO districtDTO : salesDTO.getSales()) {
-                District district = districtRepository.findById(districtDTO.getDistrictId())
-                        .orElseThrow(() -> new SalesLoadException("District not found with id:" + districtDTO.getDistrictId()));
+            for (SalesRegionDTO regionDTO : salesDTO.getSales()) {
+                Region region = regionRepository.findById(regionDTO.getRegionId())
+                        .orElseThrow(() -> new SalesLoadException("Region not found with id:" + regionDTO.getRegionId()));
 
                 Sales sales = new Sales();
                 sales.setMedicine(medicine);
-                sales.setDistrict(district);
+                sales.setRegion(region);
                 sales.setGroups(salesDTO.getGroup());
                 sales.setStartDate(salesDTO.getStartDate());
                 sales.setEndDate(salesDTO.getEndDate());
-                sales.setAllDirectSales(districtDTO.getAllDirectSales());
-                sales.setAllSecondarySales(districtDTO.getAllSecondarySales());
-                sales.setQuote(districtDTO.getQuote());
-                sales.setTotal(districtDTO.getTotal());
+                sales.setAllDirectSales(regionDTO.getAllDirectSales());
+                sales.setAllSecondarySales(regionDTO.getAllSecondarySales());
+                sales.setQuote(regionDTO.getQuote());
+                sales.setTotal(regionDTO.getTotal());
 
                 salesRepository.save(sales);
             }
@@ -61,14 +59,14 @@ public class SalesService {
 
 
 
-    public void updateSales(Long salesId, SalesDistrictDTO salesDistrictDTO) {
+    public void updateSales(Long salesId, SalesRegionDTO salesRegionDTO) {
         Sales sales = salesRepository.findById(salesId)
                 .orElseThrow(() -> new RuntimeException("Sales record not found"));
 
-        sales.setAllDirectSales(salesDistrictDTO.getAllDirectSales());
-        sales.setAllSecondarySales(salesDistrictDTO.getAllSecondarySales());
-        sales.setQuote(salesDistrictDTO.getQuote());
-        sales.setTotal(salesDistrictDTO.getTotal());
+        sales.setAllDirectSales(salesRegionDTO.getAllDirectSales());
+        sales.setAllSecondarySales(salesRegionDTO.getAllSecondarySales());
+        sales.setQuote(salesRegionDTO.getQuote());
+        sales.setTotal(salesRegionDTO.getTotal());
 
         salesRepository.save(sales);
     }
@@ -79,13 +77,13 @@ public class SalesService {
         salesRepository.delete(sales);
     }
 
-    public Page<SalesByRegionAndDistrictDTO> getSalesData(LocalDate startDate, LocalDate endDate, int page, int size) {
+    public Page<SalesByRegionDTO> getSalesData(LocalDate startDate, LocalDate endDate, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         List<Sales> salesList = salesRepository.findAllByStartAndEndDate(startDate, endDate);
 
 
-        List<SalesByRegionAndDistrictDTO> salesDTOList = salesList.stream()
-                .map(sale -> new SalesByRegionAndDistrictDTO(
+        List<SalesByRegionDTO> salesDTOList = salesList.stream()
+                .map(sale -> new SalesByRegionDTO(
                         sale.getId(),
                         sale.getMedicine().getId(),
                         sale.getGroups(),
@@ -95,7 +93,7 @@ public class SalesService {
                         sale.getAllSecondarySales(),
                         sale.getQuote(),
                         sale.getTotal(),
-                        districtRegionService.regionDistrictDTO(sale.getDistrict())
+                        districtRegionService.mapRegionToDTO(sale.getRegion())
                         )
                 )
                 .collect(Collectors.toList());

@@ -20,6 +20,6 @@ public class SalesDTO {
     private LocalDate endDate;
     private Long allDirectSales;
     private Long allSecondarySales;
-    private List<SalesDistrictDTO> sales;
+    private List<SalesRegionDTO> sales;
 
 }

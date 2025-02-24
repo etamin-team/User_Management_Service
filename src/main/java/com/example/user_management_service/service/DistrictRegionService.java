@@ -68,7 +68,7 @@ public class DistrictRegionService {
     }
 
     // Method to map Region to RegionDTO
-    private RegionDTO mapRegionToDTO(Region region) {
+    public RegionDTO mapRegionToDTO(Region region) {
         List<DistrictDTO> districtDTOList = region.getDistricts().stream()
                 .map(district -> new DistrictDTO(
                         district.getId(),

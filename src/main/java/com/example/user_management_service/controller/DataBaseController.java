@@ -7,7 +7,6 @@ import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.*;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -105,7 +104,7 @@ public class DataBaseController {
     }
 
     @PutMapping("/sales/{salesId}")
-    public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesDistrictDTO salesDTO) {
+    public ResponseEntity<String> updateSales(@PathVariable Long salesId, @RequestBody SalesRegionDTO salesDTO) {
         try {
             salesService.updateSales(salesId, salesDTO);
             return ResponseEntity.ok("Sales data updated successfully.");
@@ -125,13 +124,13 @@ public class DataBaseController {
     }
 
     @GetMapping("/sales/data")
-    public ResponseEntity<Page<SalesByRegionAndDistrictDTO>> getSalesInfoByMedicine(
+    public ResponseEntity<Page<SalesByRegionDTO>> getSalesInfoByMedicine(
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<SalesByRegionAndDistrictDTO> salesInfo = salesService.getSalesData(startDate, endDate, page, size);
+        Page<SalesByRegionDTO> salesInfo = salesService.getSalesData(startDate, endDate, page, size);
         return ResponseEntity.ok(salesInfo);
     }
 

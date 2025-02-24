@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SalesDistrictDTO {
+public class SalesRegionDTO {
     private Long id;
-    private Long districtId;
+    private Long regionId;
     private Long allDirectSales;
     private Long allSecondarySales;
     private Long quote;
