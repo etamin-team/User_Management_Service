@@ -17,7 +17,7 @@ public class District {
     @SequenceGenerator(name = "district_seq_2", sequenceName = "district_seq_2", allocationSize = 1,initialValue = 100)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "name_uz_c", nullable = false)
