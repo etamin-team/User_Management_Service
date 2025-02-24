@@ -14,7 +14,7 @@ public class District {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "district_seq")
-    @SequenceGenerator(name = "district_seq", sequenceName = "district_seq", allocationSize = 1)
+    @SequenceGenerator(name = "district_seq", sequenceName = "district_seq", allocationSize = 1,initialValue = 100)
     private Long id;
 
     @Column(nullable = false, unique = true)
