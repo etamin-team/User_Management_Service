@@ -13,8 +13,8 @@ import java.util.List;
 public class District {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "district_seq")
-    @SequenceGenerator(name = "district_seq", sequenceName = "district_seq", allocationSize = 1,initialValue = 100)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "district_seq_2")
+    @SequenceGenerator(name = "district_seq_2", sequenceName = "district_seq_2", allocationSize = 1,initialValue = 100)
     private Long id;
 
     @Column(nullable = false, unique = true)
