@@ -253,4 +253,26 @@ public class DataBaseController {
     public ResponseEntity<List<DistrictDTO>> addDistricts(@RequestBody List<DistrictDTO> districtDTOs) {
         return ResponseEntity.ok(districtRegionService.addDistricts(districtDTOs));
     }
+
+    @PutMapping("/regions/update/{id}")
+    public ResponseEntity<RegionDTO> updateRegion(@PathVariable Long id, @RequestBody RegionDTO regionDTO) {
+        return ResponseEntity.ok(districtRegionService.updateRegion(id, regionDTO));
+    }
+
+    @DeleteMapping("/regions/delete/{id}")
+    public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
+        districtRegionService.deleteRegion(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/districts/update/{id}")
+    public ResponseEntity<DistrictDTO> updateDistrict(@PathVariable Long id, @RequestBody DistrictDTO districtDTO) {
+        return ResponseEntity.ok(districtRegionService.updateDistrict(id, districtDTO));
+    }
+
+    @DeleteMapping("/districts/delete/{id}")
+    public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
+        districtRegionService.deleteDistrict(id);
+        return ResponseEntity.noContent().build();
+    }
 }

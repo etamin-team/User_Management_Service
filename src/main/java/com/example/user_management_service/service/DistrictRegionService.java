@@ -172,4 +172,47 @@ public class DistrictRegionService {
                 district.getNameRussian()
         );
     }
+
+    @Transactional
+    public RegionDTO updateRegion(Long id, RegionDTO regionDTO) {
+        Region region = regionRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Region with ID " + id + " not found"));
+        region.setName(regionDTO.getName());
+        region.setNameUzCyrillic(regionDTO.getNameUzCyrillic());
+        region.setNameUzLatin(regionDTO.getNameUzLatin());
+        region.setNameRussian(regionDTO.getNameRussian());
+        region = regionRepository.save(region);
+        return new RegionDTO(region.getId(), region.getName(), region.getNameUzCyrillic(), region.getNameUzLatin(), region.getNameRussian(), null);
+    }
+
+    @Transactional
+    public void deleteRegion(Long id) {
+        if (!regionRepository.existsById(id)) {
+            throw new DataNotFoundException("Region with ID " + id + " not found");
+        }
+        regionRepository.deleteById(id);
+    }
+
+    @Transactional
+    public DistrictDTO updateDistrict(Long id, DistrictDTO districtDTO) {
+        District district = districtRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("District with ID " + id + " not found"));
+        Region region = regionRepository.findById(districtDTO.getRegionId())
+                .orElseThrow(() -> new DataNotFoundException("Region with ID " + districtDTO.getRegionId() + " not found"));
+        district.setName(districtDTO.getName());
+        district.setNameUzCyrillic(districtDTO.getNameUzCyrillic());
+        district.setNameUzLatin(districtDTO.getNameUzLatin());
+        district.setNameRussian(districtDTO.getNameRussian());
+        district.setRegion(region);
+        district = districtRepository.save(district);
+        return new DistrictDTO(district.getId(), district.getName(), district.getNameUzCyrillic(), district.getNameUzLatin(), district.getNameRussian(), region.getId());
+    }
+
+    @Transactional
+    public void deleteDistrict(Long id) {
+        if (!districtRepository.existsById(id)) {
+            throw new DataNotFoundException("District with ID " + id + " not found");
+        }
+        districtRepository.deleteById(id);
+    }
 }
