@@ -13,8 +13,10 @@ import java.util.List;
 public class Region {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "region_seq")
+    @SequenceGenerator(name = "region_seq", sequenceName = "region_seq", allocationSize = 1, initialValue = 100)
     private Long id;
+
 
     @Column(nullable = false, unique = true)
     private String name;
