@@ -24,13 +24,14 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/doctors")
+    @GetMapping("/{meidcineId}")
     public ResponseEntity<DoctorReportDTO> getDoctorReports(
-            @RequestParam(required = false) String query,
+            @PathVariable Long meidcineId,
+            @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) Field fieldName) {
-        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(query, districtId, workplaceId, fieldName);
+        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(meidcineId,query, districtId, workplaceId, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
 }

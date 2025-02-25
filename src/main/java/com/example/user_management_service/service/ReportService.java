@@ -24,19 +24,19 @@ public class ReportService {
     private final UserService userService;
     private final ContractService contractService;
 
-    public DoctorReportDTO getDoctorReports(String query, Long districtId, Long workplaceId, Field fieldName) {
+    public DoctorReportDTO getDoctorReports( Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = contractRepository.findTotalAllowed(query, districtId, workplaceId, fieldName);
-        Long written = contractRepository.findTotalWritten(query, districtId, workplaceId, fieldName);
+        Long allowed = contractRepository.findTotalAllowed(medicineId,query, districtId, workplaceId, fieldName);
+        Long written = contractRepository.findTotalWritten(medicineId,query, districtId, workplaceId, fieldName);
 
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
-        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(query,districtId,workplaceId,fieldName));
+        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,query,districtId,workplaceId,fieldName));
 
         return doctorReportDTO;
     }
-    public List<DoctorReportListDTO> getDoctorReportListDTOList(String query, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(query, districtId, workplaceId, fieldName);
+    public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long districtId, Long workplaceId, Field fieldName) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query, districtId, workplaceId, fieldName);
 
         return contracts.stream()
                 .map(contract -> {
