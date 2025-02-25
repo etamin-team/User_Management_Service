@@ -91,15 +91,16 @@ public class User implements UserDetails {
     @Column(name = "gender")
     private Gender gender;
 
-    @ManyToOne
+
+
+
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
 
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
     private WorkPlace workplace;
-
 
 
     @Override

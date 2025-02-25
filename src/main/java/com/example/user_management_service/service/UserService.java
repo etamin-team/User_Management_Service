@@ -8,6 +8,7 @@ import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.Role;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -196,9 +197,18 @@ public class UserService {
     }
 
 
+    @Transactional
     public boolean deleteUser(UUID userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
+            User existingUser = user.get();
+
+            // Remove references to avoid constraint violations
+            existingUser.setDistrict(null);
+            existingUser.setWorkplace(null);
+            userRepository.save(existingUser);
+
+            // Now delete the user
             userRepository.deleteById(userId);
             return true;
         }
