@@ -1,16 +1,14 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.ReportException;
-import com.example.user_management_service.model.Contract;
-import com.example.user_management_service.model.Field;
-import com.example.user_management_service.model.Medicine;
-import com.example.user_management_service.model.SalesReport;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.DoctorReportDTO;
 import com.example.user_management_service.model.dto.DoctorReportListDTO;
 import com.example.user_management_service.model.dto.SalesReportDTO;
 import com.example.user_management_service.model.dto.SalesReportListDTO;
 import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.repository.MedicineRepository;
+import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
 import com.example.user_management_service.repository.SalesReportRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,14 +31,17 @@ public class ReportService {
     private final ContractService contractService;
     private final SalesReportRepository salesReportRepository;
     private final MedicineRepository medicineRepository;
+    private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
 
     public DoctorReportDTO getDoctorReports( Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         Long allowed = contractRepository.findTotalAllowed(medicineId,query, districtId, workplaceId, fieldName);
         Long written = contractRepository.findTotalWritten(medicineId,query, districtId, workplaceId, fieldName);
+        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query, districtId, workplaceId, fieldName);
 
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
+        doctorReportDTO.setWrittenInFact(inFact);
         doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,query,districtId,workplaceId,fieldName));
 
         return doctorReportDTO;
@@ -85,5 +86,12 @@ public class ReportService {
         report.setSold(salesReportDTO.getSold());
 
         salesReportRepository.save(report);
+    }
+    @Transactional
+    public void editMedicineQuantity(Long quantityId, Long correction) {
+        MedicineWithQuantityDoctor  medicineWithQuantityDoctor=medicineWithQuantityDoctorRepository.findById(quantityId).orElseThrow(() -> new ReportException("Sales Report not found"));
+        medicineWithQuantityDoctor.setCorrection(correction);
+        medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
+
     }
 }

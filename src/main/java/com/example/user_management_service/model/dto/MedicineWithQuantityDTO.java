@@ -20,6 +20,7 @@ public class MedicineWithQuantityDTO {
 
     private Long medicineId;
     private Long quote;
+    private Long correction;
     private Long agentContractId;
     private ContractMedicineAmount contractMedicineAmount;
     private Medicine medicine;

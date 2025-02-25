@@ -19,5 +19,6 @@ import java.util.List;
 public class DoctorReportDTO {
     private Long allowed;
     private Long written;
+    private Long writtenInFact;
     private List<DoctorReportListDTO> doctorReportListDTOList;
 }

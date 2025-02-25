@@ -47,4 +47,11 @@ public class ReportController {
         reportService.editSalesReport(id, salesReportDTO);
         return ResponseEntity.ok("Sales report updated successfully");
     }
+
+    @PutMapping("/correction/{quantityId}")
+    public ResponseEntity<String> editMedicineQuantity(@PathVariable Long quantityId,    @RequestParam Long correction) {
+        reportService.editMedicineQuantity(quantityId, correction);
+        return ResponseEntity.ok("MedicineQuantity correction  updated successfully");
+    }
+
 }

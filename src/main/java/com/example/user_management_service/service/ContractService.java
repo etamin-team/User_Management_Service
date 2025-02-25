@@ -106,6 +106,7 @@ public class ContractService {
                     MedicineWithQuantityDoctor medicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                     medicineWithQuantityDoctor.setMedicine(medicine);
                     medicineWithQuantityDoctor.setQuote(dto.getQuote());
+                    medicineWithQuantityDoctor.setCorrection(dto.getQuote());
                     medicineWithQuantityDoctor.setDoctorContract(contract);
 
                     ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
@@ -218,6 +219,7 @@ public class ContractService {
                     MedicineWithQuantityDoctor medicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                     medicineWithQuantityDoctor.setMedicine(medicine);
                     medicineWithQuantityDoctor.setQuote(dto.getQuote());
+                    medicineWithQuantityDoctor.setCorrection(dto.getQuote());
                     medicineWithQuantityDoctor.setDoctorContract(contract);
 
                     ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
@@ -276,6 +278,8 @@ public class ContractService {
                         // Update existing medicine quantity
                         if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= dto.getContractMedicineAmount().getAmount()) {
                             existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
+                            existingMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
+
                             return existingMedicineWithQuantityDoctor;
                         } else {
                             throw new DoctorContractException("Contract Medicine Quote does not match Contract Medicine Quote");
@@ -286,6 +290,7 @@ public class ContractService {
                         MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                         newMedicineWithQuantityDoctor.setMedicine(medicine);
                         newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
+                        newMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
                         newMedicineWithQuantityDoctor.setDoctorContract(contract);
                         return newMedicineWithQuantityDoctor;
                     }
@@ -334,6 +339,7 @@ public class ContractService {
                             .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
                                     medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
                                     medicineWithQuantity.getQuote(),
+                                    medicineWithQuantity.getCorrection(),
                                     medicineWithQuantity.getDoctorContract().getAgentGoal()!=null?  medicineWithQuantity.getDoctorContract().getAgentGoal().getId():null,
                                     medicineWithQuantity.getContractMedicineDoctorAmount(),
                                     medicineWithQuantity.getMedicine()
@@ -482,7 +488,7 @@ public class ContractService {
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(), med.getQuote(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(), med.getQuote(),med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
@@ -507,7 +513,7 @@ public class ContractService {
 
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
                 .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(),
-                        med.getQuote(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+                        med.getQuote(),med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
