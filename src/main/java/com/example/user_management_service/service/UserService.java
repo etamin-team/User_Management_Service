@@ -169,6 +169,7 @@ public class UserService {
                 .map(existingUser -> {
                     // Update the fields of the existing user from the UserDTO
                     existingUser.setFirstName(updatedUser.getFirstName());
+                    existingUser.setStatus(updatedUser.getStatus());
                     existingUser.setLastName(updatedUser.getLastName());
                     existingUser.setMiddleName(updatedUser.getMiddleName());
                     existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
