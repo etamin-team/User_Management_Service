@@ -559,4 +559,8 @@ public class ContractService {
         return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    public List<ContractDTO> getAllContracts() {
+        List<Contract> contracts = contractRepository.findAll();
+        return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 }

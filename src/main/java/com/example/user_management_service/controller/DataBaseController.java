@@ -38,7 +38,7 @@ public class DataBaseController {
     private final SalesService salesService;
     private final RecipeService recipeService;
     private final ConditionsToPreparateService conditionsToPreparateService;
-
+    private final ContractService contractService;
 
 
     // medicine
@@ -72,15 +72,15 @@ public class DataBaseController {
 
 
     // contracts
-    @GetMapping("/contracts/{contractId}")
-    public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
-        Contract contract = dataBaseService.getContractById(contractId);
-        return ResponseEntity.ok(contract);
-    }
+//    @GetMapping("/contracts/{contractId}")
+//    public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
+//        Contract contract = dataBaseService.getContractById(contractId);
+//        return ResponseEntity.ok(contract);
+//    }
 
     @GetMapping("/contracts")
-    public ResponseEntity<List<Contract>> getAllContracts() {
-        List<Contract> contracts = dataBaseService.getAllContracts();
+    public ResponseEntity<List<ContractDTO>> getAllContracts() {
+        List<ContractDTO> contracts = contractService.getAllContracts();
         return ResponseEntity.ok(contracts);
     }
 
