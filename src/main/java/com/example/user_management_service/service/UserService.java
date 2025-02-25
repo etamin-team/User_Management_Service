@@ -196,10 +196,10 @@ public class UserService {
     }
 
 
-    public boolean deleteUser(String userId) {
-        Optional<User> user = userRepository.findById(UUID.fromString(userId));
+    public boolean deleteUser(UUID userId) {
+        Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()) {
-            userRepository.deleteById(UUID.fromString(userId));
+            userRepository.deleteById(userId);
             return true;
         }
         return false;
