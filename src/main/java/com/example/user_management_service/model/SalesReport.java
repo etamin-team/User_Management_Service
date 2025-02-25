@@ -34,4 +34,8 @@ public class SalesReport {
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 
+    @ManyToOne
+    @JoinColumn(name = "quantity_id", referencedColumnName = "id")
+    private MedicineWithQuantityDoctor medicineWithQuantityDoctor;
+
 }

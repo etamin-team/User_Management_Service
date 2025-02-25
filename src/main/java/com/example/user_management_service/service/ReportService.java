@@ -67,6 +67,8 @@ public class ReportService {
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
             report.setSold(dto.getSold());
+            MedicineWithQuantityDoctor medicineWithQuantityDoctor = medicineWithQuantityDoctorRepository.findById(dto.getQuantityId()).orElseThrow(()->new ReportException("Not found"));
+            report.setMedicineWithQuantityDoctor(medicineWithQuantityDoctor);
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
