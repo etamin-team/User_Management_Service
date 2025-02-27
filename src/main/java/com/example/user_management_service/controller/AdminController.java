@@ -163,11 +163,12 @@ public class AdminController {
     // Doctor Contract
 
 
-    @GetMapping("/doctor/contracts/pending-review")
-    public ResponseEntity<Page<ContractDTO>> getPendingReviewContracts(
+    @GetMapping("/doctor/contracts/status")
+    public ResponseEntity<Page<ContractDTO>> getContractsByStatus(
+            @RequestParam GoalStatus goalStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTO> contracts = contractService.getPendingReviewContracts(page, size);
+        Page<ContractDTO> contracts = contractService.getContractsByStatus(goalStatus,page, size);
         return ResponseEntity.ok(contracts);
     }
 

@@ -355,9 +355,9 @@ public class ContractService {
     }
 
 
-    public Page<ContractDTO> getPendingReviewContracts(int page, int size) {
+    public Page<ContractDTO> getContractsByStatus(GoalStatus goalStatus, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Contract> contracts = contractRepository.findByStatus(GoalStatus.PENDING_REVIEW, pageable);
+        Page<Contract> contracts = contractRepository.findByStatus(goalStatus, pageable);
         return contracts.map(this::convertToDTO);
     }
 
