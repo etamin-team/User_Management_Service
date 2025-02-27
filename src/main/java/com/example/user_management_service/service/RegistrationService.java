@@ -107,11 +107,21 @@ public class RegistrationService {
 
     public UserDTO register(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
         User user = createUserRequest(request, role);
-        user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
         user.setCreatorId(String.valueOf(creatorId));
         User save = userRepository.save(user);
+        if (role.equals(Role.DOCTOR)){
+            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).orElseThrow(
+                    () -> new DataNotFoundException("Work Place Not Found")
+            );
+            save.setFieldName(request.getFieldName());
+            if (request.getFieldName().equals(Field.CHIEFDOCTOR)){
+                workPlace.setChiefDoctor(save);
+            }
+            save.setWorkplace(workPlace);
+        }
+        userRepository.save(save);
         return userService.convertToDTO(save) ;
     }
 
@@ -122,6 +132,7 @@ public class RegistrationService {
             District district = districtRegionService.getDistrict(request.getDistrictId());
             newUser.setDistrict(district);
         }
+        newUser.setUserId(UUID.randomUUID());
         newUser.setFirstName(request.getFirstName());
         newUser.setMiddleName(request.getMiddleName());
         newUser.setLastName(request.getLastName());
@@ -136,15 +147,6 @@ public class RegistrationService {
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
         newUser.setDateOfBirth(request.getBirthDate());
-        if (role.equals(Role.DOCTOR)||role.equals(Role.MEDAGENT)) {
-            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).orElseThrow(
-                    () -> new DataNotFoundException("Work Place Not Found")
-            );
-            newUser.setWorkplace(workPlace);
-        }
-        if (role.equals(Role.DOCTOR)){
-            newUser.setFieldName(request.getFieldName());
-        }
 
         return newUser;
     }
@@ -164,7 +166,6 @@ public class RegistrationService {
 
     private User createUserFromRequest(RegisterRequest request, Role role, UserStatus userStatus, UUID creatorId) {
         User user = createUserRequest(request, role);
-        user.setUserId(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
         user.setCreatorId(String.valueOf(creatorId));

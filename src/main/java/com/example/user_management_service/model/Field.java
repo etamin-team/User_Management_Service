@@ -9,5 +9,6 @@ public enum Field {
     ENDOCRINOLOGIST,
     GASTROENTEROLOGIST,
     TRAUMATOLOGIST,
-    NONE
+    NONE,
+    CHIEFDOCTOR
 }
