@@ -14,12 +14,7 @@ import java.util.UUID;
 @Repository
 public interface AgentGoalRepository extends JpaRepository<AgentGoal, Long> {
     @Query("SELECT ac FROM AgentGoal ac WHERE ac.medAgent.userId = :medAgentId "+
-            "AND ac.startDate <= CURRENT_DATE " +
-            "AND ac.endDate > CURRENT_DATE")
+            "AND ac.status = 'APPROVED' ")
     Optional<AgentGoal> getGoalsByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
 
-
-    @Query("SELECT m FROM AgentGoal m WHERE m.medAgent.userId = :medAgentId " +
-            "AND m.endDate IS NULL")
-    Optional<AgentGoal> getNullEndDateGoalByAgentId(@Param("medAgentId") UUID medAgentId);
 }

@@ -25,6 +25,9 @@ public class ManagerGoal {
     private User managerId;
 
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private GoalStatus status = GoalStatus.APPROVED;
 
     @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
     private List<FieldGoalQuantity> fieldGoalQuantities;

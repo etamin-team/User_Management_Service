@@ -34,6 +34,11 @@ public class AgentGoal {
     @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL)
     private List<MedicineWithQuantity> medicinesWithQuantities;
 
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private GoalStatus status = GoalStatus.APPROVED;
+
     @ManyToOne
     @JoinColumn(name = "contract_district_amount_id", referencedColumnName = "id")
     private DistrictGoalQuantity districtGoalQuantity;
