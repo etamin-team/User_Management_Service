@@ -29,6 +29,7 @@ public class UserService {
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
     private final DistrictRegionService districtRegionService;
+    private final RecipeService recipeService;
 
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
@@ -69,7 +70,8 @@ public class UserService {
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
                 user.getDistrict()==null ? null : user.getDistrict().getId(),
                 user.getRole(),
-                districtRegionService.regionDistrictDTO(user.getDistrict())
+                districtRegionService.regionDistrictDTO(user.getDistrict()),
+                recipeService.convertToDTO(user.getWorkplace())
         );
     }
 

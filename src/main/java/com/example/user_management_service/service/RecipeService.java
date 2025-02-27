@@ -109,6 +109,7 @@ public class RecipeService {
     }
 
     public WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
+        if (workPlace==null) return null;
         return new WorkPlaceDTO(
                 workPlace.getId(),
                 workPlace.getName(),

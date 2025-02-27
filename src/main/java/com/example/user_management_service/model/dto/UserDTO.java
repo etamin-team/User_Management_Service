@@ -38,4 +38,5 @@ public class UserDTO {
     private Role role;
 
     private RegionDistrictDTO regionDistrictDTO;
+    private WorkPlaceDTO workPlaceDTO;
 }
