@@ -36,6 +36,7 @@ public class RecipeService {
     ;
     private final UserRepository userRepository;
     private final UserService userService;
+    private RegistrationService registrationService;
 
 
     public void saveRecipe(RecipeDto recipeDto) {
@@ -108,8 +109,7 @@ public class RecipeService {
         );
     }
 
-    public WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
-        if (workPlace==null) return null;
+    private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
         return new WorkPlaceDTO(
                 workPlace.getId(),
                 workPlace.getName(),
@@ -117,12 +117,14 @@ public class RecipeService {
                 workPlace.getDescription(),
                 workPlace.getPhone(),
                 workPlace.getEmail(),
-                workPlace.getMedicalInstitutionType(),
+                workPlace.getMedicalInstitutionType(), // Include MedicalInstitutionType here
                 workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
                 workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
         );
 
+
     }
+
 
     private UserFullNameDTO convertToUserFullNameDTO(User user) {
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());

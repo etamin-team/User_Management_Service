@@ -2,8 +2,10 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
 import com.example.user_management_service.model.dto.UserDTO;
+import com.example.user_management_service.model.dto.WorkPlaceDTO;
 import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
@@ -29,7 +31,6 @@ public class UserService {
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
     private final DistrictRegionService districtRegionService;
-    private final RecipeService recipeService;
 
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
@@ -71,10 +72,24 @@ public class UserService {
                 user.getDistrict()==null ? null : user.getDistrict().getId(),
                 user.getRole(),
                 districtRegionService.regionDistrictDTO(user.getDistrict()),
-                recipeService.convertToDTO(user.getWorkplace())
+                convertToDTO(user.getWorkplace())
         );
     }
+    private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
+        return new WorkPlaceDTO(
+                workPlace.getId(),
+                workPlace.getName(),
+                workPlace.getAddress(),
+                workPlace.getDescription(),
+                workPlace.getPhone(),
+                workPlace.getEmail(),
+                workPlace.getMedicalInstitutionType(), // Include MedicalInstitutionType here
+                workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
+                workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
+        );
 
+
+    }
 
     public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);

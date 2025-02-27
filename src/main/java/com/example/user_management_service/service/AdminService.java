@@ -47,36 +47,14 @@ public class AdminService {
     private final ContractRepository contractRepository;
     private final RecipeRepository recipeRepository;
     private final DistrictRegionService districtRegionService;
-    private final RecipeService recipeService;
+    private final UserService userService;
 
     public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(Pageable pageable) {
         return userRepository.findDoctorsByStatus(Role.DOCTOR, UserStatus.PENDING, pageable)
-                .map(this::convertToDTO);
+                .map((data)->userService.convertToDTO(data));
     }
 
-    private UserDTO convertToDTO(User user) {
-        return new UserDTO(
-                user.getUserId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getMiddleName(),
-                user.getDateOfBirth(),
-                user.getPhoneNumber(),
-                user.getNumber(),
-                user.getEmail(),
-                user.getPosition(),
-                user.getFieldName(),
-                user.getGender(),
-                user.getStatus(),
-                user.getCreatorId(),
-                user.getWorkplace() == null ? null : user.getWorkplace().getId(),
-                user.getDistrict().getId(),
-                user.getRole(),
-                districtRegionService.regionDistrictDTO(user.getDistrict()),
-                recipeService.convertToDTO(user.getWorkplace())
 
-        );
-    }
 
     public void enableUser(UUID id) {
         User user = userRepository.findById(id)
