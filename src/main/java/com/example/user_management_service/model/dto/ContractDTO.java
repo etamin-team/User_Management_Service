@@ -36,4 +36,6 @@ public class ContractDTO {
     private List<MedicineWithQuantityDTO> medicinesWithQuantities;
 
     private RegionDistrictDTO regionDistrictDTO;
+
+    private UserDTO user;
 }

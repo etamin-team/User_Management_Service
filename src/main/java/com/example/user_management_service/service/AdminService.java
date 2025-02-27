@@ -70,7 +70,9 @@ public class AdminService {
                 user.getCreatorId(),
                 user.getWorkplace() == null ? null : user.getWorkplace().getId(),
                 user.getDistrict().getId(),
-                user.getRole()
+                user.getRole(),
+                districtRegionService.regionDistrictDTO(user.getDistrict())
+
         );
     }
 

@@ -28,6 +28,8 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
+    private final DistrictRegionService districtRegionService;
+
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
     }
@@ -66,7 +68,8 @@ public class UserService {
                 user.getCreatorId(),
                 user.getWorkplace()==null ? null : user.getWorkplace().getId(),
                 user.getDistrict()==null ? null : user.getDistrict().getId(),
-                user.getRole()
+                user.getRole(),
+                districtRegionService.regionDistrictDTO(user.getDistrict())
         );
     }
 

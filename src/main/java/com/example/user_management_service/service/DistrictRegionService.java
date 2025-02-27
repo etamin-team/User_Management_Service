@@ -159,6 +159,7 @@ public class DistrictRegionService {
         );
     }
     public RegionDistrictDTO regionDistrictDTO(District district){
+        if (district==null)return null;
         return new RegionDistrictDTO(
                 district.getRegion().getId(),
                 district.getRegion().getName(),

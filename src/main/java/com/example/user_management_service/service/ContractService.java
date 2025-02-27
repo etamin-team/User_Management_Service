@@ -32,6 +32,7 @@ public class ContractService {
     private final DistrictRegionService districtRegionService;
     private final ContractDistrictAmountRepository contractDistrictAmountRepository;
     private final ManagerGoalRepository managerGoalRepository;
+    private final UserService userService;
     private MedicineWithQuantityRepository medicineWithQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
@@ -346,7 +347,8 @@ public class ContractService {
                             ))
                             .collect(Collectors.toList())
                             : Collections.emptyList(),
-                    districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict())
+                    districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict()),
+                    userService.convertToDTO(contract.getDoctor())
             );
         }catch (Exception e){
             throw new DoctorContractException("Converting problem server error");

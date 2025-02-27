@@ -36,4 +36,6 @@ public class UserDTO {
     private Long workplaceId;
     private Long districtId;
     private Role role;
+
+    private RegionDistrictDTO regionDistrictDTO;
 }
