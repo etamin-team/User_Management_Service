@@ -54,6 +54,7 @@ public class UserService {
         return false;
     }
     public UserDTO convertToDTO(User user) {
+
         return new UserDTO(
                 user.getUserId(),
                 user.getFirstName(),
@@ -76,6 +77,7 @@ public class UserService {
         );
     }
     private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
+        if (workPlace==null)return null;
         return new WorkPlaceDTO(
                 workPlace.getId(),
                 workPlace.getName(),
