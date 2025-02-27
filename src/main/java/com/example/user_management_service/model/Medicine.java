@@ -38,6 +38,8 @@ public class Medicine {
     @Column(name = "image_url")
     private String imageUrl;
 
+    private String inn;
+
     private Long cip;
 
     private Integer quantity;
