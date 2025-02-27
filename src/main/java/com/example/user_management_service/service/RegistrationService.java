@@ -117,6 +117,9 @@ public class RegistrationService {
             );
             save.setFieldName(request.getFieldName());
             if (request.getFieldName().equals(Field.CHIEFDOCTOR)){
+                User oldChiefDoctor=workPlace.getChiefDoctor();
+                oldChiefDoctor.setFieldName(Field.NONE);
+                userRepository.save(oldChiefDoctor);
                 workPlace.setChiefDoctor(save);
             }
             save.setWorkplace(workPlace);
