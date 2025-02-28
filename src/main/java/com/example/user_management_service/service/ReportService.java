@@ -2,10 +2,7 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.*;
-import com.example.user_management_service.model.dto.DoctorReportDTO;
-import com.example.user_management_service.model.dto.DoctorReportListDTO;
-import com.example.user_management_service.model.dto.SalesReportDTO;
-import com.example.user_management_service.model.dto.SalesReportListDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
@@ -67,8 +64,9 @@ public class ReportService {
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
             report.setSold(dto.getSold());
-            MedicineWithQuantityDoctor medicineWithQuantityDoctor = medicineWithQuantityDoctorRepository.findById(dto.getQuantityId()).orElseThrow(()->new ReportException("Not found"));
-            report.setMedicineWithQuantityDoctor(medicineWithQuantityDoctor);
+            dto.getMedicineWithQuantityDoctors()
+                    .stream()
+                    .forEach(this::saveQualities);
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
@@ -76,6 +74,12 @@ public class ReportService {
 
             salesReportRepository.save(report);
         }
+    }
+
+    private void saveQualities(MedicineWithQuantityDTO medicineWithQuantityDoctors) {
+        MedicineWithQuantityDoctor medicineWithQuantityDoctor = medicineWithQuantityDoctorRepository.findById(medicineWithQuantityDoctors.getQuantityId()).orElseThrow(()->new ReportException("Not found"));
+        medicineWithQuantityDoctor.setCorrection(medicineWithQuantityDoctors.getCorrection());
+        medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
     }
 
     @Transactional

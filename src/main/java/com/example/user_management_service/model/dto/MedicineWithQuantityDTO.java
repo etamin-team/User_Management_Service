@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MedicineWithQuantityDTO {
-
+    private Long quantityId;
     private Long medicineId;
     private Long quote;
     private Long correction;

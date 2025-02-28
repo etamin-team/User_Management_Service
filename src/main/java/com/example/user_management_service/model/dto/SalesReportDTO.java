@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Date-2/25/2025
  * By Sardor Tokhirov
@@ -17,10 +19,9 @@ public class SalesReportDTO {
 
     private Long id;
     private Long medicineId;
-    private Long quantityId;
     private Long written ;
     private Long allowed ;
     private Long sold ;
 
-    private MedicineWithQuantityDTO medicineWithQuantityDoctor;
+    private List<MedicineWithQuantityDTO> medicineWithQuantityDoctors;
 }
