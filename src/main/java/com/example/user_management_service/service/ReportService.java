@@ -30,6 +30,38 @@ public class ReportService {
     private final MedicineRepository medicineRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
 
+    public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, districtId, workplaceId, fieldName);
+
+        return contracts.stream().map(contract -> {
+            SalesReportDTO dto = new SalesReportDTO();
+            dto.setMedicineId(medicineId);
+            dto.setId(contract.getId());
+
+            // Fetch related SalesReport
+            SalesReport report = salesReportRepository.findByMedicineId(medicineId)
+                    .orElseThrow(() -> new ReportException("Sales Report not found"));
+
+            dto.setWritten(report.getWritten());
+            dto.setAllowed(report.getAllowed());
+            dto.setSold(report.getSold());
+
+            // Fetch related MedicineWithQuantityDoctors
+            List<MedicineWithQuantityDTO> medicineList = medicineWithQuantityDoctorRepository
+                    .findByMedicineId(medicineId)
+                    .stream()
+                    .map(medicine -> new MedicineWithQuantityDTO(medicine.getId(),medicineId,medicine.getQuote(),medicine.getCorrection(),null,medicine.getContractMedicineDoctorAmount(), medicine.getMedicine()))
+                    .collect(Collectors.toList());
+
+            dto.setMedicineWithQuantityDoctors(medicineList);
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+
+
+
     public DoctorReportDTO getDoctorReports( Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         Long allowed = contractRepository.findTotalAllowed(medicineId,query, districtId, workplaceId, fieldName);

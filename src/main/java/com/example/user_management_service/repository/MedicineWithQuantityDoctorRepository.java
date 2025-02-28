@@ -2,12 +2,14 @@ package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicineWithQuantityDoctor;
+import com.example.user_management_service.model.SalesReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -61,5 +63,8 @@ public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<Med
             nativeQuery = true)
     Long getTotalQuotesByDistrict(
             @Param("districtId") Long districtId);
+
+    @Query("SELECT s FROM MedicineWithQuantityDoctor s WHERE :medicineId IS NULL OR s.medicine.id = :medicineId")
+    Optional<MedicineWithQuantityDoctor> findByMedicineId(@Param("medicineId") Long medicineId);
 
 }

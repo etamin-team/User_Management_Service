@@ -26,16 +26,29 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/{meidcineId}")
+    @GetMapping("/{medicineId}")
     public ResponseEntity<DoctorReportDTO> getDoctorReports(
-            @PathVariable Long meidcineId,
+            @PathVariable Long medicineId,
             @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) Field fieldName) {
-        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(meidcineId,query, districtId, workplaceId, fieldName);
+        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,query, districtId, workplaceId, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
+    @GetMapping("/admin/{medicineId}")
+    public ResponseEntity<List<SalesReportDTO>> getSalesReports(
+            @RequestParam Long medicineId,
+            @RequestParam(required = false, defaultValue = "") String query,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) Field fieldName) {
+
+        List<SalesReportDTO> salesReports = reportService.getSalesReportsByFilters(medicineId, query, districtId, workplaceId, fieldName);
+        return ResponseEntity.ok(salesReports);
+    }
+
+
     @PostMapping("/save")
     public ResponseEntity<String> saveSalesReports(@RequestBody SalesReportListDTO salesReportListDTO) {
         reportService.saveSalesReports(salesReportListDTO);
