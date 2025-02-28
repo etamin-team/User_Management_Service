@@ -159,6 +159,7 @@ public class DashboardService {
             List<Region> regions = regionRepository.findAll();
             for (Region region : regions) {
                 RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
+                recordStatsEmployeeFactDTO.setId(String.valueOf(region.getId()));
                 recordStatsEmployeeFactDTO.setName(region.getName());
                 recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByRegionId(region.getId()));
                 recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByRegionId(region.getId()));
@@ -175,6 +176,7 @@ public class DashboardService {
         List<District> districts = districtRepository.findByRegionId(regionId);
         for (District district : districts) {
             RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
+            recordStatsEmployeeFactDTO.setId(String.valueOf(district.getId()));
             recordStatsEmployeeFactDTO.setName(district.getName());
             recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByDistrictId(district.getId()));
             recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByDistrictId(district.getId()));
