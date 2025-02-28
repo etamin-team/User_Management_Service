@@ -123,16 +123,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
     SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
-    JOIN WorkPlace w
-    WHERE w.district.id = :districtId
+    WHERE u.district.id = :districtId
     GROUP BY u.fieldName
 """)
     List<RegionFieldDTO>  countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
 
     @Query("""
-    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
-    JOIN WorkPlace w 
-    WHERE w.district.region.id = :regionId
+    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u  
+    WHERE u.district.region.id = :regionId
     GROUP BY u.fieldName
 """)
     List<RegionFieldDTO> countUsersByFieldAndRegion(@Param("regionId") Long regionId);
@@ -141,15 +139,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
     SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u))  FROM User u 
-    JOIN WorkPlace w 
     GROUP BY u.fieldName
 """)
     List<RegionFieldDTO>  countUsersByFieldAndRegion();
 
     @Query("""
     SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
-    JOIN WorkPlace w 
-    WHERE w.id = :workplaceId
+    WHERE u.workplace.id = :workplaceId
     GROUP BY u.fieldName
 """)
     List<RegionFieldDTO> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
