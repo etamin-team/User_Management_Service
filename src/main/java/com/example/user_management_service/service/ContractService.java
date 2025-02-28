@@ -164,7 +164,7 @@ public class ContractService {
             System.out.println("4444444444444444444444444444444444444444444444444444444444");
 
             for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
-                if (fieldGoalQuantity.getField().equals(contractDTO.getUser().getFieldName())) {
+                if (fieldGoalQuantity.getField().equals(doctor.getFieldName())) {
                     // Field already exists, update amounts
                     ContractFieldAmount contractFieldAmount = fieldGoalQuantity.getContractFieldAmount();
                     contractFieldAmount.setAmount(contractFieldAmount.getAmount() + 1);
@@ -178,7 +178,7 @@ public class ContractService {
 
             if (fieldWithQuantities != null) {
                 boolean isExists = fieldWithQuantities.stream()
-                        .noneMatch(fieldWithQuantity -> fieldWithQuantity.getField().equals(contractDTO.getUser().getFieldName()));
+                        .noneMatch(fieldWithQuantity -> fieldWithQuantity.getField().equals(doctor.getFieldName()));
                 if (isExists) {
                     System.out.println("7777777777777777777777777777777777777777777777777777");
 
@@ -186,7 +186,7 @@ public class ContractService {
                     newMedAgentFieldAmount.setAmount(1l);
                     contractFieldAmountRepository.save(newMedAgentFieldAmount);
                     FieldWithQuantity newFieldWithQuantity = new FieldWithQuantity();
-                    newFieldWithQuantity.setField(contractDTO.getUser().getFieldName());
+                    newFieldWithQuantity.setField(doctor.getFieldName());
                     newFieldWithQuantity.setQuote(0l);
                     newFieldWithQuantity.setAgentGoal(agentGoal);
                     newFieldWithQuantity.setContractFieldMedAgentAmount(newMedAgentFieldAmount);
@@ -198,7 +198,7 @@ public class ContractService {
                 System.out.println("99999999999999999999999999999999999999999");
 
                 for (FieldWithQuantity fieldWithQuantity : fieldWithQuantities) {
-                    if (fieldWithQuantity.getField().equals(contractDTO.getUser().getFieldName())) {
+                    if (fieldWithQuantity.getField().equals(doctor.getFieldName())) {
                         ContractFieldAmount medAgentAmount = fieldWithQuantity.getContractFieldMedAgentAmount();
                         medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
                     }
@@ -213,7 +213,7 @@ public class ContractService {
                 newMedAgentFieldAmount.setAmount(1l);
                 contractFieldAmountRepository.save(newMedAgentFieldAmount);
                 FieldWithQuantity newFieldWithQuantity = new FieldWithQuantity();
-                newFieldWithQuantity.setField(contractDTO.getUser().getFieldName());
+                newFieldWithQuantity.setField(doctor.getFieldName());
                 newFieldWithQuantity.setQuote(0l);
                 newFieldWithQuantity.setAgentGoal(agentGoal);
                 newFieldWithQuantity.setContractFieldMedAgentAmount(newMedAgentFieldAmount);
