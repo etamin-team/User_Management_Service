@@ -6,5 +6,5 @@ package com.example.user_management_service.model;
  * Time-5:02 PM (GMT+5)
  */
 public enum MedicineQuantity {
-    ITEM, ML, GR, MG
+    ITEM, ML, GR, MG,MCG,IU,UNITS,MIU
 }
