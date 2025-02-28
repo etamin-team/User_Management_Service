@@ -29,8 +29,13 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
-            "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW')")
+            "AND (c.status = 'APPROVED' )")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
+
+    @Query("SELECT c FROM Contract c " +
+            "WHERE c.doctor.userId = :doctorId " +
+            "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW')")
+    Optional<Contract> findActiveOrPendingContractByDoctorId(@Param("doctorId") UUID doctorId);
 
 
 

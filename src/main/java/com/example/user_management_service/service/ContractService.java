@@ -132,7 +132,7 @@ public class ContractService {
 
 
     public ContractDTO medAgentCreateContractIfGoalExists(ContractDTO contractDTO) {
-        if (contractRepository.findActiveContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
+        if (contractRepository.findActiveOrPendingContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
             throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:" + contractDTO.getDoctorId());
         }
         // Fetch the agent contract based on the agentId
@@ -145,6 +145,7 @@ public class ContractService {
         // Fetch the doctor based on doctorId
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
+        System.out.println("1111111111111111111111111111111111111111");
         if (agentGoal.getDistrictGoalQuantity() != null && agentGoal.getDistrictGoalQuantity().getDistrict() != null && doctor.getDistrict().getId() == agentGoal.getDistrictGoalQuantity().getDistrict().getId()) {
             ContractDistrictAmount contractDistrictAmount = agentGoal.getDistrictGoalQuantity().getContractDistrictAmount();
             contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
@@ -152,10 +153,16 @@ public class ContractService {
         }
 
         // Fetch fields from ManagerGoal
+        System.out.println("2222222222222222222222222222222222222222222222222");
+
         List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
+            System.out.println("33333333333333333333333333333333333333333333333333");
+
 //            throw new DoctorContractException("No fields found in ManagerGoal.");
         } else {
+            System.out.println("4444444444444444444444444444444444444444444444444444444444");
+
             for (FieldGoalQuantity fieldGoalQuantity : fieldGoalQuantities) {
                 if (fieldGoalQuantity.getField().equals(contractDTO.getUser().getFieldName())) {
                     // Field already exists, update amounts
@@ -164,6 +171,8 @@ public class ContractService {
                     contractFieldAmountRepository.save(contractFieldAmount);
                 }
             }
+            System.out.println("5555555555555555555555555555555555555555555555555555555555");
+
             List<FieldWithQuantity> fieldWithQuantities = agentGoal.getFieldWithQuantities();
 
 
@@ -171,6 +180,8 @@ public class ContractService {
                 boolean isExists = fieldWithQuantities.stream()
                         .noneMatch(fieldWithQuantity -> fieldWithQuantity.getField().equals(contractDTO.getUser().getFieldName()));
                 if (isExists) {
+                    System.out.println("7777777777777777777777777777777777777777777777777777");
+
                     ContractFieldAmount newMedAgentFieldAmount = new ContractFieldAmount();
                     newMedAgentFieldAmount.setAmount(1l);
                     contractFieldAmountRepository.save(newMedAgentFieldAmount);
@@ -181,15 +192,22 @@ public class ContractService {
                     newFieldWithQuantity.setContractFieldMedAgentAmount(newMedAgentFieldAmount);
                     fieldWithQuantityRepository.save(newFieldWithQuantity);
                     fieldWithQuantities.add(newFieldWithQuantity);
+                    System.out.println("888888888888888888888888888888888888888888888888888888");
+
                 }
+                System.out.println("99999999999999999999999999999999999999999");
+
                 for (FieldWithQuantity fieldWithQuantity : fieldWithQuantities) {
                     if (fieldWithQuantity.getField().equals(contractDTO.getUser().getFieldName())) {
                         ContractFieldAmount medAgentAmount = fieldWithQuantity.getContractFieldMedAgentAmount();
                         medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
                     }
                 }
+                System.out.println("1000000000000000000000000000000000000");
 
             } else {
+                System.out.println("1111111111111111111                 111111111111111111111");
+
                 fieldWithQuantities = new ArrayList<>();
                 ContractFieldAmount newMedAgentFieldAmount = new ContractFieldAmount();
                 newMedAgentFieldAmount.setAmount(1l);
@@ -202,13 +220,16 @@ public class ContractService {
                 fieldWithQuantityRepository.save(newFieldWithQuantity);
                 fieldWithQuantities.add(newFieldWithQuantity);
 
+                System.out.println("1222222222222222222222111111111111111111111111");
+
+
             }
             agentGoal.setFieldWithQuantities(fieldWithQuantities);
 
 
             agentGoalRepository.save(agentGoal);
         }
-
+        System.out.println("11111111111111113333333333333333333333333333333333");
         // Create a new Contract instance
         Contract contract = new Contract();
         contract.setDoctor(doctor);
@@ -256,7 +277,10 @@ public class ContractService {
 
         contract.setMedicineWithQuantityDoctors(medicineWithQuantityDoctors);
 
+        System.out.println("11111111111144444444444444444444444444444444444444441111111111111111");
+
         Contract savedContract = contractRepository.save(contract);
+        System.out.println("5555555555511111111111111111111111111111111111111111");
 
         return convertToDTO(savedContract);
     }
@@ -505,9 +529,35 @@ public class ContractService {
     }
 
     public ContractAmountDTO getContractByDoctorId(UUID doctorId) {
+        Optional<Contract> contractOptional = contractRepository.findActiveOrPendingContractByDoctorId(doctorId);
+        if (contractOptional.isEmpty()) {
+            throw new ContractNotFoundException("Contracts not found for doctorId: " + doctorId);
+        }
+
+        Contract contract = contractOptional.get();
+
+        ContractAmountDTO contractDTO = new ContractAmountDTO();
+        contractDTO.setId(contract.getId());
+        contractDTO.setDoctorId(contract.getDoctor().getUserId());
+        contractDTO.setCreatedAt(contract.getCreatedAt());
+        contractDTO.setStartDate(contract.getStartDate());
+        contractDTO.setEndDate(contract.getEndDate());
+        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
+
+        List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
+                .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(),
+                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+                .collect(Collectors.toList());
+
+        contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
+
+
+        return contractDTO;
+    }
+    public ContractAmountDTO getActiveContractByDoctorId(UUID doctorId) {
         Optional<Contract> contractOptional = contractRepository.findActiveContractByDoctorId(doctorId);
         if (contractOptional.isEmpty()) {
-            throw new ContractNotFoundException("ENABLED Contract not found for doctorId: " + doctorId);
+            throw new ContractNotFoundException("Contracts not found for doctorId: " + doctorId);
         }
 
         Contract contract = contractOptional.get();

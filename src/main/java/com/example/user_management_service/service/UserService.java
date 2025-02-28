@@ -54,7 +54,7 @@ public class UserService {
         return false;
     }
     public UserDTO convertToDTO(User user) {
-
+        if (user==null)return null;
         return new UserDTO(
                 user.getUserId(),
                 user.getFirstName(),

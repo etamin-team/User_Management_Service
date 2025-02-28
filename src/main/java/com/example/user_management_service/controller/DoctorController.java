@@ -73,7 +73,7 @@ public class DoctorController {
     }
     @GetMapping("/contract/doctor-id/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
-        ContractAmountDTO contractAmountDTO = contractService.getContractByDoctorId(doctorId);
+        ContractAmountDTO contractAmountDTO = contractService.getActiveContractByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
 
