@@ -119,4 +119,37 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     Long countByDistrictIdInFact(@Param("districtId") Long districtId);
 
+
+    @Query("""
+    SELECT u.fieldName, COUNT(u) FROM User u 
+    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    WHERE w.district.id = :districtId
+    GROUP BY u.fieldName
+""")
+    List<Object[]> countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
+
+    @Query("""
+    SELECT u.fieldName, COUNT(u) FROM User u 
+    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    WHERE w.district.region.id = :regionId
+    GROUP BY u.fieldName
+""")
+    List<Object[]> countUsersByFieldAndRegion(@Param("regionId") Long regionId);
+
+    @Query("""
+    SELECT u.fieldName, COUNT(u) FROM User u 
+    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    GROUP BY u.fieldName
+""")
+    List<Object[]> countUsersByFieldAndRegion();
+
+    @Query("""
+    SELECT u.fieldName, COUNT(u) FROM User u 
+    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    WHERE w.id = :workplaceId
+    GROUP BY u.fieldName
+""")
+    List<Object[]> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
+
+
 }
