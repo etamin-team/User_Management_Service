@@ -17,11 +17,13 @@ import java.util.List;
 public interface SalesRepository extends JpaRepository<Sales, Long> {
 
     @Query("""
-        SELECT s FROM Sales s 
-        WHERE (:startDate IS NULL OR s.startDate >= :startDate) AND  (:endDate IS NULL OR s.endDate <= :endDate)
-        """)
+    SELECT s FROM Sales s 
+    WHERE (:startDate IS NULL OR s.startDate >= :startDate) 
+      AND (:endDate IS NULL OR s.endDate <= :endDate)
+    """)
     List<Sales> findAllByStartAndEndDate(
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
 }
