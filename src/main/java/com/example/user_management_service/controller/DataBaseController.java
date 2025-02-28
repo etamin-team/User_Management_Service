@@ -7,14 +7,14 @@ import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.*;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -79,10 +79,28 @@ public class DataBaseController {
 //    }
 
     @GetMapping("/contracts")
-    public ResponseEntity<List<ContractDTO>> getAllContracts() {
-        List<ContractDTO> contracts = contractService.getAllContracts();
+    public ResponseEntity<Page<ContractDTO>> getAllContracts(
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workPlaceId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String middleName,
+            @RequestParam(required = false) Field fieldName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(required = false) Long medicineId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+
+        Page<ContractDTO> contracts = contractService.getFilteredContracts(
+                 regionId, districtId,workPlaceId, firstName, lastName, middleName, fieldName, startDate, endDate, medicineId, page,size);
+
         return ResponseEntity.ok(contracts);
     }
+
+
 
     @DeleteMapping("/contracts/{contractId}")
     public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {

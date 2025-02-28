@@ -561,8 +561,21 @@ public class ContractService {
         return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public List<ContractDTO> getAllContracts() {
-        List<Contract> contracts = contractRepository.findAll();
-        return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
+
+
+    public Page<ContractDTO> getFilteredContracts( Long regionId, Long districtId,Long workPlaceId,
+                                                  String firstName, String lastName, String middleName,
+                                                  Field fieldName, LocalDate startDate,
+                                                  LocalDate endDate, Long medicineId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Contract> contractPage = contractRepository.findContracts(regionId, districtId, workPlaceId,
+                firstName, lastName, middleName,
+                fieldName, startDate, endDate,
+                medicineId, pageable);
+
+        // Convert each Contract entity to DTO and maintain pagination
+        return contractPage.map(this::convertToDTO);
     }
+
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +28,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
 
     @Query("SELECT c FROM Contract c " +
-            "WHERE c.doctor.userId = :doctorId "  +
+            "WHERE c.doctor.userId = :doctorId " +
             "AND c.status = 'APPROVED'")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
 
@@ -50,7 +51,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     Integer countDoctorsByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
 
 
-
     @Query("SELECT COUNT(c) FROM Contract c WHERE c.medAgent.userId = :medAgentId")
     Integer countContractsByMedAgent(@Param("medAgentId") UUID medAgentId);
 
@@ -64,7 +64,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findAllByMedAgentId(@Param("agentId") UUID agentId);
 
 
-
     @Query("SELECT c FROM Contract c " +
             "JOIN c.medicineWithQuantityDoctors m " +
             "JOIN c.doctor d " +
@@ -76,7 +75,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
-    List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId,@Param("query") String query,
+    List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId, @Param("query") String query,
                                           @Param("districtId") Long districtId,
                                           @Param("workplaceId") Long workplaceId,
                                           @Param("fieldName") Field fieldName);
@@ -127,10 +126,37 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
-                          @Param("query") String query,
-                          @Param("districtId") Long districtId,
-                          @Param("workplaceId") Long workplaceId,
-                          @Param("fieldName") Field fieldName);
+                                @Param("query") String query,
+                                @Param("districtId") Long districtId,
+                                @Param("workplaceId") Long workplaceId,
+                                @Param("fieldName") Field fieldName);
 
 
+    @Query("SELECT DISTINCT c FROM Contract c "
+            + "LEFT JOIN c.medicineWithQuantityDoctors mwqd "
+            + "WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId)"
+            + "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) "
+            + "AND (:districtId IS NULL OR c.doctor.workplace.id= :workPlaceId) "
+            + "AND (:firstName IS NULL OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) "
+            + "AND (:lastName IS NULL OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) "
+            + "AND (:middleName IS NULL OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :middleName, '%'))) "
+            + "AND (:fieldName IS NULL OR LOWER(c.doctor.fieldName) LIKE LOWER(CONCAT('%', :fieldName, '%'))) "
+            + "AND (:startDate IS NULL OR c.startDate >= :startDate) "
+            + "AND (:endDate IS NULL OR c.endDate <= :endDate) "
+            + "AND (:medicineId IS NULL OR mwqd.medicine.id = :medicineId)")
+    Page<Contract> findContracts(@Param("regionId") Long regionId,
+                                 @Param("districtId") Long districtId,
+                                 @Param("workPlaceId") Long workPlaceId,
+                                 @Param("firstName") String firstName,
+                                 @Param("lastName") String lastName,
+                                 @Param("middleName") String middleName,
+                                 @Param("fieldName") Field fieldName,
+                                 @Param("startDate") LocalDate startDate,
+                                 @Param("endDate") LocalDate endDate,
+                                 @Param("medicineId") Long medicineId,
+                                 Pageable pageable);
 }
+
+
+
+
