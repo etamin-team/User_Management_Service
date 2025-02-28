@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 public class RecordStatsEmployeeFactDTO {
     private String id;
     private String name;
+    private String nameUzCyrillic;
+    private String nameUzLatin;
+    private String nameRussian;
     private long  lpuAmount;
     private long doctorsByDB;
     private long doctorsInFact;

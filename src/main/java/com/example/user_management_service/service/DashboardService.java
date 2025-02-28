@@ -161,6 +161,9 @@ public class DashboardService {
                 RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
                 recordStatsEmployeeFactDTO.setId(String.valueOf(region.getId()));
                 recordStatsEmployeeFactDTO.setName(region.getName());
+                recordStatsEmployeeFactDTO.setNameRussian(region.getNameRussian());
+                recordStatsEmployeeFactDTO.setNameUzCyrillic(region.getNameUzCyrillic());
+                recordStatsEmployeeFactDTO.setNameUzLatin(region.getNameUzLatin());
                 recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByRegionId(region.getId()));
                 recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByRegionId(region.getId()));
                 recordStatsEmployeeFactDTO.setDoctorsInFact(userRepository.countByRegionIdInFact(region.getId()));
@@ -178,6 +181,9 @@ public class DashboardService {
             RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
             recordStatsEmployeeFactDTO.setId(String.valueOf(district.getId()));
             recordStatsEmployeeFactDTO.setName(district.getName());
+            recordStatsEmployeeFactDTO.setNameRussian(district.getNameRussian());
+            recordStatsEmployeeFactDTO.setNameUzCyrillic(district.getNameUzCyrillic());
+            recordStatsEmployeeFactDTO.setNameUzLatin(district.getNameUzLatin());
             recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByDistrictId(district.getId()));
             recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByDistrictId(district.getId()));
             recordStatsEmployeeFactDTO.setDoctorsInFact(userRepository.countByDistrictIdInFact(district.getId()));
