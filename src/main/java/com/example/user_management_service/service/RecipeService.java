@@ -130,26 +130,26 @@ public class RecipeService {
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());
     }
 
-    public List<RecipeDto> filterRecipes(String nameQuery, UUID regionId, UUID districtId, Long  medicineId, Field doctorField, LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo,int page,
-                                         int size) {
+    public Page<RecipeDto> filterRecipes(String nameQuery, UUID regionId, UUID districtId, Long medicineId, Field doctorField,
+                                         LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
-        // Get name components (first, second, third name parts)
+        // Extract name components (first, second, third name parts)
         String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreation").descending());
 
-        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1,name2,name3,
-         regionId, districtId,
-                medicineId, doctorField, lastAnalysisFrom, lastAnalysisTo, pageable
-        );
+        // Fetch paged results
+        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,
+                medicineId, doctorField, lastAnalysisFrom,
+                lastAnalysisTo, pageable);
 
-        return recipes.stream()
-                .map(this::convertToDto)
-                .toList();
+        // Convert Recipe Page to RecipeDto Page
+        return recipes.map(this::convertToDto);
     }
+
 
     private RecipeDto convertToDto(Recipe recipe) {
         return new RecipeDto(

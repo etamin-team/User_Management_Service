@@ -209,11 +209,11 @@ public class DataBaseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        List<RecipeDto> recipes = recipeService.filterRecipes(
+        Page<RecipeDto> recipes = recipeService.filterRecipes(
                 nameQuery, regionId, districtId, medicineId, doctorField,
                 lastAnalysisFrom, lastAnalysisTo, page, size
         );
-        return ResponseEntity.ok(new PageImpl<>(recipes, PageRequest.of(page, size), recipes.size()));
+        return ResponseEntity.ok(recipes);
     }
 
 
