@@ -559,7 +559,7 @@ public class ContractService {
 
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
                 .map(med -> new MedicineWithQuantityDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+                        med.getQuote(), med.getCorrection(),med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
