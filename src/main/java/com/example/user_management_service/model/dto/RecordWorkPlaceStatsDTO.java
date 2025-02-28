@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecordWorkPlaceStatsDTO {
     private Field field;
-    private int doctorsByDB;
-    private int doctorsInFact;
+    private long doctorsByDB;
+    private long doctorsInFact;
 }

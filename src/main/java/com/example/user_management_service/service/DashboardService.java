@@ -54,17 +54,17 @@ public class DashboardService {
 
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillRegion();
         recordRegionDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
-//        List<Object[]> results = userRepository.countUsersByFieldAndRegion();
-//
-//        List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
-//        for (Object[] row : results) {
-//            RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
-//            workPlaceStatsDTO.setField((Field) row[0]);
-//            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
-//            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
-//            workPlaceStatsDTOS.add(workPlaceStatsDTO);
-//        }
-//        recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
+        List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion();
+
+        List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
+        for (RegionFieldDTO row : results) {
+            RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
+            workPlaceStatsDTO.setField( row.getField());
+            workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
+            workPlaceStatsDTOS.add(workPlaceStatsDTO);
+        }
+        recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
         recordDTO.setRecordRegionDTO(recordRegionDTO);
 
         return recordDTO;
@@ -93,14 +93,14 @@ public class DashboardService {
         RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrictAndWorkplace(workplaceId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
-        List<Object[]> results = userRepository.countUsersByFieldAndWorkplace(workplaceId);
+        List<RegionFieldDTO> results = userRepository.countUsersByFieldAndWorkplace(workplaceId);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
-        for (Object[] row : results) {
+        for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
-            workPlaceStatsDTO.setField((Field) row[0]);
-            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
-            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
+            workPlaceStatsDTO.setField(row.getField());
+            workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         RecordWorkPlaceDTO recordWorkPlaceDTO= new RecordWorkPlaceDTO();
@@ -113,14 +113,14 @@ public class DashboardService {
         RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrict(districtId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
-        List<Object[]> results = userRepository.countUsersByFieldAndDistrict(districtId);
+        List<RegionFieldDTO>  results = userRepository.countUsersByFieldAndDistrict(districtId);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
-        for (Object[] row : results) {
+        for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
-            workPlaceStatsDTO.setField((Field) row[0]);
-            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
-            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
+            workPlaceStatsDTO.setField(row.getField());
+            workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         RecordDistrictDTO recordDistrictDTO= new RecordDistrictDTO();
@@ -139,14 +139,14 @@ public class DashboardService {
 
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillDistrict(regionId);
         recordDistrictDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
-        List<Object[]> results = userRepository.countUsersByFieldAndRegion(regionId);
+        List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion(regionId);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
-        for (Object[] row : results) {
+        for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
-            workPlaceStatsDTO.setField((Field) row[0]);
-            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
-            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
+            workPlaceStatsDTO.setField(row.getField());
+            workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         recordDistrictDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);

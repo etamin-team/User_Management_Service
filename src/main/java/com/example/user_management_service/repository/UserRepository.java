@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.dto.RegionFieldDTO;
 import com.example.user_management_service.model.dto.StatsEmployeeDTO;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
@@ -121,35 +122,37 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
     @Query("""
-    SELECT u.fieldName, COUNT(u) FROM User u 
-    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
+    JOIN WorkPlace w
     WHERE w.district.id = :districtId
     GROUP BY u.fieldName
 """)
-    List<Object[]> countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
+    List<RegionFieldDTO>  countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
 
     @Query("""
-    SELECT u.fieldName, COUNT(u) FROM User u 
-    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
+    JOIN WorkPlace w 
     WHERE w.district.region.id = :regionId
     GROUP BY u.fieldName
 """)
-    List<Object[]> countUsersByFieldAndRegion(@Param("regionId") Long regionId);
+    List<RegionFieldDTO> countUsersByFieldAndRegion(@Param("regionId") Long regionId);
+
+
 
     @Query("""
-    SELECT u.fieldName, COUNT(u) FROM User u 
-    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u))  FROM User u 
+    JOIN WorkPlace w 
     GROUP BY u.fieldName
 """)
-    List<Object[]> countUsersByFieldAndRegion();
+    List<RegionFieldDTO>  countUsersByFieldAndRegion();
 
     @Query("""
-    SELECT u.fieldName, COUNT(u) FROM User u 
-    JOIN WorkPlace w ON w.chiefDoctor.userId = u.userId
+    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
+    JOIN WorkPlace w 
     WHERE w.id = :workplaceId
     GROUP BY u.fieldName
 """)
-    List<Object[]> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
+    List<RegionFieldDTO> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
 
 
 }
