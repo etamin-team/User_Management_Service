@@ -54,17 +54,17 @@ public class DashboardService {
 
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillRegion();
         recordRegionDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
-        List<Object[]> results = userRepository.countUsersByFieldAndRegion();
-
-        List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
-        for (Object[] row : results) {
-            RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
-            workPlaceStatsDTO.setField((Field) row[0]);
-            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
-            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
-            workPlaceStatsDTOS.add(workPlaceStatsDTO);
-        }
-        recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
+//        List<Object[]> results = userRepository.countUsersByFieldAndRegion();
+//
+//        List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
+//        for (Object[] row : results) {
+//            RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
+//            workPlaceStatsDTO.setField((Field) row[0]);
+//            workPlaceStatsDTO.setDoctorsByDB((Integer) row[1]);
+//            workPlaceStatsDTO.setDoctorsInFact((Integer) row[1]);
+//            workPlaceStatsDTOS.add(workPlaceStatsDTO);
+//        }
+//        recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
         recordDTO.setRecordRegionDTO(recordRegionDTO);
 
         return recordDTO;
