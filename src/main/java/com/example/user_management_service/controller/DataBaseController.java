@@ -200,8 +200,8 @@ public class DataBaseController {
     @GetMapping("/recipes")
     public ResponseEntity<Page<RecipeDto>> filterRecipes(
             @RequestParam(required = false) String nameQuery,
-            @RequestParam(required = false) UUID regionId,
-            @RequestParam(required = false) UUID districtId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) Field doctorField,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastAnalysisFrom,

@@ -130,7 +130,7 @@ public class RecipeService {
         return new UserFullNameDTO(user.getFirstName(), user.getLastName(), user.getMiddleName());
     }
 
-    public Page<RecipeDto> filterRecipes(String nameQuery, UUID regionId, UUID districtId, Long medicineId, Field doctorField,
+    public Page<RecipeDto> filterRecipes(String nameQuery, Long regionId, Long districtId, Long medicineId, Field doctorField,
                                          LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
