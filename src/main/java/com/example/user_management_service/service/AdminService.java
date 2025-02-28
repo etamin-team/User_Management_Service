@@ -713,7 +713,7 @@ public class AdminService {
         // Mapping MedicineWithQuantity to MedicineWithQuantityDTO
         List<MedicineWithQuantityDTO> medicineWithQuantityDTOS = agentGoal.getMedicinesWithQuantities().stream()
                 .map(med -> new MedicineWithQuantityDTO(med.getMedicine().getId(),
-                        med.getQuote(), med.getQuote(), med.getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine()))  // mapping to DTO
+                        med.getQuote(), med.getQuote(), med.getAgentGoal().getId(), med.getContractMedicineMedAgentAmount(), med.getMedicine()))  // mapping to DTO
                 .collect(Collectors.toList());
 
         agentContractDTO.setMedicineWithQuantityDTOS(medicineWithQuantityDTOS);
@@ -721,7 +721,7 @@ public class AdminService {
         // Mapping FieldWithQuantity to FieldWithQuantityDTO
         List<FieldWithQuantityDTO> fieldWithQuantityDTOS = agentGoal.getFieldWithQuantities().stream()
                 .map(field -> new FieldWithQuantityDTO(field.getId(), field.getField(),
-                        field.getQuote(), field.getContractFieldAmount()))  // mapping to DTO
+                        field.getQuote(), field.getContractFieldMedAgentAmount()))  // mapping to DTO
                 .collect(Collectors.toList());
 
         agentContractDTO.setFieldWithQuantityDTOS(fieldWithQuantityDTOS);
