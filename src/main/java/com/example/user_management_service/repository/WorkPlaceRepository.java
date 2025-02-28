@@ -20,13 +20,25 @@ public interface WorkPlaceRepository extends JpaRepository<WorkPlace, Long> {
     Optional<WorkPlace> findById(Long id);
 
     @Query("""
-        SELECT w FROM WorkPlace w 
-        WHERE (:districtId IS NULL OR w.district.id = :districtId)
-        AND (:regionId IS NULL OR w.district.region.id = :regionId)
-        AND (:medicalInstitutionType IS NULL OR w.medicalInstitutionType = :medicalInstitutionType)
-    """)
+                SELECT w FROM WorkPlace w 
+                WHERE (:districtId IS NULL OR w.district.id = :districtId)
+                AND (:regionId IS NULL OR w.district.region.id = :regionId)
+                AND (:medicalInstitutionType IS NULL OR w.medicalInstitutionType = :medicalInstitutionType)
+            """)
     List<WorkPlace> findByFilters(@Param("districtId") Long districtId,
                                   @Param("regionId") Long regionId,
                                   @Param("medicalInstitutionType") MedicalInstitutionType medicalInstitutionType);
+
+    @Query("""
+                SELECT COUNT(w) FROM WorkPlace w 
+                WHERE w.district.region.id = :regionId
+            """)
+    Long countByRegionId(@Param("regionId") Long regionId);
+
+    @Query("""
+                SELECT COUNT(w) FROM WorkPlace w 
+                WHERE w.district.id = :districtId
+            """)
+    Long countByDistrictId(@Param("districtId") Long districtId);
 
 }

@@ -2,17 +2,14 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Field;
-import com.example.user_management_service.model.dto.RecordDTO;
-import com.example.user_management_service.model.dto.RecordDistrictDTO;
-import com.example.user_management_service.model.dto.RecordRegionDTO;
-import com.example.user_management_service.model.dto.StatsEmployeeDTO;
-import com.example.user_management_service.repository.ContractMedicineAmountRepository;
-import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
-import com.example.user_management_service.repository.UserRepository;
+import com.example.user_management_service.model.Region;
+import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +22,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DashboardService {
 
+    private final RegionRepository regionRepository;
+    private final WorkPlaceRepository workPlaceRepository;
+    private final DistrictRepository districtRepository;
     private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private ContractMedicineAmountRepository contractMedicineAmountRepository;
     private UserRepository userRepository;
@@ -33,26 +33,27 @@ public class DashboardService {
 //        if (medicineId != null) {
 //            return filterByMedicineId(medicineId, startDate, endDate);
 //        } else
-            if (userId != null) {
+        if (userId != null) {
             return filterByQuery(userId, startDate, endDate);
         } else if (field != null) {
-            return filterByField(workplaceId,field, startDate, endDate);
+            return filterByField(workplaceId, field, startDate, endDate);
         } else if (workplaceId != null) {
             return filterByWorkplaceId(workplaceId, startDate, endDate);
         } else if (districtId != null) {
             return filterByDistrictId(districtId, startDate, endDate);
-        } else
-            if (regionId != null) {
+        } else if (regionId != null) {
             return filterByRegionId(regionId, startDate, endDate);
         }
 
-        RecordDTO recordDTO= new RecordDTO();
+        RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotes());
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmount());
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
-        RecordRegionDTO recordRegionDTO= new RecordRegionDTO();
+        RecordRegionDTO recordRegionDTO = new RecordRegionDTO();
         recordRegionDTO.setEmployeeStatsList(userCountByRegion);
 
+        List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillRegion();
+        recordRegionDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
         recordDTO.setRecordRegionDTO(recordRegionDTO);
         return recordDTO;
     }
@@ -63,44 +64,77 @@ public class DashboardService {
     }
 
     private RecordDTO filterByQuery(UUID userId, LocalDate startDate, LocalDate endDate) {
-        RecordDTO recordDTO= new RecordDTO();
+        RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByUserId(userId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByUserId(userId));
         return recordDTO;
     }
 
     private RecordDTO filterByField(Long workPlaceId, Field field, LocalDate startDate, LocalDate endDate) {
-        RecordDTO recordDTO= new RecordDTO();
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByWorkplaceAndField(workPlaceId,field.name()));
-        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByWorkplaceAndField(workPlaceId,field.name()));
+        RecordDTO recordDTO = new RecordDTO();
+        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByWorkplaceAndField(workPlaceId, field.name()));
+        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByWorkplaceAndField(workPlaceId, field.name()));
         return recordDTO;
     }
 
     private RecordDTO filterByWorkplaceId(Long workplaceId, LocalDate startDate, LocalDate endDate) {
-        RecordDTO recordDTO= new RecordDTO();
+        RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrictAndWorkplace(workplaceId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
         return recordDTO;
     }
 
     private RecordDTO filterByDistrictId(Long districtId, LocalDate startDate, LocalDate endDate) {
-        RecordDTO recordDTO= new RecordDTO();
+        RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrict(districtId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
+
         return recordDTO;
 
     }
 
     private RecordDTO filterByRegionId(Long regionId, LocalDate startDate, LocalDate endDate) {
-        RecordDTO recordDTO= new RecordDTO();
+        RecordDTO recordDTO = new RecordDTO();
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByRegion(regionId));
         recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByRegion(regionId));
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByDistrictInRegion(regionId);
-        RecordDistrictDTO recordDistrictDTO= new RecordDistrictDTO();
+        RecordDistrictDTO recordDistrictDTO = new RecordDistrictDTO();
         recordDistrictDTO.setEmployeeStatsList(userCountByRegion);
 
+        List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillDistrict(regionId);
+        recordDistrictDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
         recordDTO.setRecordDistrictDTO(recordDistrictDTO);
         return recordDTO;
+    }
+
+    private List<RecordStatsEmployeeFactDTO> fillRegion() {
+        List<RecordStatsEmployeeFactDTO> list=new ArrayList<>();
+            List<Region> regions = regionRepository.findAll();
+            for (Region region : regions) {
+                RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
+                recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByRegionId(region.getId()));
+                recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByRegionId(region.getId()));
+                recordStatsEmployeeFactDTO.setDoctorsInFact(userRepository.countByRegionIdInFact(region.getId()));
+                recordStatsEmployeeFactDTO.setPopulation(1000);
+                list.add(recordStatsEmployeeFactDTO);
+            }
+
+
+        return list;
+    }
+    private List<RecordStatsEmployeeFactDTO> fillDistrict(Long regionId) {
+        List<RecordStatsEmployeeFactDTO> list=new ArrayList<>();
+        List<District> districts = districtRepository.findByRegionId(regionId);
+        for (District district : districts) {
+            RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
+            recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByDistrictId(district.getId()));
+            recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByDistrictId(district.getId()));
+            recordStatsEmployeeFactDTO.setDoctorsInFact(userRepository.countByDistrictIdInFact(district.getId()));
+            recordStatsEmployeeFactDTO.setPopulation(1000);
+            list.add(recordStatsEmployeeFactDTO);
+        }
+
+        return list;
     }
 
 }

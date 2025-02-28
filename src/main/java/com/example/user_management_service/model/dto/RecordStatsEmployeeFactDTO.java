@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecordStatsEmployeeFactDTO {
-
+    private String id;
     private String name;
-    private int lpuAmount;
-    private int doctorsByDB;
-    private int doctorsInFact;
-    private int population;
+    private long  lpuAmount;
+    private long doctorsByDB;
+    private long doctorsInFact;
+    private long population;
 }

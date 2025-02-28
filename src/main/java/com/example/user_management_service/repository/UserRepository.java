@@ -96,6 +96,27 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("middleName") String middleName
     );
 
+    @Query("""
+                SELECT COUNT(w) FROM User w 
+                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR'
+            """)
+    Long countByRegionId(@Param("regionId") Long regionId);
 
+    @Query("""
+                SELECT COUNT(w) FROM User w 
+                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR' AND w.status = 'ACTIVE'
+            """)
+    Long countByRegionIdInFact(@Param("regionId") Long regionId);
+
+    @Query("""
+                SELECT COUNT(w) FROM User w 
+                WHERE w.district.id = :districtId and w.role = 'DOCTOR'
+            """)
+    Long countByDistrictId(@Param("districtId") Long districtId);
+    @Query("""
+                SELECT COUNT(w) FROM User w 
+                WHERE w.district.id = :districtId and w.role = 'DOCTOR' AND w.status = 'ACTIVE'
+            """)
+    Long countByDistrictIdInFact(@Param("districtId") Long districtId);
 
 }
