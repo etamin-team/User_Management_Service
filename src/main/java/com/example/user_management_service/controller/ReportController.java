@@ -38,7 +38,7 @@ public class ReportController {
     }
     @GetMapping("/admin/{medicineId}")
     public ResponseEntity<List<SalesReportDTO>> getSalesReports(
-            @RequestParam Long medicineId,
+            @PathVariable Long medicineId,
             @RequestParam(required = false, defaultValue = "") String query,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
