@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * Date-12/28/2024
  * By Sardor Tokhirov
@@ -38,7 +40,10 @@ public class Medicine {
     @Column(name = "image_url")
     private String imageUrl;
 
-    private String inn;
+    @ElementCollection
+    @CollectionTable(name = "medicine_inn", joinColumns = @JoinColumn(name = "medicine_id"))
+    @Column(name = "inn")
+    private List<String> inn;
 
     private Long cip;
 
