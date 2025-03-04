@@ -26,6 +26,8 @@ public class SalesReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate reportDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private Long written ;
     private Long allowed ;
     private Long sold ;
@@ -34,10 +36,6 @@ public class SalesReport {
     @ManyToOne
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
-
-    @ManyToOne
-    @JoinColumn(name = "quantity_id", referencedColumnName = "id")
-    private MedicineWithQuantityDoctor medicineWithQuantityDoctor;
 
     @ManyToOne
     @JoinColumn(name = "region_id", referencedColumnName = "id")

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReportService {
 
     private final ContractRepository contractRepository;
@@ -79,7 +80,7 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
+
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
             SalesReport report = new SalesReport();
@@ -87,6 +88,8 @@ public class ReportService {
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
             report.setSold(dto.getSold());
+            report.setStartDate(salesReportListDTO.getStartDate());
+            report.setEndDate(salesReportListDTO.getEndDate());
 
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())

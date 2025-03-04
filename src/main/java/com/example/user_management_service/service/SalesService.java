@@ -60,8 +60,6 @@ public class SalesService {
     }
 
     public void saveSalesDTO(LocalDate startDate, LocalDate endDate, SalesReportDTO dto, Region region, Medicine medicine) {
-
-
             Sales sales = new Sales();
             sales.setMedicine(medicine);
             sales.setRegion(region);
@@ -70,9 +68,7 @@ public class SalesService {
             sales.setAllDirectSales(dto.getWritten());
             sales.setQuote(dto.getAllowed());
             sales.setTotal(dto.getSold());
-
             salesRepository.save(sales);
-
     }
 
 
