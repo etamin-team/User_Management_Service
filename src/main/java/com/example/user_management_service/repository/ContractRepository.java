@@ -29,12 +29,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
-            "AND (c.status = 'APPROVED' )")
+            "AND (c.status = 'ENABLED' )")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
-            "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW')")
+            "AND (c.status = 'ENABLED' OR c.status = 'PENDING_REVIEW')")
     Optional<Contract> findActiveOrPendingContractByDoctorId(@Param("doctorId") UUID doctorId);
 
 
@@ -79,7 +79,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "      LOWER(d.middleName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:regionId IS NULL OR d.district.id = :regionId) " +
+            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
@@ -98,10 +98,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     Long findTotalAllowed(@Param("medicineId") Long medicineId,
                           @Param("query") String query,
+                          @Param("regionId") Long regionId,
                           @Param("districtId") Long districtId,
                           @Param("workplaceId") Long workplaceId,
                           @Param("fieldName") Field fieldName);
@@ -115,10 +117,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     Long findTotalWritten(@Param("medicineId") Long medicineId,
                           @Param("query") String query,
+                          @Param("regionId") Long regionId,
                           @Param("districtId") Long districtId,
                           @Param("workplaceId") Long workplaceId,
                           @Param("fieldName") Field fieldName);
@@ -132,10 +136,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
                                 @Param("query") String query,
+                                @Param("regionId") Long regionId,
                                 @Param("districtId") Long districtId,
                                 @Param("workplaceId") Long workplaceId,
                                 @Param("fieldName") Field fieldName);
