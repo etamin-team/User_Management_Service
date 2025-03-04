@@ -27,6 +27,7 @@ public class ReportService {
     private final MedicineRepository medicineRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private final RegionRepository regionRepository;
+    private final SalesService salesService;
 
     public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query,Long regionId, Long districtId, Long workplaceId, Field fieldName) {
         List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, regionId,districtId, workplaceId, fieldName);
@@ -96,6 +97,7 @@ public class ReportService {
             report.setRegion(region);
 
             salesReportRepository.save(report);
+            salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,region,medicine);
         }
     }
 

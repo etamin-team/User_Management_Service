@@ -5,6 +5,7 @@ import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.SalesByRegionDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
 import com.example.user_management_service.model.dto.SalesRegionDTO;
+import com.example.user_management_service.model.dto.SalesReportDTO;
 import com.example.user_management_service.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,6 +59,21 @@ public class SalesService {
         }
     }
 
+    public void saveSalesDTO(LocalDate startDate, LocalDate endDate, SalesReportDTO dto, Region region, Medicine medicine) {
+
+
+            Sales sales = new Sales();
+            sales.setMedicine(medicine);
+            sales.setRegion(region);
+            sales.setStartDate(startDate);
+            sales.setEndDate(endDate);
+            sales.setAllDirectSales(dto.getWritten());
+            sales.setQuote(dto.getAllowed());
+            sales.setTotal(dto.getSold());
+
+            salesRepository.save(sales);
+
+    }
 
 
     public void updateSales(Long salesId, SalesRegionDTO salesRegionDTO) {
@@ -74,7 +91,10 @@ public class SalesService {
     public void deleteSales(Long salesId) {
         Sales sales = salesRepository.findById(salesId)
                 .orElseThrow(() -> new RuntimeException("Sales record not found"));
-        salesRepository.delete(sales);
+        sales.setRegion(null);
+        sales.setMedicine(null);
+        Sales save = salesRepository.save(sales);
+        salesRepository.delete(save);
     }
 
     public Page<SalesByRegionDTO> getSalesData(LocalDate startDate, LocalDate endDate, int page, int size) {
@@ -84,23 +104,22 @@ public class SalesService {
 
         List<SalesByRegionDTO> salesDTOList = salesList.stream()
                 .map(sale -> new SalesByRegionDTO(
-                        sale.getId(),
-                        sale.getMedicine().getId(),
-                        sale.getGroups(),
-                        sale.getStartDate(),
-                        sale.getEndDate(),
-                        sale.getAllDirectSales(),
-                        sale.getAllSecondarySales(),
-                        sale.getQuote(),
-                        sale.getTotal(),
-                        districtRegionService.mapRegionToDTO(sale.getRegion())
+                                sale.getId(),
+                                sale.getMedicine().getId(),
+                                sale.getGroups(),
+                                sale.getStartDate(),
+                                sale.getEndDate(),
+                                sale.getAllDirectSales(),
+                                sale.getAllSecondarySales(),
+                                sale.getQuote(),
+                                sale.getTotal(),
+                                districtRegionService.mapRegionToDTO(sale.getRegion())
                         )
                 )
                 .collect(Collectors.toList());
 
         return new PageImpl<>(salesDTOList, pageable, salesDTOList.size());
     }
-
 
 
 }

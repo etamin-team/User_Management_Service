@@ -18,6 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SalesReportListDTO {
+    private LocalDate startDate;
+    private LocalDate endDate;
     private LocalDate date;
     private Long regionId;
     private List<SalesReportDTO> salesReportDTOS;
