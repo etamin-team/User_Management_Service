@@ -10,6 +10,7 @@ import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.WorkPlaceRepository;
 import com.example.user_management_service.role.Role;
+import com.example.user_management_service.role.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -229,10 +230,8 @@ public class UserService {
             // Remove references to avoid constraint violations
             existingUser.setDistrict(null);
             existingUser.setWorkplace(null);
+            existingUser.setStatus(UserStatus.DISABLED);
             userRepository.save(existingUser);
-
-            // Now delete the user
-            userRepository.deleteById(userId);
             return true;
         }
         return false;
