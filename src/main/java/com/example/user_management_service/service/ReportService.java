@@ -44,14 +44,6 @@ public class ReportService {
             dto.setAllowed(report.getAllowed());
             dto.setSold(report.getSold());
 
-            // Fetch related MedicineWithQuantityDoctors
-            List<MedicineWithQuantityDTO> medicineList = medicineWithQuantityDoctorRepository
-                    .findByMedicineId(medicineId)
-                    .stream()
-                    .map(medicine -> new MedicineWithQuantityDTO(medicine.getId(),medicineId,medicine.getQuote(),medicine.getCorrection(),null,medicine.getContractMedicineDoctorAmount(), medicine.getMedicine()))
-                    .collect(Collectors.toList());
-
-            dto.setMedicineWithQuantityDoctors(medicineList);
 
             return dto;
         }).collect(Collectors.toList());
@@ -94,9 +86,7 @@ public class ReportService {
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
             report.setSold(dto.getSold());
-            dto.getMedicineWithQuantityDoctors()
-                    .stream()
-                    .forEach(this::saveQualities);
+
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
@@ -109,11 +99,7 @@ public class ReportService {
         }
     }
 
-    private void saveQualities(MedicineWithQuantityDTO medicineWithQuantityDoctors) {
-        MedicineWithQuantityDoctor medicineWithQuantityDoctor = medicineWithQuantityDoctorRepository.findById(medicineWithQuantityDoctors.getQuantityId()).orElseThrow(()->new ReportException("Not found"));
-        medicineWithQuantityDoctor.setCorrection(medicineWithQuantityDoctors.getCorrection());
-        medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
-    }
+
 
     @Transactional
     public void editSalesReport(Long id, SalesReportDTO salesReportDTO) {
