@@ -3,10 +3,7 @@ package com.example.user_management_service.service;
 import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.repository.ContractRepository;
-import com.example.user_management_service.repository.MedicineRepository;
-import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
-import com.example.user_management_service.repository.SalesReportRepository;
+import com.example.user_management_service.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +26,7 @@ public class ReportService {
     private final SalesReportRepository salesReportRepository;
     private final MedicineRepository medicineRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+    private final RegionRepository regionRepository;
 
     public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query,Long regionId, Long districtId, Long workplaceId, Field fieldName) {
         List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, regionId,districtId, workplaceId, fieldName);
@@ -103,6 +101,9 @@ public class ReportService {
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
             report.setMedicine(medicine);
+
+            Region region=regionRepository.findById(salesReportListDTO.getRegionId()).orElseThrow(() -> new ReportException("Region not found"));
+            report.setRegion(region);
 
             salesReportRepository.save(report);
         }

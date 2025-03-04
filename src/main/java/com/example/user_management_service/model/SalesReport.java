@@ -30,6 +30,7 @@ public class SalesReport {
     private Long allowed ;
     private Long sold ;
 
+
     @ManyToOne
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
@@ -37,5 +38,9 @@ public class SalesReport {
     @ManyToOne
     @JoinColumn(name = "quantity_id", referencedColumnName = "id")
     private MedicineWithQuantityDoctor medicineWithQuantityDoctor;
+
+    @ManyToOne
+    @JoinColumn(name = "region_id", referencedColumnName = "id")
+    private Region region;
 
 }
