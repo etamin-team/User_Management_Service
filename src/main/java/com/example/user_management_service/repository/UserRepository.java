@@ -66,7 +66,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     }
 
 
-    @Query("SELECT u FROM User u WHERE u.workplace.id = :workPlaceId AND u.role = :role ")
+    @Query("SELECT u FROM User u WHERE u.workplace.id = :workPlaceId AND u.role = :role AND u.status = 'ENABLED' ")
     List<User> findDoctorsByWorkPlaceId(@Param("workPlaceId") Long workPlaceId, @Param("role") Role role);
 
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status ORDER BY u.createdDate DESC")
@@ -85,6 +85,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
 
     )
+    AND u.status = 'ENABLED'
 """)
     List<User> findUsersByFilters(
             @Param("role") Role role,
@@ -99,13 +100,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
                 SELECT COUNT(w) FROM User w 
-                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR'
+                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR' AND w.status = 'ENABLED'
             """)
     Long countByRegionId(@Param("regionId") Long regionId);
 
     @Query("""
                 SELECT COUNT(w) FROM User w 
-                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR' AND w.status = 'ACTIVE'
+                WHERE w.district.region.id = :regionId and w.role = 'DOCTOR' AND w.status = 'ENABLED'
             """)
     Long countByRegionIdInFact(@Param("regionId") Long regionId);
 
@@ -116,7 +117,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Long countByDistrictId(@Param("districtId") Long districtId);
     @Query("""
                 SELECT COUNT(w) FROM User w 
-                WHERE w.district.id = :districtId and w.role = 'DOCTOR' AND w.status = 'ACTIVE'
+                WHERE w.district.id = :districtId and w.role = 'DOCTOR' AND w.status = 'ENABLED'
             """)
     Long countByDistrictIdInFact(@Param("districtId") Long districtId);
 

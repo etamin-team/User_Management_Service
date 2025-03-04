@@ -24,4 +24,6 @@ public class RecordDTO {
     private RecordDistrictDTO recordDistrictDTO;
 
     private RecordWorkPlaceDTO recordWorkPlaceDTO;
+
+    private TopProductsOnSellDTO topProductsOnSellDTO;
 }
