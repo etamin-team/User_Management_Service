@@ -79,10 +79,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "      LOWER(d.middleName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:regionId IS NULL OR d.district.id = :regionId) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId, @Param("query") String query,
+                                          @Param("regionId") Long regionId,
                                           @Param("districtId") Long districtId,
                                           @Param("workplaceId") Long workplaceId,
                                           @Param("fieldName") Field fieldName);

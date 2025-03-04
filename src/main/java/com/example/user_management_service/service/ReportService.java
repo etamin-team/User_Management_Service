@@ -30,8 +30,8 @@ public class ReportService {
     private final MedicineRepository medicineRepository;
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
 
-    public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, districtId, workplaceId, fieldName);
+    public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query,Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, regionId,districtId, workplaceId, fieldName);
 
         return contracts.stream().map(contract -> {
             SalesReportDTO dto = new SalesReportDTO();
@@ -62,7 +62,7 @@ public class ReportService {
 
 
 
-    public DoctorReportDTO getDoctorReports( Long medicineId, String query, Long districtId, Long workplaceId, Field fieldName) {
+    public DoctorReportDTO getDoctorReports( Long medicineId, String query,Long regionId,  Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         Long allowed = contractRepository.findTotalAllowed(medicineId,query, districtId, workplaceId, fieldName);
         Long written = contractRepository.findTotalWritten(medicineId,query, districtId, workplaceId, fieldName);
@@ -71,12 +71,12 @@ public class ReportService {
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
         doctorReportDTO.setWrittenInFact(inFact);
-        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,query,districtId,workplaceId,fieldName));
+        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,query,regionId,districtId,workplaceId,fieldName));
 
         return doctorReportDTO;
     }
-    public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query, districtId, workplaceId, fieldName);
+    public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query,regionId, districtId, workplaceId, fieldName);
 
         return contracts.stream()
                 .map(contract -> {
