@@ -22,4 +22,6 @@ public class SalesReportDTO {
     private Long written ;
     private Long allowed ;
     private Long sold ;
+
+    private List<DoctorReportListDTO> doctorReportListDTOS;
 }

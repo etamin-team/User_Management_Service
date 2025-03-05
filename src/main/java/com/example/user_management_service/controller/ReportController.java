@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -38,16 +39,18 @@ public class ReportController {
         return ResponseEntity.ok(doctorReportDTO);
     }
     @GetMapping("/admin/{medicineId}")
-    public ResponseEntity<List<SalesReportDTO>> getSalesReports(
+    public ResponseEntity<SalesReportDTO> getSalesReports(
             @PathVariable Long medicineId,
             @RequestParam(required = false, defaultValue = "") String query,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
 
-        List<SalesReportDTO> salesReports = reportService.getSalesReportsByFilters(medicineId, query,regionId, districtId, workplaceId, fieldName);
-        return ResponseEntity.ok(salesReports);
+        SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        return ResponseEntity.ok(salesReport);
     }
 
 

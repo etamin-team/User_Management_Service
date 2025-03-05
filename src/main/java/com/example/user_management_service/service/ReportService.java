@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,25 +31,20 @@ public class ReportService {
     private final RegionRepository regionRepository;
     private final SalesService salesService;
 
-    public List<SalesReportDTO> getSalesReportsByFilters(Long medicineId, String query,Long regionId, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId, query, regionId,districtId, workplaceId, fieldName);
-
-        return contracts.stream().map(contract -> {
-            SalesReportDTO dto = new SalesReportDTO();
-            dto.setMedicineId(medicineId);
-            dto.setId(contract.getId());
-
-            // Fetch related SalesReport
-            SalesReport report = salesReportRepository.findByMedicineId(medicineId)
-                    .orElseThrow(() -> new ReportException("Sales Report not found"));
-
-            dto.setWritten(report.getWritten());
-            dto.setAllowed(report.getAllowed());
-            dto.setSold(report.getSold());
+    public SalesReportDTO getSalesReportsByFilters(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
 
-            return dto;
-        }).collect(Collectors.toList());
+        SalesReportDTO dto =  new SalesReportDTO();
+        SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).get(0);
+
+        dto.setId(report.getId());
+        dto.setWritten(report.getWritten());
+        dto.setAllowed(report.getAllowed());
+        dto.setSold(report.getSold());
+        dto.setMedicineId(medicineId);
+        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(medicineId,query,regionId,districtId,workplaceId,fieldName));
+
+        return dto;
     }
 
 
@@ -106,7 +102,6 @@ public class ReportService {
 
 
 
-    @Transactional
     public void editSalesReport(Long id, SalesReportDTO salesReportDTO) {
         SalesReport report = salesReportRepository.findById(id)
                 .orElseThrow(() -> new ReportException("Sales Report not found"));
@@ -117,7 +112,7 @@ public class ReportService {
 
         salesReportRepository.save(report);
     }
-    @Transactional
+
     public void editMedicineQuantity(Long quantityId, Long correction) {
         MedicineWithQuantityDoctor  medicineWithQuantityDoctor=medicineWithQuantityDoctorRepository.findById(quantityId).orElseThrow(() -> new ReportException("Sales Report not found"));
         medicineWithQuantityDoctor.setCorrection(correction);
