@@ -73,20 +73,19 @@ public class SalesService {
 
 
     public void updateSales(Long salesId, SalesRegionDTO salesRegionDTO) {
-        Sales sales = salesRepository.findById(salesId)
-                .orElseThrow(() -> new RuntimeException("Sales record not found"));
+        Sales sales = salesRepository.findById(salesRegionDTO.getId())
+                .orElseThrow(() -> new SalesLoadException("Sales record not found"));
 
         sales.setAllDirectSales(salesRegionDTO.getAllDirectSales());
         sales.setAllSecondarySales(salesRegionDTO.getAllSecondarySales());
         sales.setQuote(salesRegionDTO.getQuote());
         sales.setTotal(salesRegionDTO.getTotal());
-
         salesRepository.save(sales);
     }
 
     public void deleteSales(Long salesId) {
         Sales sales = salesRepository.findById(salesId)
-                .orElseThrow(() -> new RuntimeException("Sales record not found"));
+                .orElseThrow(() -> new SalesLoadException("Sales record not found"));
         sales.setRegion(null);
         sales.setMedicine(null);
         Sales save = salesRepository.save(sales);
