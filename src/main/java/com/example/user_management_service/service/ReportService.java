@@ -35,7 +35,7 @@ public class ReportService {
 
 
         SalesReportDTO dto =  new SalesReportDTO();
-        SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).get(0);
+        SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).orElseThrow(()->new ReportException("Report not found"));
 
         dto.setId(report.getId());
         dto.setWritten(report.getWritten());
