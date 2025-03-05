@@ -33,7 +33,10 @@ public class ReportService {
 
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
-
+        System.out.println("11111111111111111111111111");
+        System.out.println("--------------------------------------------------------");
+        System.out.println("--------------------------------------------------------");
+        System.out.println("--------------------------------------------------------");
         SalesReportDTO dto =  new SalesReportDTO();
         SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).orElseThrow(()->new ReportException("Report not found"));
         System.out.println("11111111111111111111111111");
