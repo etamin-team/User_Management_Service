@@ -20,10 +20,12 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     SELECT s FROM Sales s 
     WHERE (:startDate IS NULL OR s.startDate >= :startDate) 
       AND (:endDate IS NULL OR s.endDate <= :endDate)
+    ORDER BY s.id ASC
     """)
     List<Sales> findAllByStartAndEndDate(
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
 
 }
