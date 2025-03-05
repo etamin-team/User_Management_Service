@@ -34,7 +34,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             "AND (:startDate IS NULL OR r.dateCreation >= :startDate) " +
             "AND (:endDate IS NULL OR r.dateCreation <= :endDate) " +
             "AND (:medicineId IS NULL OR p.medicine.id = :medicineId) " +
-            "AND (u.role = 'DOCTOR')")  // Filter by doctor role
+            "AND (:doctorId IS NULL OR u.userId = :doctorId) " +
+            "AND (u.role = 'DOCTOR') " +
+            "ORDER BY r.dateCreation ASC")
     List<Recipe> findRecipesByFilters(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
@@ -44,6 +46,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("specialty") String specialty,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
+            @Param("doctorId") UUID doctorId,
             @Param("medicineId") Long medicineId);
 
     @Query("SELECT COUNT(r) FROM Recipe r " +
@@ -89,6 +92,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
         WHERE (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
         AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
         AND (:doctorField IS NULL OR r.doctorId.fieldName = :doctorField)
+        AND (:doctorId IS NULL OR r.doctorId.userId = :doctorId)
         AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
         AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
          AND (
@@ -110,6 +114,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("doctorField") Field doctorField,
             @Param("lastAnalysisFrom") LocalDate lastAnalysisFrom,
             @Param("lastAnalysisTo") LocalDate lastAnalysisTo,
+            @Param("doctorId") UUID doctorId,
             Pageable pageable
     );
 

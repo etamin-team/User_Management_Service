@@ -87,9 +87,9 @@ public class RecipeService {
 
     public List<LastRecipeDTO> getRecipes(
             String firstName, String lastName, String middleName, String district, Field category,
-            String specialty, Long medicineId, LocalDate startDate, LocalDate endDate) {
+            String specialty, Long medicineId, LocalDate startDate, LocalDate endDate, UUID doctorId) {
 
-        return recipeRepository.findRecipesByFilters(firstName, lastName, middleName, district, category, specialty, startDate, endDate, medicineId)
+        return recipeRepository.findRecipesByFilters(firstName, lastName, middleName, district, category, specialty, startDate, endDate, doctorId,medicineId)
                 .stream()
                 .map(this::mapToLastRecipeDTO)
                 .collect(Collectors.toList());
@@ -131,7 +131,7 @@ public class RecipeService {
     }
 
     public Page<RecipeDto> filterRecipes(String nameQuery, Long regionId, Long districtId, Long medicineId, Field doctorField,
-                                         LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo, int page, int size) {
+                                         LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo,UUID doctorId, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Extract name components (first, second, third name parts)
@@ -144,7 +144,7 @@ public class RecipeService {
         // Fetch paged results
         Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,
                 medicineId, doctorField, lastAnalysisFrom,
-                lastAnalysisTo, pageable);
+                lastAnalysisTo,doctorId, pageable);
 
         // Convert Recipe Page to RecipeDto Page
         return recipes.map(this::convertToDto);

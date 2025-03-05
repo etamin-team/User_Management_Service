@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Date-2/22/2025
  * By Sardor Tokhirov
@@ -25,5 +27,5 @@ public class RecordDTO {
 
     private RecordWorkPlaceDTO recordWorkPlaceDTO;
 
-    private TopProductsOnSellDTO topProductsOnSellDTO;
+    private List<TopProductsOnSellDTO> topProductsOnSellDTO;
 }

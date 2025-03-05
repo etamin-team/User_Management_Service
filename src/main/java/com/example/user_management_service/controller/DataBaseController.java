@@ -204,6 +204,7 @@ public class DataBaseController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) Field doctorField,
+            @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastAnalysisFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate lastAnalysisTo,
             @RequestParam(defaultValue = "0") int page,
@@ -211,7 +212,7 @@ public class DataBaseController {
     ) {
         Page<RecipeDto> recipes = recipeService.filterRecipes(
                 nameQuery, regionId, districtId, medicineId, doctorField,
-                lastAnalysisFrom, lastAnalysisTo, page, size
+                lastAnalysisFrom, lastAnalysisTo,doctorId, page, size
         );
         return ResponseEntity.ok(recipes);
     }

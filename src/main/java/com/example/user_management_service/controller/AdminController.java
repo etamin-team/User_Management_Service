@@ -78,6 +78,7 @@ public class AdminController {
             @RequestParam(required = false) Field category,
             @RequestParam(required = false) String specialty,
             @RequestParam(required = false) Long medicineId,
+            @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
 
@@ -87,7 +88,7 @@ public class AdminController {
         String middleName = nameParts.length > 2 ? nameParts[1] : null;
 
 
-        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, district, category, specialty, medicineId, startDate, endDate);
+        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, district, category, specialty, medicineId, startDate, endDate,doctorId);
         return ResponseEntity.ok(recipes);
     }
 

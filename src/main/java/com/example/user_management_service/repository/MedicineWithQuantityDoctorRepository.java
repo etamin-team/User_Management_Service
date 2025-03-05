@@ -3,6 +3,7 @@ package com.example.user_management_service.repository;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicineWithQuantityDoctor;
 import com.example.user_management_service.model.SalesReport;
+import com.example.user_management_service.model.dto.TopProductsOnSellDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,6 +16,32 @@ import java.util.UUID;
 
 @Repository
 public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<MedicineWithQuantityDoctor, Long> {
+
+
+
+
+    @Query("""
+        SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 
+        FROM MedicineWithQuantityDoctor m 
+        JOIN m.contractMedicineDoctorAmount cma
+        JOIN m.doctorContract dc
+        JOIN dc.doctor d
+        JOIN d.district dist
+        JOIN dist.region reg
+        JOIN d.workplace wp
+        WHERE (:districtId IS NULL OR dist.id = :districtId)
+        AND (:regionId IS NULL OR reg.id = :regionId)
+        AND (:workplaceId IS NULL OR wp.id = :workplaceId)
+        GROUP BY m.medicine 
+        ORDER BY SUM(cma.amount) DESC
+        LIMIT 6
+    """)
+    List<TopProductsOnSellDTO> findTop6MostSoldMedicinesWithFilters(
+            @Param("districtId") Long districtId,
+            @Param("regionId") Long regionId,
+            @Param("workplaceId") Long workplaceId
+    );
+
     @Query("SELECT COALESCE(SUM(m.quote), 0) FROM MedicineWithQuantityDoctor m")
     Long getTotalQuotes();
 
