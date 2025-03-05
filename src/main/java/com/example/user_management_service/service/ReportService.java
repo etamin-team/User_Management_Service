@@ -36,7 +36,10 @@ public class ReportService {
 
         SalesReportDTO dto =  new SalesReportDTO();
         SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).orElseThrow(()->new ReportException("Report not found"));
-
+        System.out.println("11111111111111111111111111");
+        System.out.println("--------------------------------------------------------");
+        System.out.println("--------------------------------------------------------");
+        System.out.println("--------------------------------------------------------");
         dto.setId(report.getId());
         dto.setWritten(report.getWritten());
         dto.setAllowed(report.getAllowed());
@@ -64,6 +67,10 @@ public class ReportService {
         return doctorReportDTO;
     }
     public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        System.out.println("---------------------------------------------------");
+        System.out.println("---------------------------------------------------");
+        System.out.println("---------------------------------------------------");
         List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query,regionId, districtId, workplaceId, fieldName);
 
         return contracts.stream()

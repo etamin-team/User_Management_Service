@@ -83,7 +83,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
-    List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId, @Param("query") String query,
+    List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId,
+                                          @Param("query") String query,
                                           @Param("regionId") Long regionId,
                                           @Param("districtId") Long districtId,
                                           @Param("workplaceId") Long workplaceId,
