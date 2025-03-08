@@ -28,4 +28,6 @@ public class RecordDTO {
     private RecordWorkPlaceDTO recordWorkPlaceDTO;
 
     private List<TopProductsOnSellDTO> topProductsOnSellDTO;
+
+    
 }

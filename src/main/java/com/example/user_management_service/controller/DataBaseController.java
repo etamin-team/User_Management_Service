@@ -1,9 +1,6 @@
 package com.example.user_management_service.controller;
 
-import com.example.user_management_service.model.Contract;
-import com.example.user_management_service.model.Field;
-import com.example.user_management_service.model.MedicalInstitutionType;
-import com.example.user_management_service.model.Medicine;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.*;
 import lombok.AllArgsConstructor;
@@ -292,5 +289,22 @@ public class DataBaseController {
     public ResponseEntity<Void> deleteDistrict(@PathVariable Long id) {
         districtRegionService.deleteDistrict(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/mnn/add")
+    public ResponseEntity<MNN> saveMNN(@RequestBody MNN mnn) {
+        MNN mnn1 = dataBaseService.saveMNN(mnn);
+        return ResponseEntity.ok(mnn1);
+    }
+
+    @DeleteMapping("/mnn/delete/{mnn}")
+    public void deleteMNN(@PathVariable Long mnn) {
+       dataBaseService.deleteMNN(mnn);
+    }
+
+    @PostMapping("/list/add")
+    public ResponseEntity<List<MNN>> listMNN() {
+        List<MNN> mnn1 = dataBaseService.getAllMnn();
+        return ResponseEntity.ok(mnn1);
     }
 }

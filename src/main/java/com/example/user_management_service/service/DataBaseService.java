@@ -26,9 +26,10 @@ public class DataBaseService {
     private final UserService userService;
     private final DistrictRegionService districtRegionService;
     private final DistrictRepository districtRepository;
+    private final MNNRepository mnnRepository;
 
     @Autowired
-    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService, DistrictRepository districtRepository) {
+    public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService, DistrictRepository districtRepository, MNNRepository mnnRepository) {
         this.contractRepository = contractRepository;
         this.medicineRepository = medicineRepository;
         this.workPlaceRepository = workPlaceRepository;
@@ -36,6 +37,7 @@ public class DataBaseService {
         this.userService = userService;
         this.districtRegionService = districtRegionService;
         this.districtRepository = districtRepository;
+        this.mnnRepository = mnnRepository;
     }
 
     // Create or update a Medicine (save)
@@ -167,5 +169,20 @@ public class DataBaseService {
 
 
         return workPlaceStatisticsInfoDTO;
+    }
+
+    public MNN saveMNN(MNN mnn) {
+        MNN mnn1=new MNN();
+        mnn1.setName(mnn.getName());
+        return  mnnRepository.save(mnn1);
+
+    }
+
+    public void deleteMNN(Long mnn) {
+        mnnRepository.deleteById(mnn);
+    }
+
+    public List<MNN> getAllMnn() {
+        return mnnRepository.findAll();
     }
 }
