@@ -9,6 +9,5 @@ public enum UserStatus {
     ENABLED,
     DECLINED,
     PENDING,
-    DISABLED,
-    DELETED
+    DISABLED
 }
