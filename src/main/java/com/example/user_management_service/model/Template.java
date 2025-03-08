@@ -27,14 +27,14 @@ public class Template {
     private Long id;
 
     private String name;
-
+    @Column(length = 2000)
     private String diagnosis;
 
     @ElementCollection
     @CollectionTable(name = "template_preparation", joinColumns = @JoinColumn(name = "template_id"))
     @Column(name = "preparation")
     private List<Preparation> preparations = new ArrayList<>();
-
+    @Column(length = 2000)
     private String  note;
 
     @ManyToOne(cascade = CascadeType.ALL)
