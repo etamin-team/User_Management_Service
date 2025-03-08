@@ -185,4 +185,8 @@ public class DataBaseService {
     public List<MNN> getAllMnn() {
         return mnnRepository.findAll();
     }
+
+    public void saveMNNList(List<MNN> mnn) {
+        mnnRepository.saveAll(mnn);
+    }
 }

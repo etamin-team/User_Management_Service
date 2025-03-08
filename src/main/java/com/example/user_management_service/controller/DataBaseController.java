@@ -296,13 +296,19 @@ public class DataBaseController {
         MNN mnn1 = dataBaseService.saveMNN(mnn);
         return ResponseEntity.ok(mnn1);
     }
+    @PostMapping("/mnn/add-bulk")
+    public ResponseEntity<Void> saveMNNList(@RequestBody List<MNN> mnn) {
+         dataBaseService.saveMNNList(mnn);
+        return ResponseEntity.ok().build();
+    }
+
 
     @DeleteMapping("/mnn/delete/{mnn}")
     public void deleteMNN(@PathVariable Long mnn) {
        dataBaseService.deleteMNN(mnn);
     }
 
-    @PostMapping("/list/add")
+    @GetMapping("/mnn/list")
     public ResponseEntity<List<MNN>> listMNN() {
         List<MNN> mnn1 = dataBaseService.getAllMnn();
         return ResponseEntity.ok(mnn1);
