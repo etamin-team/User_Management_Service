@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -25,6 +26,7 @@ public class UserDTO {
     private String lastName;
     private String middleName;
     private LocalDate dateOfBirth;
+    private LocalDateTime dateOfCreation;
     private String phoneNumber;
     private String number;
     private String email;

@@ -62,6 +62,7 @@ public class UserService {
                 user.getLastName(),
                 user.getMiddleName(),
                 user.getDateOfBirth(),
+                user.getCreatedDate(),
                 user.getPhoneNumber(),
                 user.getNumber(),
                 user.getEmail(),
