@@ -189,4 +189,10 @@ public class DataBaseService {
     public void saveMNNList(List<MNN> mnn) {
         mnnRepository.saveAll(mnn);
     }
+
+    public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
+        for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
+            createWorkPlace(workPlaceDTO);
+        }
+    }
 }

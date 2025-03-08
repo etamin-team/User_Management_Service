@@ -152,9 +152,15 @@ public class DataBaseController {
 
     // workplace
 
-    @PostMapping("/workplaces/create")
+    @PostMapping("/workplaces/add")
     public ResponseEntity<String> createWorkPlace(@RequestBody WorkPlaceDTO workPlaceDTO) {
         dataBaseService.createWorkPlace(workPlaceDTO);
+        return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/workplaces/add-bulk")
+    public ResponseEntity<String> bulkWorkPlace(@RequestBody List<WorkPlaceDTO> workPlaceDTO) {
+        dataBaseService.bulkWorkPlace(workPlaceDTO);
         return new ResponseEntity<>("Workplace created successfully!", HttpStatus.CREATED);
     }
 

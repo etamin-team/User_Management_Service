@@ -34,6 +34,7 @@ public class Template {
     @CollectionTable(name = "template_preparation", joinColumns = @JoinColumn(name = "template_id"))
     @Column(name = "preparation")
     private List<Preparation> preparations = new ArrayList<>();
+
     @Column(length = 2000)
     private String  note;
 
