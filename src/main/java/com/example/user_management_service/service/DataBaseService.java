@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,12 +43,24 @@ public class DataBaseService {
 
     // Create or update a Medicine (save)
     public Medicine saveOrUpdateMedicine(Medicine medicine) {
+        if (medicine.getId() == null || medicine.getId() == 0) {
+            medicine.setCreatedDate(LocalDateTime.now());
+        }
         return medicineRepository.save(medicine);
     }
 
+    public void saveList(List<Medicine> medicines) {
+        for (Medicine medicine : medicines) {
+            saveOrUpdateMedicine(medicine);
+        }
+    }
+
+
     // Delete a Medicine by ID
     public void deleteMedicine(Long id) {
-        medicineRepository.deleteById(id);
+        Medicine byId = medicineRepository.findById(id).orElseThrow(() -> new DataBaseException("Medicine not found"));
+        byId.setStatus(Status.DELETED);
+        medicineRepository.save(byId);
     }
 
     // Find a Medicine by ID
@@ -56,7 +69,7 @@ public class DataBaseService {
     }
 
     public List<Medicine> findAllMedicines() {
-        return medicineRepository.findAll();
+        return medicineRepository.findAllSortByCreatedDate();
     }
 
 
@@ -111,7 +124,7 @@ public class DataBaseService {
     }
 
     public void deleteWorkPlace(Long id) {
-        workPlaceRepository.findById(id).orElseThrow(()->new DataBaseException("WorkPlace doesn't exist with id: "+id));
+        workPlaceRepository.findById(id).orElseThrow(() -> new DataBaseException("WorkPlace doesn't exist with id: " + id));
         workPlaceRepository.deleteById(id);
     }
 
@@ -138,7 +151,7 @@ public class DataBaseService {
         return new WorkPlaceListDTO(
                 workPlace.getId(),
                 workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
-                workPlace.getDistrict()!=null? districtRegionService.regionDistrictDTO(workPlace.getDistrict()):null,
+                workPlace.getDistrict() != null ? districtRegionService.regionDistrictDTO(workPlace.getDistrict()) : null,
                 workPlace.getMedicalInstitutionType(),
                 workPlace.getAddress(),
                 workPlace.getDescription(),
@@ -153,8 +166,7 @@ public class DataBaseService {
 
         workPlaceStatisticsInfoDTO.setAllDoctors(userList.size());
 
-        Map<Field,FieldStatistics> fieldStatisticsMap=new HashMap();
-
+        Map<Field, FieldStatistics> fieldStatisticsMap = new HashMap();
 
 
         for (Field field : Field.values()) {
@@ -172,9 +184,9 @@ public class DataBaseService {
     }
 
     public MNN saveMNN(MNN mnn) {
-        MNN mnn1=new MNN();
+        MNN mnn1 = new MNN();
         mnn1.setName(mnn.getName());
-        return  mnnRepository.save(mnn1);
+        return mnnRepository.save(mnn1);
 
     }
 

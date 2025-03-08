@@ -45,6 +45,13 @@ public class DataBaseController {
         return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED);
     }
 
+    @PostMapping("/medicine/add-bulk")
+    public ResponseEntity<Void> addListOfMedicines(@RequestBody List<Medicine> medicines) {
+        dataBaseService.saveList(medicines);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+
     @DeleteMapping("/medicine/{id}")
     public ResponseEntity<Void> deleteMedicine(@PathVariable Long id) {
         dataBaseService.deleteMedicine(id);
@@ -89,14 +96,13 @@ public class DataBaseController {
             @RequestParam(required = false) Long medicineId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-            ) {
+    ) {
 
         Page<ContractDTO> contracts = contractService.getFilteredContracts(
-                 regionId, districtId,workPlaceId, firstName, lastName, middleName, fieldName, startDate, endDate, medicineId, page,size);
+                regionId, districtId, workPlaceId, firstName, lastName, middleName, fieldName, startDate, endDate, medicineId, page, size);
 
         return ResponseEntity.ok(contracts);
     }
-
 
 
     @DeleteMapping("/contracts/{contractId}")
@@ -191,12 +197,12 @@ public class DataBaseController {
         WorkPlaceListDTO workplaces = dataBaseService.getWorkPlaceById(workplaceId);
         return ResponseEntity.ok(workplaces);
     }
+
     @GetMapping("/workplaces/statistics/{workplaceId}")
     public ResponseEntity<WorkPlaceStatisticsInfoDTO> getWorkPlaceDoctorsById(@PathVariable Long workplaceId) {
         WorkPlaceStatisticsInfoDTO statisticsInfoDTO = dataBaseService.getWorkPlaceStats(workplaceId);
         return ResponseEntity.ok(statisticsInfoDTO);
     }
-
 
 
     //Recipes
@@ -215,11 +221,10 @@ public class DataBaseController {
     ) {
         Page<RecipeDto> recipes = recipeService.filterRecipes(
                 nameQuery, regionId, districtId, medicineId, doctorField,
-                lastAnalysisFrom, lastAnalysisTo,doctorId, page, size
+                lastAnalysisFrom, lastAnalysisTo, doctorId, page, size
         );
         return ResponseEntity.ok(recipes);
     }
-
 
 
     //ConditionsToPreparate
@@ -249,7 +254,6 @@ public class DataBaseController {
         conditionsToPreparateService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 
     //regions and districts
@@ -302,16 +306,17 @@ public class DataBaseController {
         MNN mnn1 = dataBaseService.saveMNN(mnn);
         return ResponseEntity.ok(mnn1);
     }
+
     @PostMapping("/mnn/add-bulk")
     public ResponseEntity<Void> saveMNNList(@RequestBody List<MNN> mnn) {
-         dataBaseService.saveMNNList(mnn);
+        dataBaseService.saveMNNList(mnn);
         return ResponseEntity.ok().build();
     }
 
 
     @DeleteMapping("/mnn/delete/{mnn}")
     public void deleteMNN(@PathVariable Long mnn) {
-       dataBaseService.deleteMNN(mnn);
+        dataBaseService.deleteMNN(mnn);
     }
 
     @GetMapping("/mnn/list")

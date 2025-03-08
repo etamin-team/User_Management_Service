@@ -1,11 +1,13 @@
 package com.example.user_management_service.model;
 
+import com.example.user_management_service.role.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,6 +37,12 @@ public class Medicine {
 
     @Column(name = "name_ru")
     private String nameRussian;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
 
 
     @Column(name = "image_url")

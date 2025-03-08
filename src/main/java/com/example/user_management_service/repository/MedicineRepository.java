@@ -3,7 +3,11 @@ package com.example.user_management_service.repository;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Region;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Date-12/29/2024
@@ -13,4 +17,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
+
+    @Query("""
+    SELECT u FROM Medicine u 
+    WHERE u.status = 'ACTIVE'
+    ORDER BY u.createdDate DESC
+""")
+    List<Medicine> findAllSortByCreatedDate();
+
+
 }
