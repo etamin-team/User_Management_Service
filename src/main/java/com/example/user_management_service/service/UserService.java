@@ -231,7 +231,7 @@ public class UserService {
             // Remove references to avoid constraint violations
             existingUser.setDistrict(null);
             existingUser.setWorkplace(null);
-            existingUser.setStatus(UserStatus.DISABLED);
+            existingUser.setStatus(UserStatus.DELETED);
             userRepository.save(existingUser);
             return true;
         }
