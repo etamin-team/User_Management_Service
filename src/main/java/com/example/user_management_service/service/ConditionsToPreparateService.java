@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.DataBaseException;
 import com.example.user_management_service.model.ConditionsToPreparate;
 import com.example.user_management_service.model.dto.ConditionsToPreparateDto;
 import com.example.user_management_service.model.dto.PercentageValDto;
@@ -43,12 +44,12 @@ public class ConditionsToPreparateService {
 
     public ConditionsToPreparateDto update(Long id, ConditionsToPreparateDto dto) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Entity not found with id: " + id);
+            throw new DataBaseException("Entity not found with id: " + id);
         }
         ConditionsToPreparate entity = mapToEntity(dto);
-        entity.setId(id); // Ensure ID remains the same
-        entity = repository.save(entity);
-        return mapToDto(entity);
+        entity.setId(id);
+        ConditionsToPreparate entity2 = repository.save(entity);
+        return mapToDto(entity2);
     }
 
     public void delete(Long id) {

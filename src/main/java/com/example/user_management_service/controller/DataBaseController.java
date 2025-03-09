@@ -255,9 +255,7 @@ public class DataBaseController {
         return ResponseEntity.noContent().build();
     }
 
-
     //regions and districts
-
 
     @PostMapping("/regions/add")
     public ResponseEntity<RegionDTO> addRegion(@RequestBody RegionDTO regionDTO) {
