@@ -26,7 +26,7 @@ import java.util.UUID;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("""
     SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
-        COALESCE((SELECT COUNT(u) FROM User u WHERE u.role = 'DOCTOR'), 0), 
+        COALESCE((SELECT COUNT(u) FROM User u WHERE u.role = 'DOCTOR' and u.status= 'ACTIVE'), 0), 
         COALESCE(COUNT(DISTINCT c.doctor.userId), 0), 
         COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
     )

@@ -27,12 +27,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     @Query("""
     SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
         r.contractType, 
-        COUNT (r.recipeId)
+        COUNT(r.recipeId)
     )
-    FROM Recipe r
+    FROM Recipe r 
+    WHERE r.dateCreation >= DATE_TRUNC('month', CURRENT_DATE)
     GROUP BY r.contractType
 """)
     List<ContractTypeSalesData> getTotalSoldByContractType();
+
+
 
     @Query("""
     SELECT new com.example.user_management_service.model.dto.ActiveDoctorSalesData(
@@ -115,22 +118,22 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     Integer totalMedicineAmountByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
 
     @Query("""
-        SELECT r FROM Recipe r
-        WHERE (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
-        AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
-        AND (:doctorField IS NULL OR r.doctorId.fieldName = :doctorField)
-        AND (:doctorId IS NULL OR r.doctorId.userId = :doctorId)
-        AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
-        AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
-         AND (
-           (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
-           OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
-           OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+    SELECT r FROM Recipe r
+    WHERE (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
+    AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
+    AND (:doctorField IS NULL OR r.doctorId.fieldName = CAST(:doctorField AS string))
+    AND (:doctorId IS NULL OR r.doctorId.userId = CAST(:doctorId AS UUID))
+    AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
+    AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
+    AND (
+        (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(COALESCE(:firstName, ''), '%')))
+        OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(COALESCE(:lastName, ''), '%')))
+        OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(COALESCE(:middleName, ''), '%')))
     )
-        AND (:medicineId IS NULL OR r.recipeId IN (
-                    SELECT rp.recipeId FROM Recipe rp JOIN rp.preparations p WHERE p.medicine.id = :medicineId
-                ))
-    """)
+    AND (:medicineId IS NULL OR EXISTS (
+        SELECT 1 FROM Recipe rp JOIN rp.preparations p WHERE p.medicine.id = :medicineId AND rp.recipeId = r.recipeId
+    ))
+""")
     Page<Recipe> findRecipesByFilters(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
@@ -144,5 +147,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("doctorId") UUID doctorId,
             Pageable pageable
     );
+
 
 }

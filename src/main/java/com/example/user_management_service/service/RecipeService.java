@@ -147,7 +147,11 @@ public class RecipeService {
                 medicineId, doctorField, lastAnalysisFrom,
                 lastAnalysisTo,doctorId, pageable);
 
-        // Convert Recipe Page to RecipeDto Page
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------Recipe------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
         return recipes.map(this::convertToDto);
     }
 
