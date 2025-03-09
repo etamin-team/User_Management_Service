@@ -1,7 +1,10 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.ContractNotFoundException;
+import com.example.user_management_service.exception.DoctorContractException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
@@ -37,6 +40,7 @@ public class RecipeService {
     ;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ContractRepository contractRepository;
     private RegistrationService registrationService;
 
 
@@ -50,7 +54,6 @@ public class RecipeService {
         recipe.setDiagnosis(recipeDto.getDiagnosis());
         recipe.setComment(recipeDto.getComment());
         recipe.setTelegramId(recipeDto.getTelegramId());
-        recipe.setContractType(recipeDto.getContractType());
 
         List<Preparation> preparations = recipeDto.getPreparations().stream()
                 .map(this::mapPreparationDtoToEntity)
@@ -58,7 +61,10 @@ public class RecipeService {
 
         recipe.setPreparations(preparations);
         recipe.setDateCreation(LocalDate.now());
-        recipe.setDoctorId(userRepository.findById(recipeDto.getDoctorId()).orElseThrow());
+        User doctor = userRepository.findById(recipeDto.getDoctorId()).orElseThrow(() -> new DoctorContractException("Doctor not found"));
+        recipe.setDoctorId(doctor);
+        ContractType contractType = contractRepository.findActiveContractByDoctorId(doctor.getUserId()).orElse(new Contract()).getContractType();
+        recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
         recipeRepository.save(recipe);
 
         List<Long> medicineIds = preparations.stream()
