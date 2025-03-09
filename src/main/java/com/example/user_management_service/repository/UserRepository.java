@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.dto.DashboardDoctorsCoverage;
 import com.example.user_management_service.model.dto.RegionFieldDTO;
 import com.example.user_management_service.model.dto.StatsEmployeeDTO;
 import com.example.user_management_service.role.Role;
@@ -23,6 +24,24 @@ import java.util.UUID;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
+        COUNT(u), 
+        COALESCE(COUNT(DISTINCT c.id), 0), 
+        COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
+    ) 
+    FROM User u 
+    LEFT JOIN Contract c ON u.userId = c.doctor.userId 
+    WHERE u.role = 'DOCTOR'
+    GROUP BY COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
+    ORDER BY COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
+""")
+    List<DashboardDoctorsCoverage> getDoctorsCoverage();
+
+
+
 
     @Override
     Optional<User> findById(UUID uuid);

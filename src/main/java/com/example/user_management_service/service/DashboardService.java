@@ -38,7 +38,7 @@ public class DashboardService {
         RecordDTO recordDTO = new RecordDTO();
         recordDTO.setTopProductsOnSellDTO(medicineWithQuantityDoctorRepository.findTop6MostSoldMedicinesWithFilters(districtId,regionId,workplaceId));
         recordDTO.setActiveDoctorSalesData(recipeRepository.getMonthlySales());
-        recordDTO.setDashboardDoctorsCoverage(contractRepository.getDoctorsCoverage());
+        recordDTO.setDashboardDoctorsCoverage(userRepository.getDoctorsCoverage());
         if (userId != null) {
             return filterByQuery(recordDTO,userId, startDate, endDate);
         } else if (field != null) {
