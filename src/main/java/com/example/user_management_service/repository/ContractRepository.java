@@ -26,16 +26,17 @@ import java.util.UUID;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("""
     SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
-        (SELECT COUNT(u) FROM User u where u.role='DOCTOR'),
-        COUNT(DISTINCT c.doctor.userId),
-        EXTRACT(MONTH FROM c.startDate)
+        (SELECT COUNT(u) FROM User u WHERE u.role = 'DOCTOR'), 
+        COUNT(DISTINCT c.doctor.userId), 
+        EXTRACT(MONTH FROM c.createdAt)
     )
     FROM Contract c
-    WHERE c.startDate IS NOT NULL
-    GROUP BY EXTRACT(MONTH FROM c.startDate)
-    ORDER BY EXTRACT(MONTH FROM c.startDate)
+    WHERE c.createdAt IS NOT NULL
+    GROUP BY EXTRACT(MONTH FROM c.createdAt)
+    ORDER BY EXTRACT(MONTH FROM c.createdAt)
 """)
     List<DashboardDoctorsCoverage> getDoctorsCoverage();
+
 
 
 
