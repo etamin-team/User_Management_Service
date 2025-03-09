@@ -162,16 +162,15 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                 @Param("workplaceId") Long workplaceId,
                                 @Param("fieldName") Field fieldName);
 
-
     @Query("SELECT DISTINCT c FROM Contract c "
             + "LEFT JOIN c.medicineWithQuantityDoctors mwqd "
-            + "WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId)"
+            + "WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId) "
             + "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) "
-            + "AND (:districtId IS NULL OR c.doctor.workplace.id= :workPlaceId) "
-            + "AND (:firstName IS NULL OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) "
-            + "AND (:lastName IS NULL OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) "
-            + "AND (:middleName IS NULL OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :middleName, '%'))) "
-            + "AND (:fieldName IS NULL OR LOWER(c.doctor.fieldName) LIKE LOWER(CONCAT('%', :fieldName, '%'))) "
+            + "AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) "
+            + "AND (:firstName IS NULL OR CAST(c.doctor.firstName AS string) LIKE LOWER(CONCAT('%', :firstName, '%'))) "
+            + "AND (:lastName IS NULL OR CAST(c.doctor.lastName AS string) LIKE LOWER(CONCAT('%', :lastName, '%'))) "
+            + "AND (:middleName IS NULL OR CAST(c.doctor.middleName AS string) LIKE LOWER(CONCAT('%', :middleName, '%'))) "
+            + "AND (:fieldName IS NULL OR CAST(c.doctor.fieldName AS string) LIKE LOWER(CONCAT('%', :fieldName, '%'))) "
             + "AND (:startDate IS NULL OR c.startDate >= :startDate) "
             + "AND (:endDate IS NULL OR c.endDate <= :endDate) "
             + "AND (:medicineId IS NULL OR mwqd.medicine.id = :medicineId)")
@@ -181,11 +180,12 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                  @Param("firstName") String firstName,
                                  @Param("lastName") String lastName,
                                  @Param("middleName") String middleName,
-                                 @Param("fieldName") Field fieldName,
+                                 @Param("fieldName") String fieldName, // Changed Field to String
                                  @Param("startDate") LocalDate startDate,
                                  @Param("endDate") LocalDate endDate,
                                  @Param("medicineId") Long medicineId,
                                  Pageable pageable);
+
 }
 
 
