@@ -32,5 +32,7 @@ public class RecordDTO {
     private List<ActiveDoctorSalesData> activeDoctorSalesData;
 
     private List<DashboardDoctorsCoverage> dashboardDoctorsCoverage;
-    
+
+    private List<ContractTypeSalesData> contractTypeSalesData;
+
 }

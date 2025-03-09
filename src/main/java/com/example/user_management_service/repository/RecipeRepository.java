@@ -4,6 +4,7 @@ import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.PreparationType;
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.dto.ActiveDoctorSalesData;
+import com.example.user_management_service.model.dto.ContractTypeSalesData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +23,16 @@ import java.util.UUID;
  */
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
+
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
+        r.contractType, 
+        COUNT (r.recipeId)
+    )
+    FROM Recipe r
+    GROUP BY r.contractType
+""")
+    List<ContractTypeSalesData> getTotalSoldByContractType();
 
     @Query("""
     SELECT new com.example.user_management_service.model.dto.ActiveDoctorSalesData(

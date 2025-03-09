@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.User;
+import com.example.user_management_service.model.dto.ContractTypeSalesData;
 import com.example.user_management_service.model.dto.DashboardDoctorsCoverage;
 import com.example.user_management_service.model.dto.RegionFieldDTO;
 import com.example.user_management_service.model.dto.StatsEmployeeDTO;
@@ -25,6 +26,15 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
+        r.contractType, 
+        COUNT(r)
+    )
+    FROM Recipe r
+    GROUP BY r.contractType
+""")
+    List<ContractTypeSalesData> getRecipeCountByContractType();
 
     @Override
     Optional<User> findById(UUID uuid);
