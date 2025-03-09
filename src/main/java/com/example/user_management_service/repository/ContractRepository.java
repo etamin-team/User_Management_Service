@@ -3,6 +3,7 @@ package com.example.user_management_service.repository;
 import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.GoalStatus;
+import com.example.user_management_service.model.dto.DashboardDoctorsCoverage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,6 +24,21 @@ import java.util.UUID;
  */
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
+        (SELECT COUNT(u) FROM User u where u.fieldName='DOCTOR'), 
+        COUNT(DISTINCT c.doctor.userId), 
+        EXTRACT(MONTH FROM c.startDate)
+    )
+    FROM Contract c
+    WHERE c.startDate IS NOT NULL
+    GROUP BY EXTRACT(MONTH FROM c.startDate)
+    ORDER BY EXTRACT(MONTH FROM c.startDate)
+""")
+    List<DashboardDoctorsCoverage> getDoctorsCoverage();
+
+
+
     @Query("SELECT c FROM Contract c WHERE c.status = :status")
     Page<Contract> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
 

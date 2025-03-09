@@ -26,15 +26,16 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     @Query("""
     SELECT new com.example.user_management_service.model.dto.ActiveDoctorSalesData(
         SUM(p.quantity * m.cip), 
-        FUNCTION('MONTH', r.dateCreation)
+        EXTRACT(MONTH FROM r.dateCreation)
     )
     FROM Recipe r
     JOIN r.preparations p
     JOIN p.medicine m
-    GROUP BY FUNCTION('MONTH', r.dateCreation)
-    ORDER BY FUNCTION('MONTH', r.dateCreation)
+    GROUP BY EXTRACT(MONTH FROM r.dateCreation)
+    ORDER BY EXTRACT(MONTH FROM r.dateCreation)
 """)
     List<ActiveDoctorSalesData> getMonthlySales();
+
 
 
     @Query("SELECT DISTINCT r FROM Recipe r " +
