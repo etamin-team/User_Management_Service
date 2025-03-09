@@ -16,6 +16,7 @@ public class ActiveDoctorSalesData {
     private Long amount;
     private Month month;
     public ActiveDoctorSalesData(Long amount, Integer month) {
+        this.amount = amount;
         this.month = (month != null) ? Month.of(month) : null;
     }
 
