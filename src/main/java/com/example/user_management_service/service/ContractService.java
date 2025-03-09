@@ -46,7 +46,7 @@ public class ContractService {
     // Doctor Contract
 
     public ContractDTO managerCreateContract(ContractDTO contractDTO) {
-        if (contractRepository.findActiveContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
+        if (contractRepository.findActiveOrPendingContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
             throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:" + contractDTO.getDoctorId());
         }
         ManagerGoal managerGoal = managerGoalRepository.getGoalsByManagerId(contractDTO.getManagerId()).orElseThrow(() -> new DoctorContractException("Manager Goal Doesn't exists"));
