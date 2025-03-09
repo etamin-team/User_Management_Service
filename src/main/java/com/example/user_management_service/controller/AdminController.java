@@ -74,9 +74,9 @@ public class AdminController {
     @GetMapping("/recipes")
     public ResponseEntity<List<LastRecipeDTO>> getAllLastRecipes(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String district,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Field category,
-            @RequestParam(required = false) String specialty,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) UUID doctorId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
@@ -88,7 +88,7 @@ public class AdminController {
         String middleName = nameParts.length > 2 ? nameParts[1] : null;
 
 
-        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, district, category, specialty, medicineId, startDate, endDate,doctorId);
+        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, districtId, category,regionId,medicineId, startDate, endDate,doctorId);
         return ResponseEntity.ok(recipes);
     }
 

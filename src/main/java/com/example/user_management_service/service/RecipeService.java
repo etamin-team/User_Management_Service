@@ -57,7 +57,7 @@ public class RecipeService {
                 .collect(Collectors.toList());
 
         recipe.setPreparations(preparations);
-        recipe.setDateCreation(LocalDateTime.now());
+        recipe.setDateCreation(LocalDate.now());
         recipe.setDoctorId(userRepository.findById(recipeDto.getDoctorId()).orElseThrow());
         recipeRepository.save(recipe);
 
@@ -88,10 +88,10 @@ public class RecipeService {
     }
 
     public List<LastRecipeDTO> getRecipes(
-            String firstName, String lastName, String middleName, String district, Field category,
-            String specialty, Long medicineId, LocalDate startDate, LocalDate endDate, UUID doctorId) {
+            String firstName, String lastName, String middleName, Long district, Field category,
+            Long regionId, Long medicineId, LocalDate startDate, LocalDate endDate, UUID doctorId) {
 
-        return recipeRepository.findRecipesByFilters(firstName, lastName, middleName, district, category, specialty, startDate, endDate, doctorId,medicineId)
+        return recipeRepository.findRecipesByFilters(firstName, lastName, middleName,regionId, district,medicineId,category , startDate, endDate)
                 .stream()
                 .map(this::mapToLastRecipeDTO)
                 .collect(Collectors.toList());
@@ -146,7 +146,7 @@ public class RecipeService {
         // Fetch paged results
         Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,medicineId,
                  doctorField, lastAnalysisFrom,
-                lastAnalysisTo,doctorId, pageable);
+                lastAnalysisTo, pageable);
 
         System.out.println("-----------------------------------------------------------------------");
         System.out.println("-----------------------------------------------------------------------");
