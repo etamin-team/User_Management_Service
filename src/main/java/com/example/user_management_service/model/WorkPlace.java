@@ -29,10 +29,10 @@ public class WorkPlace {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "address")
+    @Column(name = "address",length = 600)
     private String address;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 2000)
     private String description;
 
     @Column(name = "phone")

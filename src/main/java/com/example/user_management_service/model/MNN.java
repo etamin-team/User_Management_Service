@@ -22,5 +22,6 @@ public class MNN {
     @Column(name = "id")
     private Long id;
 
+    @Column(length = 2000)
     private String name;
 }
