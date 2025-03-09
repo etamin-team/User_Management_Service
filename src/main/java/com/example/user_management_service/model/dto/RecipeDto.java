@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.ContractType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class RecipeDto {
     private String comment;
     private Long telegramId;
     private Long districtId;
+    private ContractType contractType;
     private List<PreparationDto> preparations;
 
     private UserDTO doctor;

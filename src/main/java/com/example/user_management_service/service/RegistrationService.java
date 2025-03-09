@@ -145,7 +145,7 @@ public class RegistrationService {
         newUser.setPassword(request.getPassword());
         newUser.setCreatedDate(LocalDateTime.now());
         newUser.setRole(role);
-        newUser.setEmail(request.getEmail());
+        newUser.setEmail(request.getEmail().trim().isEmpty() ?null:request.getEmail());
         newUser.setPosition(request.getPosition());
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());

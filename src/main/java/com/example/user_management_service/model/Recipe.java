@@ -56,6 +56,8 @@ public class Recipe {
     @Column(name = "telegram_id")
     private Long telegramId;
 
+    private ContractType contractType;
+
     @ElementCollection
     @CollectionTable(name = "recipe_preparation", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "preparation")
