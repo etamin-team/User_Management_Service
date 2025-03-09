@@ -26,8 +26,8 @@ import java.util.UUID;
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("""
     SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
-        (SELECT COUNT(u) FROM User u where u.fieldName='DOCTOR'), 
-        COUNT(DISTINCT c.doctor.userId), 
+        (SELECT COUNT(u) FROM User u where u.role='DOCTOR'),
+        COUNT(DISTINCT c.doctor.userId),
         EXTRACT(MONTH FROM c.startDate)
     )
     FROM Contract c
