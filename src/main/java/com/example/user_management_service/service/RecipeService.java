@@ -144,7 +144,7 @@ public class RecipeService {
 
         // Fetch paged results
         Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,
-                medicineId, doctorField, lastAnalysisFrom,
+                 doctorField, lastAnalysisFrom,
                 lastAnalysisTo,doctorId, pageable);
 
         System.out.println("-----------------------------------------------------------------------");

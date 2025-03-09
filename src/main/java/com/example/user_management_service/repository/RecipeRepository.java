@@ -118,35 +118,30 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     Integer totalMedicineAmountByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
 
     @Query("""
-    SELECT r FROM Recipe r
-    WHERE (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
-    AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
-    AND (:doctorField IS NULL OR r.doctorId.fieldName = CAST(:doctorField AS string))
-    AND (:doctorId IS NULL OR r.doctorId.userId = CAST(:doctorId AS UUID))
-    AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
-    AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
-    AND (
-        (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(COALESCE(:firstName, ''), '%')))
-        OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(COALESCE(:lastName, ''), '%')))
-        OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(COALESCE(:middleName, ''), '%')))
-    )
-    AND (:medicineId IS NULL OR EXISTS (
-        SELECT 1 FROM Recipe rp JOIN rp.preparations p WHERE p.medicine.id = :medicineId AND rp.recipeId = r.recipeId
-    ))
-""")
+        SELECT r FROM Recipe r
+        WHERE (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
+        AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
+        AND (:doctorField IS NULL OR r.doctorId.fieldName = :doctorField)
+        AND (:doctorId IS NULL OR r.doctorId.userId = :doctorId)
+        AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
+        AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
+        AND (
+           (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+           OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+           OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+    ) """)
     Page<Recipe> findRecipesByFilters(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("regionId") Long regionId,
             @Param("districtId") Long districtId,
-            @Param("medicineId") Long medicineId,
+
             @Param("doctorField") Field doctorField,
             @Param("lastAnalysisFrom") LocalDate lastAnalysisFrom,
             @Param("lastAnalysisTo") LocalDate lastAnalysisTo,
             @Param("doctorId") UUID doctorId,
             Pageable pageable
     );
-
 
 }
