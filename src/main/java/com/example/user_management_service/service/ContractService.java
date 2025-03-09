@@ -614,7 +614,7 @@ public class ContractService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         Page<Contract> contractPage = contractRepository.findContracts(regionId, districtId, workPlaceId,
-
+                firstName, lastName, middleName,
                 fieldName, startDate, endDate,
                  pageable);
 
