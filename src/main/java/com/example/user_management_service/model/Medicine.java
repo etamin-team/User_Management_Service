@@ -57,7 +57,7 @@ public class Medicine {
 
     private Integer quantity;
 
-    private Integer prescription;
+    private Double prescription;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "volume")
