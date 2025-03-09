@@ -25,16 +25,16 @@ import java.util.UUID;
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("""
-    SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
-        COALESCE((SELECT COUNT(u) FROM User u WHERE u.role = 'DOCTOR' and u.status= 'ACTIVE'), 0), 
-        COALESCE(COUNT(DISTINCT c.doctor.userId), 0), 
-        COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
-    )
-    FROM Contract c
-    WHERE c.createdAt IS NOT NULL
-    GROUP BY EXTRACT(MONTH FROM c.createdAt)
-    ORDER BY EXTRACT(MONTH FROM c.createdAt)
-""")
+                SELECT new com.example.user_management_service.model.dto.DashboardDoctorsCoverage(
+                    COALESCE((SELECT COUNT(u) FROM User u WHERE u.role = 'DOCTOR' and u.status= 'ACTIVE'), 0), 
+                    COALESCE(COUNT(DISTINCT c.doctor.userId), 0), 
+                    COALESCE(EXTRACT(MONTH FROM c.createdAt), 0)
+                )
+                FROM Contract c
+                WHERE c.createdAt IS NOT NULL
+                GROUP BY EXTRACT(MONTH FROM c.createdAt)
+                ORDER BY EXTRACT(MONTH FROM c.createdAt)
+            """)
     List<DashboardDoctorsCoverage> getDoctorsCoverage();
 
 
@@ -51,8 +51,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "WHERE c.doctor.userId = :doctorId " +
             "AND (c.status = 'ENABLED' OR c.status = 'PENDING_REVIEW')")
     Optional<Contract> findActiveOrPendingContractByDoctorId(@Param("doctorId") UUID doctorId);
-
-
 
 
     @Modifying
@@ -162,25 +160,31 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                 @Param("workplaceId") Long workplaceId,
                                 @Param("fieldName") Field fieldName);
 
-    @Query("SELECT DISTINCT c FROM Contract c "
-            + "LEFT JOIN c.medicineWithQuantityDoctors mwqd "
-            + "WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId) "
-            + "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) "
-            + "AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) "
-            + "AND (:firstName IS NULL OR CAST(c.doctor.firstName AS string) LIKE LOWER(CONCAT('%', :firstName, '%'))) "
-            + "AND (:lastName IS NULL OR CAST(c.doctor.lastName AS string) LIKE LOWER(CONCAT('%', :lastName, '%'))) "
-            + "AND (:middleName IS NULL OR CAST(c.doctor.middleName AS string) LIKE LOWER(CONCAT('%', :middleName, '%'))) "
-            + "AND (:fieldName IS NULL OR CAST(c.doctor.fieldName AS string) LIKE LOWER(CONCAT('%', :fieldName, '%'))) "
-            + "AND (:startDate IS NULL OR c.startDate >= :startDate) "
-            + "AND (:endDate IS NULL OR c.endDate <= :endDate) "
-            + "AND (:medicineId IS NULL OR mwqd.medicine.id = :medicineId)")
+
+    @Query(""" 
+                    SELECT DISTINCT c FROM Contract c 
+                                 LEFT JOIN c.medicineWithQuantityDoctors mwqd 
+                                 WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId) 
+                                 AND (:districtId IS NULL OR c.doctor.district.id = :districtId) 
+                                 AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) 
+                                 AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName) 
+                                 AND (:startDate IS NULL OR c.startDate >= :startDate) 
+                                 AND (:endDate IS NULL OR c.endDate <= :endDate) 
+                                 AND (:medicineId IS NULL OR mwqd.medicine.id = :medicineId)
+                                 AND (
+                                        (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                                         OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                                         OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                                  )
+            """)
     Page<Contract> findContracts(@Param("regionId") Long regionId,
                                  @Param("districtId") Long districtId,
                                  @Param("workPlaceId") Long workPlaceId,
                                  @Param("firstName") String firstName,
                                  @Param("lastName") String lastName,
                                  @Param("middleName") String middleName,
-                                 @Param("fieldName") String fieldName, // Changed Field to String
+                                 @Param("fieldName") Field fieldName,
                                  @Param("startDate") LocalDate startDate,
                                  @Param("endDate") LocalDate endDate,
                                  @Param("medicineId") Long medicineId,

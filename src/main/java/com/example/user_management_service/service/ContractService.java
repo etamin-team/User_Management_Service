@@ -615,7 +615,7 @@ public class ContractService {
 
         Page<Contract> contractPage = contractRepository.findContracts(regionId, districtId, workPlaceId,
                 firstName, lastName, middleName,
-                fieldName.name(), startDate, endDate,
+                fieldName, startDate, endDate,
                 medicineId, pageable);
 
         // Convert each Contract entity to DTO and maintain pagination
