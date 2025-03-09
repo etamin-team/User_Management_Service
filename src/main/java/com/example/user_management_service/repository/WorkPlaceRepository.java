@@ -23,7 +23,8 @@ public interface WorkPlaceRepository extends JpaRepository<WorkPlace, Long> {
                 SELECT w FROM WorkPlace w 
                 WHERE (:districtId IS NULL OR w.district.id = :districtId)
                 AND (:regionId IS NULL OR w.district.region.id = :regionId)
-                AND (:medicalInstitutionType IS NULL OR w.medicalInstitutionType = :medicalInstitutionType)
+                AND (:medicalInstitutionType IS NULL OR w.medicalInstitutionType = :medicalInstitutionType) 
+                            ORDER BY w.district.id  DESC 
             """)
     List<WorkPlace> findByFilters(@Param("districtId") Long districtId,
                                   @Param("regionId") Long regionId,
