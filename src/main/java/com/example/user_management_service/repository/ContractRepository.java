@@ -38,18 +38,18 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<DashboardDoctorsCoverage> getDoctorsCoverage();
 
 
-    @Query("SELECT c FROM Contract c WHERE c.status = :status")
+    @Query("SELECT c FROM Contract c WHERE c.status = :status ")
     Page<Contract> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
 
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
-            "AND (c.status = 'APPROVED' )")
+            "AND (c.status = 'APPROVED' ) order by c.id asc limit 1")
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
-            "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW')")
+            "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW') order by c.id asc limit 1")
     Optional<Contract> findActiveOrPendingContractByDoctorId(@Param("doctorId") UUID doctorId);
 
 
