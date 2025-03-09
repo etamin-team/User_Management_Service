@@ -504,6 +504,7 @@ public class ContractService {
         contractDTO.setDoctorId(contract.getDoctor().getUserId());
         contractDTO.setCreatedAt(contract.getCreatedAt());
         contractDTO.setStartDate(contract.getStartDate());
+        contractDTO.setContractType(contract.getContractType());
         contractDTO.setEndDate(contract.getEndDate());
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
@@ -529,6 +530,7 @@ public class ContractService {
         contractDTO.setDoctorId(contract.getDoctor().getUserId());
         contractDTO.setCreatedAt(contract.getCreatedAt());
         contractDTO.setStartDate(contract.getStartDate());
+        contractDTO.setContractType(contract.getContractType());
         contractDTO.setEndDate(contract.getEndDate());
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
@@ -556,6 +558,7 @@ public class ContractService {
         contractDTO.setCreatedAt(contract.getCreatedAt());
         contractDTO.setStartDate(contract.getStartDate());
         contractDTO.setEndDate(contract.getEndDate());
+        contractDTO.setContractType(contract.getContractType());
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
         List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
