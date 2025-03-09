@@ -171,19 +171,10 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                  AND (:startDate IS NULL OR c.startDate >= :startDate) 
                                  AND (:endDate IS NULL OR c.endDate <= :endDate) 
                                  
-                                 AND (
-                                        (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
-                                         OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
-                                         OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
-            
-                                  )
             """)
     Page<Contract> findContracts(@Param("regionId") Long regionId,
                                  @Param("districtId") Long districtId,
                                  @Param("workPlaceId") Long workPlaceId,
-                                 @Param("firstName") String firstName,
-                                 @Param("lastName") String lastName,
-                                 @Param("middleName") String middleName,
                                  @Param("fieldName") Field fieldName,
                                  @Param("startDate") LocalDate startDate,
                                  @Param("endDate") LocalDate endDate,
