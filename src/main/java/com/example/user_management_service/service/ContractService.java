@@ -228,6 +228,7 @@ public class ContractService {
         contract.setCreatedAt(LocalDate.now());
         contract.setMedAgent(agentGoal.getMedAgent());
         contract.setManager(managerGoal.getManagerId());
+        contract.setContractType(contractDTO.getContractType());
         contractRepository.save(contract);
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {
