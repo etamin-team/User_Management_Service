@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class RecipeDto {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private String phoneNumberPrefix;
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
     private String diagnosis;
     private String comment;
     private Long telegramId;

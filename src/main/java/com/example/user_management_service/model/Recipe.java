@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class Recipe {
     private String comment;
 
     @Column(name = "date_creation")
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
 
     @Column(name = "telegram_id")
     private Long telegramId;

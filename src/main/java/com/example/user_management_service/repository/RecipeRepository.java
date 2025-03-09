@@ -129,14 +129,18 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
            (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
            OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
            OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
-    ) """)
+    )
+        AND (:medicineId IS NULL OR r.recipeId IN (
+                    SELECT rp.recipeId FROM Recipe rp JOIN rp.preparations p WHERE p.medicine.id = :medicineId
+                ))
+    """)
     Page<Recipe> findRecipesByFilters(
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("regionId") Long regionId,
             @Param("districtId") Long districtId,
-
+            @Param("medicineId") Long medicineId,
             @Param("doctorField") Field doctorField,
             @Param("lastAnalysisFrom") LocalDate lastAnalysisFrom,
             @Param("lastAnalysisTo") LocalDate lastAnalysisTo,

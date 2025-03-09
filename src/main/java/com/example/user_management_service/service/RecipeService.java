@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,7 +57,7 @@ public class RecipeService {
                 .collect(Collectors.toList());
 
         recipe.setPreparations(preparations);
-        recipe.setDateCreation(LocalDate.now());
+        recipe.setDateCreation(LocalDateTime.now());
         recipe.setDoctorId(userRepository.findById(recipeDto.getDoctorId()).orElseThrow());
         recipeRepository.save(recipe);
 
@@ -143,7 +144,7 @@ public class RecipeService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreation").descending());
 
         // Fetch paged results
-        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,
+        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(name1, name2, name3, regionId, districtId,medicineId,
                  doctorField, lastAnalysisFrom,
                 lastAnalysisTo,doctorId, pageable);
 

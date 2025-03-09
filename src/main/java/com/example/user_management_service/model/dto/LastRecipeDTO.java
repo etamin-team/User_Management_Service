@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +23,7 @@ public class LastRecipeDTO {
     private UUID recipeId;
     private UserFullNameDTO doctorName;
     private WorkPlaceDTO workPlaceDTO;
-    private LocalDate dateOfCreation;
+    private LocalDateTime dateOfCreation;
     private List<Medicine> medicines;
 
 }
