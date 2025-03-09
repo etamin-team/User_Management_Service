@@ -25,6 +25,7 @@ public class DashboardService {
     private final RegionRepository regionRepository;
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
+    private final RecipeRepository recipeRepository;
     private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private ContractMedicineAmountRepository contractMedicineAmountRepository;
     private UserRepository userRepository;
@@ -35,6 +36,7 @@ public class DashboardService {
 //        } else
         RecordDTO recordDTO = new RecordDTO();
         recordDTO.setTopProductsOnSellDTO(medicineWithQuantityDoctorRepository.findTop6MostSoldMedicinesWithFilters(districtId,regionId,workplaceId));
+        recordDTO.setActiveDoctorSalesData(recipeRepository.getMonthlySales());
         if (userId != null) {
             return filterByQuery(recordDTO,userId, startDate, endDate);
         } else if (field != null) {

@@ -29,5 +29,6 @@ public class RecordDTO {
 
     private List<TopProductsOnSellDTO> topProductsOnSellDTO;
 
+    private List<ActiveDoctorSalesData> activeDoctorSalesData;
     
 }

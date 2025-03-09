@@ -3,6 +3,7 @@ package com.example.user_management_service.repository;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.PreparationType;
 import com.example.user_management_service.model.Recipe;
+import com.example.user_management_service.model.dto.ActiveDoctorSalesData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +22,20 @@ import java.util.UUID;
  */
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
+
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.ActiveDoctorSalesData(
+        SUM(p.quantity * m.cip), 
+        FUNCTION('MONTH', r.dateCreation)
+    )
+    FROM Recipe r
+    JOIN r.preparations p
+    JOIN p.medicine m
+    GROUP BY FUNCTION('MONTH', r.dateCreation)
+    ORDER BY FUNCTION('MONTH', r.dateCreation)
+""")
+    List<ActiveDoctorSalesData> getMonthlySales();
+
 
     @Query("SELECT DISTINCT r FROM Recipe r " +
             "JOIN r.preparations p " +
