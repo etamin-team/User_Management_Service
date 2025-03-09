@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.GoalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,8 @@ public class ContractDTO {
     private UUID agentId;
     private Long  agentContractId;
     private UUID  managerId;
+
+    private ContractType contractType;
 
     private List<MedicineWithQuantityDTO> medicinesWithQuantities;
 

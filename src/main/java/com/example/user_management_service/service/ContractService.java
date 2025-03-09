@@ -97,6 +97,7 @@ public class ContractService {
         contract.setCreatedAt(LocalDate.now());
         contract.setStatus(GoalStatus.APPROVED);
         contract.setManager(managerGoal.getManagerId());
+        contract.setContractType(contract.getContractType());
         contractRepository.save(contract);
 
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
@@ -351,6 +352,7 @@ public class ContractService {
                     contract.getManager() != null && contract.getManager().getUserId() != null
                             ? contract.getManager().getUserId()
                             : null,
+                    contract.getContractType(),
                     contract.getMedicineWithQuantityDoctors() != null
                             ? contract.getMedicineWithQuantityDoctors().stream()
                             .filter(Objects::nonNull) // Avoid NullPointerException inside stream

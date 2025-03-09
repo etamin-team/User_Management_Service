@@ -92,8 +92,6 @@ public class User implements UserDetails {
     private Gender gender;
 
 
-
-
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;

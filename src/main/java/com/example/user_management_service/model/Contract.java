@@ -1,5 +1,6 @@
 package com.example.user_management_service.model;
 
+import com.example.user_management_service.role.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,6 +46,10 @@ public class Contract {
 
     @Column(name = "end_date")
     private LocalDate endDate;
+
+
+    @Enumerated(EnumType.STRING)
+    private ContractType contractType;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", referencedColumnName = "user_id")
