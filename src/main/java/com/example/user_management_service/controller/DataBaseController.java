@@ -74,6 +74,17 @@ public class DataBaseController {
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<Page<Medicine>> getAllMedicinesPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Medicine> medicines = dataBaseService.findAllMedicinesPageable(pageable);
+
+        return new ResponseEntity<>(medicines, HttpStatus.OK);
+    }
+
 
     // contracts
 //    @GetMapping("/contracts/{contractId}")

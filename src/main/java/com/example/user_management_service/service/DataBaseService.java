@@ -7,6 +7,8 @@ import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -207,5 +209,10 @@ public class DataBaseService {
         for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
             createWorkPlace(workPlaceDTO);
         }
+    }
+
+    public Page<Medicine> findAllMedicinesPageable(Pageable pageable) {
+        return medicineRepository.findAllSortByCreatedDatePageable(pageable);
+
     }
 }
