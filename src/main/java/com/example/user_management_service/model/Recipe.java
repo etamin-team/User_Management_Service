@@ -54,8 +54,6 @@ public class Recipe {
     @Column(name = "date_creation")
     private LocalDateTime dateCreation;
 
-    @Column(name = "telegram_id")
-    private Long telegramId;
 
     private ContractType contractType;
 

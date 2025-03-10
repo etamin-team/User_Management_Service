@@ -53,7 +53,6 @@ public class RecipeService {
         recipe.setPhoneNumberPrefix(recipeDto.getPhoneNumberPrefix());
         recipe.setDiagnosis(recipeDto.getDiagnosis());
         recipe.setComment(recipeDto.getComment());
-        recipe.setTelegramId(recipeDto.getTelegramId());
 
         List<Preparation> preparations = recipeDto.getPreparations().stream()
                 .map(this::mapPreparationDtoToEntity)
@@ -176,7 +175,6 @@ public class RecipeService {
                 recipe.getDateCreation(),
                 recipe.getDiagnosis(),
                 recipe.getComment(),
-                recipe.getTelegramId(),
                 recipe.getDoctorId().getDistrict().getId(),
                 recipe.getContractType(),
                 recipe.getPreparations().stream().map(this::convertPreparationToDto).collect(Collectors.toList()),

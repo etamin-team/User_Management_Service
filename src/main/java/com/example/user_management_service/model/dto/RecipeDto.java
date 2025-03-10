@@ -25,7 +25,6 @@ public class RecipeDto {
     private LocalDateTime dateCreation;
     private String diagnosis;
     private String comment;
-    private Long telegramId;
     private Long districtId;
     private ContractType contractType;
     private List<PreparationDto> preparations;
