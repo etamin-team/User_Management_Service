@@ -74,7 +74,7 @@ public class DataBaseController {
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/medicines-page")
     public ResponseEntity<Page<Medicine>> getAllMedicinesPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
