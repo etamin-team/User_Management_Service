@@ -22,7 +22,7 @@ public class RecipeDto {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private String phoneNumberPrefix;
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
     private String diagnosis;
     private String comment;
     private Long telegramId;

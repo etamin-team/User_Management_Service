@@ -23,7 +23,7 @@ public class LastRecipeDTO {
     private UUID recipeId;
     private UserFullNameDTO doctorName;
     private WorkPlaceDTO workPlaceDTO;
-    private LocalDate dateOfCreation;
+    private LocalDateTime dateOfCreation;
     private List<Medicine> medicines;
 
 }

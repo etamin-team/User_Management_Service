@@ -52,7 +52,7 @@ public class Recipe {
     private String comment;
 
     @Column(name = "date_creation")
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
 
     @Column(name = "telegram_id")
     private Long telegramId;
