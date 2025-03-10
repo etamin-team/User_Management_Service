@@ -171,7 +171,7 @@ public class DataBaseService {
 
 
         for (Field field : Field.values()) {
-            fieldStatisticsMap.put(field, new FieldStatistics(0, 0, 0));
+            fieldStatisticsMap.put(field, new FieldStatistics(field,0, 0, 0));
         }
 
         for (User user : userList) {
