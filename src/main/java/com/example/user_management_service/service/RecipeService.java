@@ -63,7 +63,9 @@ public class RecipeService {
         recipe.setDateCreation(LocalDateTime.now());
         User doctor = userRepository.findById(recipeDto.getDoctorId()).orElseThrow(() -> new DoctorContractException("Doctor not found"));
         recipe.setDoctorId(doctor);
+        System.out.println("---------------------------------------");
         ContractType contractType = contractRepository.findActiveContractByDoctorId(doctor.getUserId()).orElse(new Contract()).getContractType();
+        System.out.println(contractType.name());
         recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
         recipeRepository.save(recipe);
 
