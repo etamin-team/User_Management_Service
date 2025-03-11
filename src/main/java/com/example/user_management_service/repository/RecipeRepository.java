@@ -37,20 +37,37 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 
 
 
-    @Query("SELECT COUNT(r) FROM Recipe r " +
-            "WHERE (:query IS NULL OR " +
-            "      LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-            "AND (:medicineId IS NULL OR EXISTS (SELECT 1 FROM r.preparations p WHERE p.medicine.id = :medicineId)) " +
+//    @Query("SELECT COUNT(r) FROM Recipe r " +
+//            "WHERE (:query IS NULL OR " +
+//            "      LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+//            "      LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+//            "AND (:medicineId IS NULL OR EXISTS (SELECT 1 FROM r.preparations p WHERE p.medicine.id = :medicineId)) " +
+//            "AND (:districtId IS NULL OR r.doctorId.district.id = :districtId) " +
+//            "AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) " +
+//            "AND (:fieldName IS NULL OR r.doctorId.fieldName = :fieldName)")
+//    Long countRecipesByFilters(@Param("medicineId") Long medicineId,
+//                               @Param("query") String query,
+//                               @Param("regionId") Long regionId,
+//                               @Param("districtId") Long districtId,
+//                               @Param("fieldName") Field fieldName);
+
+//    @Query("SELECT COUNT(DISTINCT r) FROM Recipe r JOIN r.preparations p WHERE p.medicine.id = :medicineId")
+//    long countByMedicineId(@Param("medicineId") Long medicineId);
+
+
+    @Query("SELECT COUNT(DISTINCT r) FROM Recipe r JOIN r.preparations p " +
+            "WHERE p.medicine.id = :medicineId " +
             "AND (:districtId IS NULL OR r.doctorId.district.id = :districtId) " +
             "AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) " +
-            "AND (:fieldName IS NULL OR r.doctorId.fieldName = :fieldName)")
-    Long countRecipesByFilters(@Param("medicineId") Long medicineId,
-                               @Param("query") String query,
-                               @Param("regionId") Long regionId,
-                               @Param("districtId") Long districtId,
-                               @Param("fieldName") Field fieldName);
-
+            "AND (:fieldName IS NULL OR r.doctorId.fieldName = :fieldName) " +
+            "AND (:query IS NULL OR " +
+            "      LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT('%', :query, '%')))")
+    long countByMedicineIdAndFilters(@Param("medicineId") Long medicineId,
+                                     @Param("query") String query,
+                                     @Param("regionId") Long regionId,
+                                     @Param("districtId") Long districtId,
+                                     @Param("fieldName") Field fieldName);
 
 
 
