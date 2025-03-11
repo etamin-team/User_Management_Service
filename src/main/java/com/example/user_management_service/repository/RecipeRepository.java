@@ -37,6 +37,24 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 
 
 
+    @Query("SELECT COUNT(r) FROM Recipe r " +
+            "JOIN r.doctorId d " +
+            "LEFT JOIN d.district dist " +
+            "LEFT JOIN dist.region reg " +
+            "WHERE (:query IS NULL OR " +
+            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:medicineId IS NULL OR EXISTS (SELECT 1 FROM r.preparations p WHERE p.medicine.id = :medicineId)) " +
+            "AND (:districtId IS NULL OR dist.id = :districtId) " +
+            "AND (:regionId IS NULL OR reg.id = :regionId) " +
+            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+    Long countRecipesByFilters(@Param("medicineId") Long medicineId,
+                               @Param("query") String query,
+                               @Param("regionId") Long regionId,
+                               @Param("districtId") Long districtId,
+                               @Param("fieldName") Field fieldName);
+
+
     @Query("""
     SELECT new com.example.user_management_service.model.dto.ActiveDoctorSalesData(
         SUM(p.quantity * m.cip), 

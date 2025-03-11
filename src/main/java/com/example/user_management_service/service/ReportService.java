@@ -30,6 +30,7 @@ public class ReportService {
     private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private final RegionRepository regionRepository;
     private final SalesService salesService;
+    private final RecipeRepository recipeRepository;
 
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
@@ -59,7 +60,7 @@ public class ReportService {
     public DoctorReportDTO getDoctorReports( Long medicineId, String query,Long regionId,  Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         Long allowed = contractRepository.findTotalAllowed(medicineId,query, regionId, districtId, workplaceId, fieldName);
-        Long written = contractRepository.findTotalWritten(medicineId,query,regionId, districtId, workplaceId, fieldName);
+        Long written = recipeRepository.countRecipesByFilters(medicineId,query,regionId, districtId, fieldName);
         Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query,regionId, districtId, workplaceId, fieldName);
 
         doctorReportDTO.setAllowed(allowed);

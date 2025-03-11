@@ -103,6 +103,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                           @Param("workplaceId") Long workplaceId,
                                           @Param("fieldName") Field fieldName);
 
+
+
     @Query("SELECT COALESCE(SUM(m.quote), 0) " +
             "FROM Contract c " +
             "JOIN c.medicineWithQuantityDoctors m " +
