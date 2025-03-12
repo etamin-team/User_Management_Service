@@ -55,6 +55,7 @@ public class ContractService {
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
         List<DistrictGoalQuantity> districtGoalQuantities = managerGoal.getDistrictGoalQuantities();
+
         boolean isDistrictIdMatches = districtGoalQuantities
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
@@ -64,9 +65,16 @@ public class ContractService {
         if (managerGoal.getDistrictGoalQuantities() != null && managerGoal.getDistrictGoalQuantities().size() > 0 && !isDistrictIdMatches) {
 //            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
             System.out.println("2222222222222222222222111111111111111111111111333333333333333333333");
+            ;
             DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
                     .stream()
-                    .filter(dq -> dq.getDistrict().getId().equals(doctor.getDistrict().getId()))
+                    .filter(dq -> {
+                        System.out.println("aaaa-a-----------------------------------------------------aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                        System.out.println(dq.getDistrict().getId());
+                        System.out.println("-----------------");
+                        System.out.println(doctor.getDistrict().getId());
+                        return dq.getDistrict().getId().equals(doctor.getDistrict().getId());
+                    })
                     .findFirst().get();
 
             System.out.println("222222222222222222222");
