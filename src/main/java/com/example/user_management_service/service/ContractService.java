@@ -59,8 +59,11 @@ public class ContractService {
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
                 .anyMatch(id -> id.equals(doctor.getDistrict().getId()));
+        System.out.println("--------------------------------------------------------------");
+        System.out.println("111111111111111111111111111111111111111111111222222222222222222222222222222222222222222222222222");
         if (managerGoal.getDistrictGoalQuantities() != null && managerGoal.getDistrictGoalQuantities().size() > 0 && !isDistrictIdMatches) {
 //            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
+            System.out.println("2222222222222222222222111111111111111111111111333333333333333333333");
             DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
                     .stream()
                     .filter(dq -> dq.getDistrict().getId().equals(doctor.getDistrict().getId()))
