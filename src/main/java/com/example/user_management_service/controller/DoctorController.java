@@ -65,8 +65,8 @@ public class DoctorController {
     }
 
     @GetMapping("/find-medicines-by-inn")
-    public ResponseEntity<List<Medicine>> findMedicineByInn(@RequestParam List<String> inn) {
-        List<Medicine> medicines = doctorService.findMedicinesByInn(inn);
+    public ResponseEntity<List<Medicine>> findMedicineByInn(@RequestParam List<String> inn, @RequestParam boolean exact) {
+        List<Medicine> medicines = doctorService.findMedicinesByInn(inn,exact);
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 

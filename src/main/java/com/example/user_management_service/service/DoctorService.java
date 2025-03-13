@@ -148,11 +148,13 @@ public class DoctorService {
         return template;
     }
 
-    public List<Medicine> findMedicinesByInn(List<String> inn) {
+    public List<Medicine> findMedicinesByInn(List<String> inn,boolean exact) {
         if (inn == null || inn.isEmpty()) {
             return Collections.emptyList();
-        } else {
+        } else if (exact){
             return medicineRepository.findByAllInn(inn,inn.size());
+        }else {
+            return medicineRepository.findByInn(inn);
         }
     }
 }
