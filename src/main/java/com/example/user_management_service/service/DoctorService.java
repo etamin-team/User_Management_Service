@@ -121,9 +121,10 @@ public class DoctorService {
                 preparation.getTimesInDay(),
                 preparation.getDays(),
                 preparation.getType(),
-                preparation.getMedicine() != null ? preparation.getMedicine().getId() : null,preparation.getMedicine()
+                preparation.getMedicine() != null ? preparation.getMedicine().getId() : null, preparation.getMedicine()
         );
     }
+
     private Template convertToEntity(TemplateDto templateDto) {
         Template template = new Template();
         template.setName(templateDto.getName());
@@ -147,4 +148,11 @@ public class DoctorService {
         return template;
     }
 
+    public List<Medicine> findMedicinesByInn(List<String> inn) {
+        if (inn == null || inn.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return medicineRepository.findByInn(inn);
+        }
+    }
 }

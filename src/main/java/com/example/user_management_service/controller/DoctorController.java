@@ -1,5 +1,6 @@
 package com.example.user_management_service.controller;
 
+import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Recipe;
 import com.example.user_management_service.model.Template;
 import com.example.user_management_service.model.dto.*;
@@ -9,6 +10,7 @@ import com.example.user_management_service.service.RecipeService;
 import com.example.user_management_service.service.RoleService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +34,6 @@ public class DoctorController {
     private final RoleService roleService;
 
 
-
     @PostMapping("/create-template")
     public void createTemplate(@RequestBody TemplateDto templateDto) {
         templateDto.setDoctorId(roleService.getCurrentUserId());
@@ -49,6 +50,7 @@ public class DoctorController {
     public void saveTemplate(@PathVariable Long id, @RequestParam boolean save) {
         doctorService.saveTemplate(id, save);
     }
+
     @DeleteMapping("/delete-template/{id}")
     public void deleteTemplate(@PathVariable Long id) {
         doctorService.deleteTemplate(id);
@@ -59,9 +61,14 @@ public class DoctorController {
             @RequestParam(required = false) Boolean saved,
             @RequestParam(required = false, defaultValue = "false") Boolean sortBy,
             @RequestParam(required = false) String searchText) {
-        return doctorService.getTemplates(saved, sortBy, searchText,roleService.getCurrentUserId());
+        return doctorService.getTemplates(saved, sortBy, searchText, roleService.getCurrentUserId());
     }
 
+    @GetMapping("/find-medicines-by-inn")
+    public ResponseEntity<List<Medicine>> findMedicineByInn(@RequestParam List<String> inn) {
+        List<Medicine> medicines = doctorService.findMedicinesByInn(inn);
+        return new ResponseEntity<>(medicines, HttpStatus.OK);
+    }
 
 
     @PostMapping("/save-recipe")
@@ -75,6 +82,7 @@ public class DoctorController {
         ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
         return ResponseEntity.ok(contractAmountDTO);
     }
+
     @GetMapping("/contract/doctor-id/{doctorId}")
     public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
         ContractAmountDTO contractAmountDTO = contractService.getActiveContractByDoctorId(doctorId);
