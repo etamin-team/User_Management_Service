@@ -49,6 +49,10 @@ public class DoctorController {
     public void saveTemplate(@PathVariable Long id, @RequestParam boolean save) {
         doctorService.saveTemplate(id, save);
     }
+    @PostMapping("/delete-template/{id}")
+    public void deleteTemplate(@PathVariable Long id) {
+        doctorService.deleteTemplate(id);
+    }
 
     @GetMapping("/templates")
     public List<TemplateDto> getTemplates(

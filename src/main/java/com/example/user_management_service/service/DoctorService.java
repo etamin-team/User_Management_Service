@@ -59,6 +59,10 @@ public class DoctorService {
         templateRepository.save(template);
     }
 
+    public void deleteTemplate(Long templateId) {
+        templateRepository.deleteById(templateId);
+    }
+
     public List<TemplateDto> getTemplates(Boolean saved, Boolean sortBy, String searchText, UUID doctorId) {
         List<Template> templates;
 
