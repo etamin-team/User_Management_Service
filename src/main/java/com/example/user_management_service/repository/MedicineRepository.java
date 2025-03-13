@@ -24,6 +24,12 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
     @Query("SELECT m FROM Medicine m JOIN m.inn i WHERE LOWER(i) IN :inns")
     List<Medicine> findByInn(@Param("inns") List<String> inns);
 
+    @Query("SELECT m FROM Medicine m JOIN m.inn i " +
+            "WHERE LOWER(i) IN :inns " +
+            "GROUP BY m " +
+            "HAVING COUNT(DISTINCT i) = :size")
+    List<Medicine> findByAllInn(@Param("inns") List<String> inns, @Param("size") long size);
+
 
     @Query("""
     SELECT u FROM Medicine u 

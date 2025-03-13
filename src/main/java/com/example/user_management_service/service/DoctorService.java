@@ -152,7 +152,7 @@ public class DoctorService {
         if (inn == null || inn.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return medicineRepository.findByInn(inn);
+            return medicineRepository.findByAllInn(inn,inn.size());
         }
     }
 }
