@@ -173,7 +173,7 @@ public class DataBaseService {
 
 
         for (Field field : Field.values()) {
-            fieldStatisticsMap.put(field, new FieldStatistics(field,0, 0, 0));
+            fieldStatisticsMap.put(field, new FieldStatistics(field, 0, 0, 0));
         }
 
         for (User user : userList) {
@@ -188,7 +188,7 @@ public class DataBaseService {
 
     public MNN saveMNN(MNN mnn) {
         MNN mnn1 = new MNN();
-        mnn1.setName(mnn.getName());
+        mnn1.setName(mnn.getName().trim());
         return mnnRepository.save(mnn1);
 
     }
@@ -201,8 +201,10 @@ public class DataBaseService {
         return mnnRepository.findAll();
     }
 
-    public void saveMNNList(List<MNN> mnn) {
-        mnnRepository.saveAll(mnn);
+    public void saveMNNList(List<MNN> mnns) {
+        for (MNN mnn : mnns) {
+            saveMNN(mnn);
+        }
     }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
