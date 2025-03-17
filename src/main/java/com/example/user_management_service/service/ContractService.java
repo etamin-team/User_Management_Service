@@ -286,6 +286,10 @@ public class ContractService {
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
 
+//        Set<Long> medicineIds = contract.getMedicineWithQuantityDoctors()
+//                .stream()
+//                .map(mq -> mq.getMedicine().getId())
+//                .collect(Collectors.toSet());
         // Update or add medicines with quantities
         contract.setMedicineWithQuantityDoctors(contractDTO.getMedicinesWithQuantities().stream()
                 .map(dto -> {

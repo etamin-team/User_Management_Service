@@ -191,7 +191,7 @@ public class AdminService {
                             medicineGoalQuantity.setContractMedicineAmount(contractMedicineAmount);
                         } else {
                             medicineGoalQuantity = medicineGoalQuantityRepository.findById(dto.getId())
-                                    .orElseThrow(() -> new EntityNotFoundException("Medicine goal not found with id: " + dto.getId()));
+                                    .orElseThrow(() -> new ManagerGoalException("Medicine goal not found with id: " + dto.getId()));
                             if (medicineGoalQuantity.getManagerGoal().getGoalId() != id)
                                 throw new ManagerGoalException("Manager Goal id: " + id + " doesn't match with medicine goal id: " + medicineGoalQuantity.getManagerGoal().getGoalId());
                         }
@@ -502,7 +502,7 @@ public class AdminService {
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId())
                 .orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
 
-        Set<Long> medicineIds = managerGoal.getMedicineGoalQuantities()
+        Set<Long> medicineIds = agentGoal.getMedicinesWithQuantities()
                 .stream()
                 .map(mq -> mq.getMedicine().getId())
                 .collect(Collectors.toSet());
@@ -511,7 +511,7 @@ public class AdminService {
                 .map(dto -> processMedicineWithQuantity(dto, medicineIds, managerGoal, agentGoal))
                 .collect(Collectors.toList()));
 
-        Set<Field> fieldIds = managerGoal.getFieldGoalQuantities()
+        Set<Field> fieldIds = agentGoal.getFieldWithQuantities()
                 .stream()
                 .map(fq -> fq.getField())
                 .collect(Collectors.toSet());
