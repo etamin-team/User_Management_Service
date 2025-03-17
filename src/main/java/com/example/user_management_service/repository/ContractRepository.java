@@ -86,16 +86,15 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
     @Query("SELECT c FROM Contract c " +
             "JOIN c.medicineWithQuantityDoctors m " +
-            "JOIN c.doctor d " +
             "WHERE (:query IS NULL OR " +
-            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(d.middleName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
-            "AND (:districtId IS NULL OR d.district.id = :districtId) " +
-            "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
+            "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
     List<Contract> findContractsByFilters(@Param("medicineId") Long medicineId,
                                           @Param("query") String query,
                                           @Param("regionId") Long regionId,
