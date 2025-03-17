@@ -108,15 +108,14 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("SELECT COALESCE(SUM(m.quote), 0) " +
             "FROM Contract c " +
             "JOIN c.medicineWithQuantityDoctors m " +
-            "JOIN c.doctor d " +
             "WHERE (:query IS NULL OR " +
-            "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
+            "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:districtId IS NULL OR d.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
+            "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
+            "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
     Long findTotalAllowed(@Param("medicineId") Long medicineId,
                           @Param("query") String query,
                           @Param("regionId") Long regionId,
