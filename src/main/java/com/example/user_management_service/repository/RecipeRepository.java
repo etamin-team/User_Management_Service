@@ -55,7 +55,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 //    long countByMedicineId(@Param("medicineId") Long medicineId);
 
 
-    @Query("SELECT COUNT(DISTINCT r) FROM Recipe r JOIN r.preparations p " +
+    @Query("SELECT COUNT(r) FROM Recipe r JOIN r.preparations p " +
             "WHERE p.medicine.id = :medicineId " +
             "AND (:districtId IS NULL OR r.doctorId.district.id = :districtId) " +
             "AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) " +
