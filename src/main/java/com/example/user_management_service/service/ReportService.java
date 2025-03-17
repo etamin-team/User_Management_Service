@@ -61,7 +61,7 @@ public class ReportService {
     public DoctorReportDTO getDoctorReports( Long medicineId, String query,Long regionId,  Long districtId, Long workplaceId, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         Long allowed = contractRepository.findTotalAllowed(medicineId,query, regionId, districtId, workplaceId, fieldName);
-        Long written = recipeRepository.countByMedicineIdAndFilters(medicineId,query,regionId, districtId, fieldName);
+        Long written = contractRepository.findTotalWritten(medicineId,query,regionId, districtId,workplaceId, fieldName);
         Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query,regionId, districtId, workplaceId, fieldName);
 
         doctorReportDTO.setAllowed(allowed);
