@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,5 +130,16 @@ public class ReportService {
         medicineWithQuantityDoctor.setCorrection(correction);
         medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
 
+    }
+
+    public List<DoctorReportDTO> getDoctorReportsList(String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+        List<Medicine> medicines=medicineRepository.findAllSortByCreatedDate();
+        List<DoctorReportDTO> doctorReportDTOS=new ArrayList<>();
+        for (Medicine medicine:medicines) {
+            DoctorReportDTO dto=getDoctorReports(medicine.getId(),query,regionId,districtId,workplaceId,fieldName);
+            dto.setMedicine(medicine);
+            doctorReportDTOS.add(dto);
+        }
+        return doctorReportDTOS;
     }
 }

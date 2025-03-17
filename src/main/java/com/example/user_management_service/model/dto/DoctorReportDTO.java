@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 public class DoctorReportDTO {
+    private Medicine medicine;
     private Long allowed;
     private Long written;
     private Long writtenInFact;

@@ -38,6 +38,16 @@ public class ReportController {
         DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,query,regionId, districtId, workplaceId, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
+    @GetMapping("/report-list")
+    public ResponseEntity<List<DoctorReportDTO>> getDoctorReportsList(
+            @RequestParam(required = false,defaultValue = "") String query,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) Field fieldName) {
+        List<DoctorReportDTO> doctorReportDTO = reportService.getDoctorReportsList(query,regionId, districtId, workplaceId, fieldName);
+        return ResponseEntity.ok(doctorReportDTO);
+    }
     @GetMapping("/admin/{medicineId}")
     public ResponseEntity<SalesReportDTO> getSalesReports(
             @PathVariable Long medicineId,
