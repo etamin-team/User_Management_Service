@@ -29,6 +29,5 @@ public class ContractAmountDTO {
     private Long agentId;
     private ContractType contractType;
 
-    private List<OutOfContractMedicineAmountDTO> outOfContractMedicineAmount;
     private List<MedicineWithQuantityDTO> contractedMedicineWithQuantity;
 }
