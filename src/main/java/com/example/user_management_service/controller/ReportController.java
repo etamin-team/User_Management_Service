@@ -27,8 +27,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/{medicineId}")
-//    @GetMapping("/manager/{medicineId}")
+    @GetMapping("/manager/{medicineId}")
     public ResponseEntity<DoctorReportDTO> getDoctorReports(
             @PathVariable Long medicineId,
             @RequestParam(required = false,defaultValue = "") String query,
