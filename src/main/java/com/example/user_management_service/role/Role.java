@@ -12,6 +12,7 @@ public enum Role {
     ADMIN(4),
     MANAGER(3),
     MEDAGENT(2),
+    FIELDFORCE(4),
     DOCTOR(1),
     PATIENT(0);
 

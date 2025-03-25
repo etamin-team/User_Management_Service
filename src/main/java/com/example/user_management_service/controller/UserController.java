@@ -41,15 +41,15 @@ public class UserController {
     }
 
     @GetMapping("/password-compare")
-    public ResponseEntity<Boolean> comparePassword(@RequestParam(required = true ) UUID userId, @RequestParam(required = true)  String password) {
+    public ResponseEntity<Boolean> comparePassword(@RequestParam(required = true) UUID userId, @RequestParam(required = true) String password) {
         boolean isDeleted = userService.comparePassword(userId, password);
-        return  ResponseEntity.ok(isDeleted);
+        return ResponseEntity.ok(isDeleted);
 
     }
 
     @PostMapping("/register-doctor")
     public ResponseEntity<UserDTO> registerDoctor(@RequestBody RegisterRequest request) {
-        UserDTO isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED,roleService.getCurrentUserId());
+        UserDTO isRegistered = authService.register(request, Role.DOCTOR, UserStatus.ENABLED, roleService.getCurrentUserId());
         return ResponseEntity.ok(isRegistered);
     }
 
@@ -57,6 +57,12 @@ public class UserController {
     public ResponseEntity<String> registerAdmin(@RequestBody RegisterRequest request) {
         validateRoleAssignment(Role.ADMIN);
         return registerUser(request, "Admin", Role.ADMIN);
+    }
+
+    @PostMapping("/register-fieldforce")
+    public ResponseEntity<String> registerFieldForce(@RequestBody RegisterRequest request) {
+        validateRoleAssignment(Role.FIELDFORCE);
+        return registerUser(request, "Fieldforce", Role.FIELDFORCE);
     }
 
     @PostMapping("/register-manager")
@@ -188,8 +194,6 @@ public class UserController {
     }
 
 
-
-
     private void validateRoleAssignment(Role targetRole) {
         Role currentUserRole = roleService.getCurrentUserRole();
         if (!authService.canCreateRole(currentUserRole, targetRole)) {
@@ -199,7 +203,7 @@ public class UserController {
 
 
     private ResponseEntity<String> registerUser(RegisterRequest request, String roleName, Role role) {
-        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED,roleService.getCurrentUserId())!=null;
+        boolean isRegistered = authService.register(request, role, UserStatus.ENABLED, roleService.getCurrentUserId()) != null;
         HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }
@@ -220,7 +224,6 @@ public class UserController {
                 ? ResponseEntity.ok("User successfully deleted.")
                 : ResponseEntity.notFound().build();
     }
-
 
 
 }
