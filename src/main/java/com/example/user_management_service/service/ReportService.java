@@ -35,16 +35,8 @@ public class ReportService {
 
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
-        System.out.println("11111111111111111111111111");
-        System.out.println("--------------------------------------------------------");
-        System.out.println("--------------------------------------------------------");
-        System.out.println("--------------------------------------------------------");
         SalesReportDTO dto =  new SalesReportDTO();
         SalesReport report = salesReportRepository.findByFilters(medicineId, regionId, startDate, endDate).orElseThrow(()->new ReportException("Report not found"));
-        System.out.println("11111111111111111111111111");
-        System.out.println("--------------------------------------------------------");
-        System.out.println("--------------------------------------------------------");
-        System.out.println("--------------------------------------------------------");
         dto.setId(report.getId());
         dto.setWritten(report.getWritten());
         dto.setAllowed(report.getAllowed());
@@ -56,13 +48,11 @@ public class ReportService {
     }
 
 
-
-
-    public DoctorReportDTO getDoctorReports( Long medicineId, String query,Long regionId,  Long districtId, Long workplaceId, Field fieldName) {
+    public DoctorReportDTO getDoctorReports(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = contractRepository.findTotalAllowed(medicineId,query, regionId, districtId, workplaceId, fieldName);
-        Long written = contractRepository.findTotalWritten(medicineId,query, regionId, districtId, workplaceId, fieldName);
-        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query,regionId, districtId, workplaceId, fieldName);
+        Long allowed = contractRepository.findTotalAllowed(medicineId,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long written = contractRepository.findTotalWritten(medicineId,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
 
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
@@ -72,10 +62,6 @@ public class ReportService {
         return doctorReportDTO;
     }
     public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        System.out.println("---------------------------------------------------");
-        System.out.println("---------------------------------------------------");
-        System.out.println("---------------------------------------------------");
         List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query,regionId, districtId, workplaceId, fieldName);
 
         return contracts.stream()
@@ -132,11 +118,11 @@ public class ReportService {
 
     }
 
-    public List<DoctorReportDTO> getDoctorReportsList(String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+    public List<DoctorReportDTO> getDoctorReportsList(String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         List<Medicine> medicines=medicineRepository.findAllSortByCreatedDate();
         List<DoctorReportDTO> doctorReportDTOS=new ArrayList<>();
         for (Medicine medicine:medicines) {
-            DoctorReportDTO dto=getDoctorReports(medicine.getId(),query,regionId,districtId,workplaceId,fieldName);
+            DoctorReportDTO dto=getDoctorReports(medicine.getId(),query,regionId,districtId,workplaceId, startDate, endDate, fieldName);
             dto.setMedicine(medicine);
             doctorReportDTOS.add(dto);
         }

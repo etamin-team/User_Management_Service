@@ -28,26 +28,35 @@ public class ReportController {
     private final ReportService reportService;
 
     @GetMapping("/{medicineId}")
+//    @GetMapping("/manager/{medicineId}")
     public ResponseEntity<DoctorReportDTO> getDoctorReports(
             @PathVariable Long medicineId,
             @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
-        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,query,regionId, districtId, workplaceId, fieldName);
+        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
-    @GetMapping("/report-list")
+
+    @GetMapping("/manager/report-list")
     public ResponseEntity<List<DoctorReportDTO>> getDoctorReportsList(
             @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
-        List<DoctorReportDTO> doctorReportDTO = reportService.getDoctorReportsList(query,regionId, districtId, workplaceId, fieldName);
+        List<DoctorReportDTO> doctorReportDTO = reportService.getDoctorReportsList(query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
+
+
+
     @GetMapping("/admin/{medicineId}")
     public ResponseEntity<SalesReportDTO> getSalesReports(
             @PathVariable Long medicineId,
@@ -64,7 +73,8 @@ public class ReportController {
     }
 
 
-    @PostMapping("/save")
+
+    @PostMapping("/manager/save")
     public ResponseEntity<String> saveSalesReports(@RequestBody SalesReportListDTO salesReportListDTO) {
         reportService.saveSalesReports(salesReportListDTO);
         return ResponseEntity.ok("Sales reports saved successfully");
