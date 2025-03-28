@@ -175,7 +175,7 @@ public class RecipeService {
                 recipe.getDateCreation(),
                 recipe.getDiagnosis(),
                 recipe.getComment(),
-                recipe.getDoctorId().getDistrict().getId(),
+                recipe.getDoctorId().getDistrict()!=null? recipe.getDoctorId().getDistrict().getId():null,
                 recipe.getContractType(),
                 recipe.getPreparations().stream().map(this::convertPreparationToDto).collect(Collectors.toList()),
                 userService.convertToDTO(recipe.getDoctorId())
@@ -183,6 +183,7 @@ public class RecipeService {
     }
 
     private PreparationDto convertPreparationToDto(Preparation preparation) {
+        if (preparation==null){return new PreparationDto();}
         return new PreparationDto(
                 preparation.getName(),
                 preparation.getAmount(),
@@ -190,7 +191,7 @@ public class RecipeService {
                 preparation.getTimesInDay(),
                 preparation.getDays(),
                 preparation.getType(),
-                preparation.getMedicine().getId(), // Medicine ID
+                preparation.getMedicine()!=null?   preparation.getMedicine().getId():null, // Medicine ID
                 preparation.getMedicine() // Medicine entity itself (if required)
         );
     }

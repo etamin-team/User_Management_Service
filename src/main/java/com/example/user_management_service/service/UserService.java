@@ -1,18 +1,20 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.DataNotFoundException;
+import com.example.user_management_service.model.FieldForceRegions;
+import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
 import com.example.user_management_service.model.dto.ChangePasswordRequest;
+import com.example.user_management_service.model.dto.FieldForceRegionsDTO;
 import com.example.user_management_service.model.dto.UserDTO;
 import com.example.user_management_service.model.dto.WorkPlaceDTO;
-import com.example.user_management_service.repository.DistrictRepository;
-import com.example.user_management_service.repository.UserRepository;
-import com.example.user_management_service.repository.WorkPlaceRepository;
+import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,8 @@ public class UserService {
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
     private final DistrictRegionService districtRegionService;
+    private final FieldForceRegionsRepository fieldForceRegionsRepository;
+    private final RegionRepository regionRepository;
 
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
@@ -39,7 +43,7 @@ public class UserService {
 
 
     public boolean changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findById(UUID.fromString(changePasswordRequest.getUserId())).orElseThrow(()-> new DataNotFoundException("User not found by ID " + changePasswordRequest.getUserId()));
+        User user = userRepository.findById(UUID.fromString(changePasswordRequest.getUserId())).orElseThrow(() -> new DataNotFoundException("User not found by ID " + changePasswordRequest.getUserId()));
 
         if (user != null) {
 
@@ -54,8 +58,9 @@ public class UserService {
         }
         return false;
     }
+
     public UserDTO convertToDTO(User user) {
-        if (user==null)return null;
+        if (user == null) return null;
         return new UserDTO(
                 user.getUserId(),
                 user.getFirstName(),
@@ -71,15 +76,16 @@ public class UserService {
                 user.getGender(),
                 user.getStatus(),
                 user.getCreatorId(),
-                user.getWorkplace()==null ? null : user.getWorkplace().getId(),
-                user.getDistrict()==null ? null : user.getDistrict().getId(),
+                user.getWorkplace() == null ? null : user.getWorkplace().getId(),
+                user.getDistrict() == null ? null : user.getDistrict().getId(),
                 user.getRole(),
                 districtRegionService.regionDistrictDTO(user.getDistrict()),
                 convertToDTO(user.getWorkplace())
         );
     }
+
     private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
-        if (workPlace==null)return null;
+        if (workPlace == null) return null;
         return new WorkPlaceDTO(
                 workPlace.getId(),
                 workPlace.getName(),
@@ -103,7 +109,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -117,7 +123,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MANAGER, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -131,7 +137,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -146,7 +152,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.ADMIN, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -160,13 +166,11 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId!=null?String.valueOf(creatorId):null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
-
-
 
 
     private String[] prepareNameParts(String nameQuery) {
@@ -186,10 +190,8 @@ public class UserService {
     }
 
 
-
-
     public UserDTO updateUser(String userId, UserDTO updatedUser) {
-        User user= userRepository.findById(UUID.fromString(userId))
+        User user = userRepository.findById(UUID.fromString(userId))
                 .map(existingUser -> {
                     // Update the fields of the existing user from the UserDTO
                     existingUser.setFirstName(updatedUser.getFirstName());
@@ -242,5 +244,17 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow();
         return passwordEncoder.matches(password, user.getPassword());
     }
+
+    public void createOrUpdateFieldForceRegions(FieldForceRegionsDTO fieldForceRegions) {
+        if (fieldForceRegions == null) {
+            return;
+        }
+        List<Region> regions = regionRepository.findAllById(fieldForceRegions.getForceRegionIds());
+        FieldForceRegions newFieldForceRegions = fieldForceRegionsRepository.findByUserId(fieldForceRegions.getFieldForceId()).orElse(new FieldForceRegions());
+        newFieldForceRegions.setUser(userRepository.findById(fieldForceRegions.getFieldForceId()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
+        newFieldForceRegions.setRegion(regions);
+        fieldForceRegionsRepository.save(newFieldForceRegions);
+    }
+
 
 }

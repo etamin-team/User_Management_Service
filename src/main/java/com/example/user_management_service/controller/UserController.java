@@ -1,10 +1,9 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.exception.UnauthorizedAccessException;
+import com.example.user_management_service.model.FieldForceRegions;
 import com.example.user_management_service.model.User;
-import com.example.user_management_service.model.dto.ChangePasswordRequest;
-import com.example.user_management_service.model.dto.RegisterRequest;
-import com.example.user_management_service.model.dto.UserDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import com.example.user_management_service.service.RegistrationService;
@@ -223,6 +222,13 @@ public class UserController {
         return isDeleted
                 ? ResponseEntity.ok("User successfully deleted.")
                 : ResponseEntity.notFound().build();
+    }
+
+
+    @PostMapping("/field-force-regions/update")
+    public ResponseEntity<Void> createOrUpdateFieldForceRegions(@RequestBody FieldForceRegionsDTO fieldForceRegions) {
+        userService.createOrUpdateFieldForceRegions(fieldForceRegions);
+        return ResponseEntity.noContent().build();
     }
 
 
