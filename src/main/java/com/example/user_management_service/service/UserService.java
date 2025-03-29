@@ -290,6 +290,7 @@ public class UserService {
         String[] nameParts = prepareNameParts(nameQuery);
 
         return userRepository.countUsersCreatedThisMonth(
+                Role.DOCTOR,
                 creatorId!=null?creatorId.toString():null,
                 regionId,
                 districtId,

@@ -191,17 +191,19 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     List<RegionFieldDTO> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
     @Query("SELECT COUNT(u) FROM User u " +
-            "WHERE (:creatorId IS NULL OR u.creatorId = :creatorId) " +
+            "WHERE u.role = :role " +
+            "AND (:creatorId IS NULL OR u.creatorId = :creatorId) " +
             "AND (:regionId IS NULL OR u.district.region.id = :regionId) " +
             "AND (:districtId IS NULL OR u.district.id = :districtId) " +
             "AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId) " +
-            "AND (:firstName IS NULL OR (u.firstName IS NOT NULL AND LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))) " +
-            "AND (:lastName IS NULL OR (u.lastName IS NOT NULL AND LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))) " +
-            "AND (:middleName IS NULL OR (u.middleName IS NOT NULL AND LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))) " +
+            "AND (:firstName IS NULL OR LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%'))) " +
+            "AND (:lastName IS NULL OR LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%'))) " +
+            "AND (:middleName IS NULL OR LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%'))) " +
             "AND u.status = 'ENABLED' " +
-            "AND FUNCTION('DATE', u.createdDate) BETWEEN FUNCTION('DATE', DATE_TRUNC('MONTH', CURRENT_DATE)) " +
-            "AND FUNCTION('DATE', CURRENT_DATE)")
+            "AND YEAR(u.createdDate) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(u.createdDate) = MONTH(CURRENT_DATE)")
     long countUsersCreatedThisMonth(
+            @Param("role") Role role,
             @Param("creatorId") String creatorId,
             @Param("regionId") Long regionId,
             @Param("districtId") Long districtId,
@@ -210,6 +212,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName
     );
+
 
 
 
