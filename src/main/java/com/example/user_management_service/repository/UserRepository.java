@@ -27,13 +27,13 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
-    SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
-        r.contractType, 
-        COUNT(r)
-    )
-    FROM Recipe r
-    GROUP BY r.contractType
-""")
+                SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
+                    r.contractType, 
+                    COUNT(r)
+                )
+                FROM Recipe r
+                GROUP BY r.contractType
+            """)
     List<ContractTypeSalesData> getRecipeCountByContractType();
 
     @Override
@@ -65,7 +65,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findByRole(Role role);
 
 
-
     // Get all doctors
     default List<User> findDoctors() {
         return findByRole(Role.DOCTOR);
@@ -85,21 +84,21 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Page<User> findDoctorsByStatus(@Param("role") Role role, @Param("status") UserStatus status, Pageable pageable);
 
     @Query("""
-    SELECT u FROM User u 
-    WHERE u.role = :role
-    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
-    AND (:regionId IS NULL OR u.district.region.id = :regionId)
-    AND (:districtId IS NULL OR u.district.id = :districtId)
-    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
-    AND (
-           (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
-           OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
-           OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
-
-    )
-    AND u.status = 'ENABLED'
-    ORDER BY u.createdDate DESC
-""")
+                SELECT u FROM User u 
+                WHERE u.role = :role
+                AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                AND (:districtId IS NULL OR u.district.id = :districtId)
+                AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (
+                       (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                )
+                AND u.status = 'ENABLED'
+                ORDER BY u.createdDate DESC
+            """)
     List<User> findUsersByFilters(
             @Param("role") Role role,
             @Param("creatorId") String creatorId,
@@ -110,6 +109,58 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName
     );
+
+    @Query("""
+                SELECT COUNT(u) FROM User u 
+                WHERE u.role = :role
+                AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                AND (:districtId IS NULL OR u.district.id = :districtId)
+                AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (
+                       (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+                )
+                AND u.status = 'ENABLED'
+            """)
+    Long countDoctorsByFilters(
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName
+    );
+
+    @Query("""
+    SELECT COUNT(u) FROM User u
+    WHERE u.role = 'DOCTOR'
+    AND u.status = 'ENABLED'
+    AND FUNCTION('YEAR', u.createdDate) = FUNCTION('YEAR', CURRENT_DATE)
+    AND FUNCTION('MONTH', u.createdDate) = FUNCTION('MONTH', CURRENT_DATE)
+    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+    AND (:regionId IS NULL OR u.district.region.id = :regionId)
+    AND (:districtId IS NULL OR u.district.id = :districtId)
+    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+    AND (
+           LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%'))
+        OR LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%'))
+        OR LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%'))
+    )
+""")
+    Long countNewDoctorsThisMonth(
+            @Param("creatorId") UUID creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName
+    );
+
 
     @Query("""
                 SELECT COUNT(w) FROM User w 
@@ -128,6 +179,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                 WHERE w.district.id = :districtId and w.role = 'DOCTOR'
             """)
     Long countByDistrictId(@Param("districtId") Long districtId);
+
     @Query("""
                 SELECT COUNT(w) FROM User w 
                 WHERE w.district.id = :districtId and w.role = 'DOCTOR' AND w.status = 'ENABLED'
@@ -136,32 +188,31 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
 
     @Query("""
-    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
-    WHERE u.district.id = :districtId
-    GROUP BY u.fieldName
-""")
-    List<RegionFieldDTO>  countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
+                SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
+                WHERE u.district.id = :districtId
+                GROUP BY u.fieldName
+            """)
+    List<RegionFieldDTO> countUsersByFieldAndDistrict(@Param("districtId") Long districtId);
 
     @Query("""
-    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u  
-    WHERE u.district.region.id = :regionId
-    GROUP BY u.fieldName
-""")
+                SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u  
+                WHERE u.district.region.id = :regionId
+                GROUP BY u.fieldName
+            """)
     List<RegionFieldDTO> countUsersByFieldAndRegion(@Param("regionId") Long regionId);
 
 
+    @Query("""
+                SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u))  FROM User u 
+                GROUP BY u.fieldName
+            """)
+    List<RegionFieldDTO> countUsersByFieldAndRegion();
 
     @Query("""
-    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u))  FROM User u 
-    GROUP BY u.fieldName
-""")
-    List<RegionFieldDTO>  countUsersByFieldAndRegion();
-
-    @Query("""
-    SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
-    WHERE u.workplace.id = :workplaceId
-    GROUP BY u.fieldName
-""")
+                SELECT NEW com.example.user_management_service.model.dto.RegionFieldDTO(u.fieldName, COUNT(u)) FROM User u 
+                WHERE u.workplace.id = :workplaceId
+                GROUP BY u.fieldName
+            """)
     List<RegionFieldDTO> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
 
 

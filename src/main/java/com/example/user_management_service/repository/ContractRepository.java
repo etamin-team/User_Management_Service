@@ -249,6 +249,31 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                  Pageable pageable);
 
 
+
+    @Query("""
+    SELECT COUNT(DISTINCT c.doctor) FROM Contract c
+    WHERE c.status = 'APPROVED'
+    AND (:creatorId IS NULL OR c.doctor.creatorId = :creatorId)
+    AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+    AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+    AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+    AND (
+           (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+           OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+           OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+    )
+    AND c.doctor.status = 'ENABLED'
+""")
+    Long countDoctorsWithApprovedContracts(
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName
+    );
+
 }
 
 

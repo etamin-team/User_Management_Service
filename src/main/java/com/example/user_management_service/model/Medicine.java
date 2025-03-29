@@ -69,6 +69,15 @@ public class Medicine {
     private PreparationType type;
 
 
+    @Column(name = "recipe_percentage")
+    private Double recipePercentage;
+
+    @Column(name = "recipe_limit")
+    private Double recipeLimit;
+    @Column(name = "recipe_ball")
+    private Integer recipeBall;
+
+
     @Column(name = "su_percentage")
     private Double suPercentage;
 

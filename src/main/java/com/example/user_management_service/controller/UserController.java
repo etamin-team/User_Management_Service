@@ -110,7 +110,17 @@ public class UserController {
         List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(doctors);
     }
-
+    @GetMapping("/doctor-data")
+    public ResponseEntity<DoctorsInfoDTO> getDoctorData(
+            @RequestParam(required = false) UUID creatorId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery
+    ) {
+        DoctorsInfoDTO info = userService.getDoctorsInfo(creatorId, regionId, districtId, workplaceId, nameQuery);
+        return ResponseEntity.ok(info);
+    }
     @GetMapping("/managers")
     public ResponseEntity<List<UserDTO>> getManagers(
             @RequestParam(required = false) UUID creatorId,

@@ -5,10 +5,7 @@ import com.example.user_management_service.model.FieldForceRegions;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.WorkPlace;
-import com.example.user_management_service.model.dto.ChangePasswordRequest;
-import com.example.user_management_service.model.dto.FieldForceRegionsDTO;
-import com.example.user_management_service.model.dto.UserDTO;
-import com.example.user_management_service.model.dto.WorkPlaceDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
@@ -36,6 +33,7 @@ public class UserService {
     private final DistrictRegionService districtRegionService;
     private final FieldForceRegionsRepository fieldForceRegionsRepository;
     private final RegionRepository regionRepository;
+    private final ContractRepository contractRepository;
 
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
@@ -254,6 +252,56 @@ public class UserService {
         newFieldForceRegions.setUser(userRepository.findById(fieldForceRegions.getFieldForceId()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
         newFieldForceRegions.setRegion(regions);
         fieldForceRegionsRepository.save(newFieldForceRegions);
+    }
+
+
+    public DoctorsInfoDTO getDoctorsInfo(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        DoctorsInfoDTO doctorsInfoDTO=new DoctorsInfoDTO();
+        doctorsInfoDTO.setAllDoctors(getAllDoctorsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
+        doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
+        doctorsInfoDTO.setNewDoctors(getNewDoctorsCountThisMonth(creatorId, regionId, districtId, workplaceId, nameQuery));
+
+        return doctorsInfoDTO;
+    }
+
+    public Long getAllDoctorsCount(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        return userRepository.countDoctorsByFilters(Role.DOCTOR,
+                creatorId != null ? String.valueOf(creatorId) : null,
+                regionId, districtId, workplaceId,
+                name1, name2, name3);
+    }
+    public Long getDoctorsWithApprovedContractsCount(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        return contractRepository.countDoctorsWithApprovedContracts(
+                creatorId != null ? String.valueOf(creatorId) : null,
+                regionId, districtId, workplaceId,
+                name1, name2, name3
+        );
+    }
+
+    public Long getNewDoctorsCountThisMonth(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        String[] nameParts = prepareNameParts(nameQuery);
+
+        return userRepository.countNewDoctorsThisMonth(
+                creatorId,
+                regionId,
+                districtId,
+                workplaceId,
+                nameParts.length > 0 ? nameParts[0] : "",
+                nameParts.length > 1 ? nameParts[1] : "",
+                nameParts.length > 2 ? nameParts[2] : ""
+        );
     }
 
 
