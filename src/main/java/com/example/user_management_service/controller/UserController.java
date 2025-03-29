@@ -258,7 +258,7 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/field-forces/")
+    @GetMapping("/field-forces")
     public ResponseEntity<List<FieldForceRegionsInfoDTO>> getFieldForceRegions() {
         List<FieldForceRegionsInfoDTO> dto = userService.getFieldForceRegions();
         if (dto == null) {
