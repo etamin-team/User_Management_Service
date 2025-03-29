@@ -149,8 +149,8 @@ public class DoctorService {
     }
 
     public List<Medicine> findMedicinesByInn(List<String> inn,boolean exact) {
-        if (inn == null || inn.isEmpty()) {
-            return Collections.emptyList();
+        if (inn == null || inn.isEmpty() ) {
+            return medicineRepository.findAllSortByCreatedDate();
         } else if (exact){
             return medicineRepository.findByAllInn(inn,inn.size());
         }else {
