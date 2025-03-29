@@ -318,5 +318,19 @@ public class UserService {
                 fieldForceRegions.getRegionIds()
         );
     }
+    public List<FieldForceRegionsInfoDTO> getFieldForceRegions() {
+        List<FieldForceRegions> fieldForceRegionsList = fieldForceRegionsRepository.findAll();
 
+        return fieldForceRegionsList.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    private FieldForceRegionsInfoDTO convertToDTO(FieldForceRegions fieldForceRegions) {
+        return new FieldForceRegionsInfoDTO(
+                fieldForceRegions.getId(),
+                convertToDTO(fieldForceRegions.getUser()),
+                fieldForceRegions.getRegionIds()
+        );
+    }
 }

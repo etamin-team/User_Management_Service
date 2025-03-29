@@ -258,5 +258,12 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
-
+    @GetMapping("/field-force-regions/user/{userId}")
+    public ResponseEntity<List<FieldForceRegionsInfoDTO>> getFieldForceRegions() {
+        List<FieldForceRegionsInfoDTO> dto = userService.getFieldForceRegions();
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
+    }
 }
