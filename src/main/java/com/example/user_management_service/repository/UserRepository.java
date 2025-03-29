@@ -135,31 +135,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("middleName") String middleName
     );
 
-    @Query("""
-    SELECT COUNT(u) FROM User u
-    WHERE u.role = 'DOCTOR'
-    AND u.status = 'ENABLED'
-    AND FUNCTION('YEAR', u.createdDate) = FUNCTION('YEAR', CURRENT_DATE)
-    AND FUNCTION('MONTH', u.createdDate) = FUNCTION('MONTH', CURRENT_DATE)
-    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
-    AND (:regionId IS NULL OR u.district.region.id = :regionId)
-    AND (:districtId IS NULL OR u.district.id = :districtId)
-    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
-    AND (
-           LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%'))
-        OR LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%'))
-        OR LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%'))
-    )
-""")
-    Long countNewDoctorsThisMonth(
-            @Param("creatorId") UUID creatorId,
-            @Param("regionId") Long regionId,
-            @Param("districtId") Long districtId,
-            @Param("workplaceId") Long workplaceId,
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName,
-            @Param("middleName") String middleName
-    );
+
 
 
     @Query("""
@@ -214,6 +190,27 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                 GROUP BY u.fieldName
             """)
     List<RegionFieldDTO> countUsersByFieldAndWorkplace(@Param("workplaceId") Long workplaceId);
+    @Query("SELECT COUNT(u) FROM User u " +
+            "WHERE (:creatorId IS NULL OR u.creatorId = :creatorId) " +
+            "AND (:regionId IS NULL OR u.district.region.id = :regionId) " +
+            "AND (:districtId IS NULL OR u.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId) " +
+            "AND (:firstName IS NULL OR (u.firstName IS NOT NULL AND LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))) " +
+            "AND (:lastName IS NULL OR (u.lastName IS NOT NULL AND LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))) " +
+            "AND (:middleName IS NULL OR (u.middleName IS NOT NULL AND LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))) " +
+            "AND u.status = 'ENABLED' " +
+            "AND FUNCTION('DATE', u.createdDate) BETWEEN FUNCTION('DATE', DATE_TRUNC('MONTH', CURRENT_DATE)) " +
+            "AND FUNCTION('DATE', CURRENT_DATE)")
+    long countUsersCreatedThisMonth(
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName
+    );
+
 
 
 }

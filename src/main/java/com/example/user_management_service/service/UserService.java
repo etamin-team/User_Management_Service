@@ -249,9 +249,13 @@ public class UserService {
 
     public DoctorsInfoDTO getDoctorsInfo(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         DoctorsInfoDTO doctorsInfoDTO=new DoctorsInfoDTO();
+        System.out.println("---------------------------------------------------------------------------------------------1111111111111");
         doctorsInfoDTO.setAllDoctors(getAllDoctorsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
+        System.out.println("--------------------------------------------------------------------------22222222222222222222222222");
         doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
+        System.out.println("----------------------33333333333333333333333333333333333333333333333333333");
         doctorsInfoDTO.setNewDoctors(getNewDoctorsCountThisMonth(creatorId, regionId, districtId, workplaceId, nameQuery));
+        System.out.println("----------------------565454343434343");
 
         return doctorsInfoDTO;
     }
@@ -285,8 +289,8 @@ public class UserService {
     public Long getNewDoctorsCountThisMonth(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] nameParts = prepareNameParts(nameQuery);
 
-        return userRepository.countNewDoctorsThisMonth(
-                creatorId,
+        return userRepository.countUsersCreatedThisMonth(
+                creatorId!=null?creatorId.toString():null,
                 regionId,
                 districtId,
                 workplaceId,
