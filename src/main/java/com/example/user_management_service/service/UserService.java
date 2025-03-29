@@ -1,6 +1,7 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.DataNotFoundException;
+import com.example.user_management_service.exception.NotFoundException;
 import com.example.user_management_service.model.FieldForceRegions;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.User;
@@ -243,16 +244,7 @@ public class UserService {
         return passwordEncoder.matches(password, user.getPassword());
     }
 
-    public void createOrUpdateFieldForceRegions(FieldForceRegionsDTO fieldForceRegions) {
-        if (fieldForceRegions == null) {
-            return;
-        }
-        List<Region> regions = regionRepository.findAllById(fieldForceRegions.getForceRegionIds());
-        FieldForceRegions newFieldForceRegions = fieldForceRegionsRepository.findByUserId(fieldForceRegions.getFieldForceId()).orElse(new FieldForceRegions());
-        newFieldForceRegions.setUser(userRepository.findById(fieldForceRegions.getFieldForceId()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
-        newFieldForceRegions.setRegion(regions);
-        fieldForceRegionsRepository.save(newFieldForceRegions);
-    }
+
 
 
     public DoctorsInfoDTO getDoctorsInfo(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
@@ -304,5 +296,30 @@ public class UserService {
         );
     }
 
+    public void createOrUpdateFieldForceRegions(FieldForceRegionsDTO fieldForceRegions) {
+        if (fieldForceRegions == null) {
+            return;
+        }
+        List<Region> regions = regionRepository.findAllById(fieldForceRegions.getForceRegionIds());
+        FieldForceRegions newFieldForceRegions = fieldForceRegionsRepository.findByUserId(fieldForceRegions.getFieldForceId()).orElse(new FieldForceRegions());
+        newFieldForceRegions.setUser(userRepository.findById(fieldForceRegions.getFieldForceId()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
+        newFieldForceRegions.setRegion(regions);
+        fieldForceRegionsRepository.save(newFieldForceRegions);
+    }
+
+    public FieldForceRegionsInfoDTO getFieldForceRegionsByUserId(UUID userId) {
+        FieldForceRegions fieldForceRegions = fieldForceRegionsRepository.findByUserId(userId).orElseThrow(()->new NotFoundException("FieldForceRegions not found"));
+        if (fieldForceRegions == null) {
+            return null; // Return null if no data is found
+        }
+
+        return new FieldForceRegionsInfoDTO(
+                fieldForceRegions.getId(),
+                convertToDTO(fieldForceRegions.getUser()),
+                fieldForceRegions.getRegion().stream()
+                        .map(region ->districtRegionService.mapRegionToDTO(region)) // Assuming RegionDTO has id & name
+                        .toList()
+        );
+    }
 
 }

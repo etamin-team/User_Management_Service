@@ -59,9 +59,9 @@ public class UserController {
     }
 
     @PostMapping("/register-fieldforce")
-    public ResponseEntity<String> registerFieldForce(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> registerFieldForce(@RequestBody RegisterRequest request, @RequestParam List<Long> regionIds) {
         validateRoleAssignment(Role.FIELDFORCE);
-        return registerUser(request, "Fieldforce", Role.FIELDFORCE);
+        return registerUserFieldForce(request, "Fieldforce", Role.FIELDFORCE,regionIds);
     }
 
     @PostMapping("/register-manager")
@@ -216,6 +216,15 @@ public class UserController {
         HttpStatus status = isRegistered ? HttpStatus.ACCEPTED : HttpStatus.UNAUTHORIZED;
         return ResponseEntity.status(status).body(roleName + " registration " + (isRegistered ? "successful" : "failed"));
     }
+    private ResponseEntity<String> registerUserFieldForce(RegisterRequest request, String roleName, Role role,List<Long> regionIds) {
+        UUID uuid=authService.register(request, role, UserStatus.ENABLED, roleService.getCurrentUserId()).getUserId();
+        FieldForceRegionsDTO fieldForceRegionsDTO = new FieldForceRegionsDTO();
+        fieldForceRegionsDTO.setFieldForceId(uuid);
+        fieldForceRegionsDTO.setForceRegionIds(regionIds);
+        userService.createOrUpdateFieldForceRegions(fieldForceRegionsDTO);
+        HttpStatus status = HttpStatus.ACCEPTED;
+        return ResponseEntity.status(status).body(roleName + " registration " + "successful" );
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
@@ -239,6 +248,14 @@ public class UserController {
     public ResponseEntity<Void> createOrUpdateFieldForceRegions(@RequestBody FieldForceRegionsDTO fieldForceRegions) {
         userService.createOrUpdateFieldForceRegions(fieldForceRegions);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/field-force-regions/user/{userId}")
+    public ResponseEntity<FieldForceRegionsInfoDTO> getFieldForceRegionByUserId(@PathVariable UUID userId) {
+        FieldForceRegionsInfoDTO dto = userService.getFieldForceRegionsByUserId(userId);
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dto);
     }
 
 
