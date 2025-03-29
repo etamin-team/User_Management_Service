@@ -67,17 +67,19 @@ public class RecipeService {
         System.out.println(contractType.name());
         recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
         recipeRepository.save(recipe);
+        if (preparations!=null && preparations.size()>0) {
+            List<Long> medicineIds = preparations.stream()
+                    .map(Preparation::getMedicine)
+                    .filter(Objects::nonNull)  // Ensure no null medicines
+                    .map(Medicine::getId)
+                    .collect(Collectors.toList());
 
-        List<Long> medicineIds = preparations.stream()
-                .map(Preparation::getMedicine)
-                .filter(Objects::nonNull)  // Ensure no null medicines
-                .map(Medicine::getId)
-                .collect(Collectors.toList());
-
-        contractService.saveContractMedicineAmount(recipe.getDoctorId().getUserId(), medicineIds);
+            contractService.saveContractMedicineAmount(recipe.getDoctorId().getUserId(), medicineIds);
+        }
     }
 
     private Preparation mapPreparationDtoToEntity(PreparationDto preparationDto) {
+        if (preparationDto==null){return null;}
         Preparation preparation = new Preparation();
         preparation.setName(preparationDto.getName());
         preparation.setAmount(preparationDto.getAmount());

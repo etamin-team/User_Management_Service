@@ -285,6 +285,7 @@ public class ContractService {
         // Update contract details
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
+        contract.setContractType(contractDTO.getContractType());
 
 //        Set<Long> medicineIds = contract.getMedicineWithQuantityDoctors()
 //                .stream()
@@ -414,7 +415,7 @@ public class ContractService {
                     outOfContractMedicineAmountRepository.save(outOfContractMedicine);
                 } else {
                     Medicine medicine = medicineRepository.findById(medicineId)
-                            .orElseThrow(() -> new EntityNotFoundException("Medicine not found with ID: " + medicineId));
+                            .orElseThrow(() -> new DoctorContractException("Medicine not found with ID: " + medicineId));
 
                     OutOfContractMedicineAmount newOutOfContractMedicine = new OutOfContractMedicineAmount();
                     newOutOfContractMedicine.setAmount(1L);
@@ -471,7 +472,7 @@ public class ContractService {
                     } else {
                         // If medicine does not exist, create a new entry
                         Medicine medicine = medicineRepository.findById(medicineId)
-                                .orElseThrow(() -> new EntityNotFoundException("Medicine not found with ID: " + medicineId));
+                                .orElseThrow(() -> new DoctorContractException("Medicine not found with ID: " + medicineId));
 
                         OutOfContractMedicineAmount newOutOfContractMedicine = new OutOfContractMedicineAmount();
                         newOutOfContractMedicine.setAmount(1L);
