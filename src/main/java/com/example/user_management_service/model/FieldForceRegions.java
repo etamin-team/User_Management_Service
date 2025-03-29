@@ -28,6 +28,10 @@ public class FieldForceRegions {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany( cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Region> region;
+
+    @ElementCollection
+    @CollectionTable(name = "field_force_regions_list", joinColumns = @JoinColumn(name = "field_force_region_id"))
+    @Column(name = "region_id")
+    private List<Long> regionIds;
+
 }

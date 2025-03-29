@@ -17,5 +17,5 @@ public class FieldForceRegionsInfoDTO {
 
     private Long id;
     private UserDTO userDTO;
-    private List<RegionDTO> regionIds;
+    private List<Long> regionIds;
 }

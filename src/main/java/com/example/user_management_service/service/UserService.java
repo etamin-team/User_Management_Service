@@ -300,10 +300,9 @@ public class UserService {
         if (fieldForceRegions == null) {
             return;
         }
-        List<Region> regions = regionRepository.findAllById(fieldForceRegions.getForceRegionIds());
         FieldForceRegions newFieldForceRegions = fieldForceRegionsRepository.findByUserId(fieldForceRegions.getFieldForceId()).orElse(new FieldForceRegions());
         newFieldForceRegions.setUser(userRepository.findById(fieldForceRegions.getFieldForceId()).orElseThrow(() -> new UsernameNotFoundException("User not found")));
-        newFieldForceRegions.setRegion(regions);
+        newFieldForceRegions.setRegionIds(fieldForceRegions.getForceRegionIds());
         fieldForceRegionsRepository.save(newFieldForceRegions);
     }
 
@@ -316,9 +315,7 @@ public class UserService {
         return new FieldForceRegionsInfoDTO(
                 fieldForceRegions.getId(),
                 convertToDTO(fieldForceRegions.getUser()),
-                fieldForceRegions.getRegion().stream()
-                        .map(region ->districtRegionService.mapRegionToDTO(region)) // Assuming RegionDTO has id & name
-                        .toList()
+                fieldForceRegions.getRegionIds()
         );
     }
 
