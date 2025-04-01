@@ -28,10 +28,23 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "AND (:endDate IS NULL OR s.reportDate <= :endDate) " +
             "ORDER BY s.id DESC LIMIT 1")
     Optional<SalesReport> findByFilters(@Param("medicineId") Long medicineId,
-                                 @Param("regionId") Long regionId,
-                                 @Param("startDate") LocalDate startDate,
-                                 @Param("endDate") LocalDate endDate);
+                                        @Param("regionId") Long regionId,
+                                        @Param("startDate") LocalDate startDate,
+                                        @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT s FROM SalesReport s " +
+            "WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
+            "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
+            "    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)) " +
+            "AND (:startDate IS NULL OR s.reportDate >= :startDate) " +
+            "AND (:endDate IS NULL OR s.reportDate <= :endDate) " +
+            "ORDER BY s.id DESC LIMIT 1")
+    Optional<SalesReport> findByFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
 
 }

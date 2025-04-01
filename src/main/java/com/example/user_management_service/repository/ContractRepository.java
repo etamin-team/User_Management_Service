@@ -102,6 +102,25 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                           @Param("workplaceId") Long workplaceId,
                                           @Param("fieldName") Field fieldName);
 
+    @Query("SELECT c FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "WHERE (:query IS NULL OR " +
+            "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "      LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND ((:regionId IS NOT NULL AND c.doctor.district.region.id = :regionId) " +
+            "    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND c.doctor.district.region.id IN :regionIds)) " +
+            "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
+            "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
+    List<Contract> findContractsByFilters(@Param("regionIds") List<Long> regionIds,
+                                          @Param("medicineId") Long medicineId,
+                                          @Param("query") String query,
+                                          @Param("regionId") Long regionId,
+                                          @Param("districtId") Long districtId,
+                                          @Param("workplaceId") Long workplaceId,
+                                          @Param("fieldName") Field fieldName);
 
 
     @Query("SELECT COALESCE(SUM(m.quote), 0) " +
@@ -225,18 +244,18 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
 
     @Query(""" 
-        SELECT DISTINCT c FROM Contract c 
-        LEFT JOIN c.medicineWithQuantityDoctors mwqd 
-        WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId) 
-        AND (:districtId IS NULL OR c.doctor.district.id = :districtId) 
-        AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) 
-        AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName) 
-        AND (:startDate IS NULL OR c.startDate >= :startDate) 
-        AND (:endDate IS NULL OR c.endDate <= :endDate) 
-        AND (:firstName IS NULL OR :firstName = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) 
-        AND (:lastName IS NULL OR :lastName = '' OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) 
-        AND (:middleName IS NULL OR :middleName = '' OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :middleName, '%'))) 
-""")
+                    SELECT DISTINCT c FROM Contract c 
+                    LEFT JOIN c.medicineWithQuantityDoctors mwqd 
+                    WHERE (:regionId IS NULL OR c.doctor.district.region.id = :regionId) 
+                    AND (:districtId IS NULL OR c.doctor.district.id = :districtId) 
+                    AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) 
+                    AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName) 
+                    AND (:startDate IS NULL OR c.startDate >= :startDate) 
+                    AND (:endDate IS NULL OR c.endDate <= :endDate) 
+                    AND (:firstName IS NULL OR :firstName = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) 
+                    AND (:lastName IS NULL OR :lastName = '' OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) 
+                    AND (:middleName IS NULL OR :middleName = '' OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :middleName, '%'))) 
+            """)
     Page<Contract> findContracts(@Param("regionId") Long regionId,
                                  @Param("districtId") Long districtId,
                                  @Param("workPlaceId") Long workPlaceId,
@@ -249,21 +268,20 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                  Pageable pageable);
 
 
-
     @Query("""
-    SELECT COUNT(DISTINCT c.doctor) FROM Contract c
-    WHERE c.status = 'APPROVED'
-    AND (:creatorId IS NULL OR c.doctor.creatorId = :creatorId)
-    AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
-    AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
-    AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
-    AND (
-           (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
-           OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
-           OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
-    )
-    AND c.doctor.status = 'ENABLED'
-""")
+                SELECT COUNT(DISTINCT c.doctor) FROM Contract c
+                WHERE c.status = 'APPROVED'
+                AND (:creatorId IS NULL OR c.doctor.creatorId = :creatorId)
+                AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+                AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+                AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+                AND (
+                       (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+                )
+                AND c.doctor.status = 'ENABLED'
+            """)
     Long countDoctorsWithApprovedContracts(
             @Param("creatorId") String creatorId,
             @Param("regionId") Long regionId,

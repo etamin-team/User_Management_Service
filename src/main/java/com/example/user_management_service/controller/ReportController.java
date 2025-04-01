@@ -71,6 +71,21 @@ public class ReportController {
         return ResponseEntity.ok(salesReport);
     }
 
+    @GetMapping("/field-force/{medicineId}")
+    public ResponseEntity<SalesReportDTO> getFieldForceSalesReports(
+            @PathVariable Long medicineId,
+            @RequestParam(required = false, defaultValue = "") String query,
+            @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) Field fieldName) {
+
+        SalesReportDTO salesReport= reportService.getFieldForceSalesReportsByFilters(regionIds,medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        return ResponseEntity.ok(salesReport);
+    }
 
 
     @PostMapping("/manager/save")

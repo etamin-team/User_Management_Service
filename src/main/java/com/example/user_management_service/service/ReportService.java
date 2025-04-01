@@ -74,6 +74,19 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
+    public List<DoctorReportListDTO> getDoctorReportListDTOList(List<Long> regionIds,Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(regionIds,medicineId,query,regionId, districtId, workplaceId, fieldName);
+
+        return contracts.stream()
+                .map(contract -> {
+                    DoctorReportListDTO dto = new DoctorReportListDTO();
+                    dto.setDoctor(userService.convertToDTO(contract.getDoctor()));
+                    dto.setContractDTO(contractService.convertToDTO(contract));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
@@ -127,5 +140,20 @@ public class ReportService {
             doctorReportDTOS.add(dto);
         }
         return doctorReportDTOS;
+    }
+
+    public SalesReportDTO getFieldForceSalesReportsByFilters(List<Long> regionIds, Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
+
+        SalesReportDTO dto =  new SalesReportDTO();
+        SalesReport report = salesReportRepository.findByFilters(regionIds,medicineId, regionId, startDate, endDate).orElseThrow(()->new ReportException("Report not found"));
+        dto.setId(report.getId());
+        dto.setWritten(report.getWritten());
+        dto.setAllowed(report.getAllowed());
+        dto.setSold(report.getSold());
+        dto.setMedicineId(medicineId);
+        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(regionIds,medicineId,query,regionId,districtId,workplaceId,fieldName));
+
+        return dto;
+
     }
 }
