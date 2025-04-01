@@ -59,12 +59,11 @@ public class RecipeService {
                 .collect(Collectors.toList());
 
         recipe.setPreparations(preparations);
-        recipe.setDateCreation(LocalDateTime.now());
+        recipe.setDateCreation(LocalDate.now());
         User doctor = userRepository.findById(recipeDto.getDoctorId()).orElseThrow(() -> new DoctorContractException("Doctor not found"));
         recipe.setDoctorId(doctor);
         System.out.println("---------------------------------------");
         ContractType contractType = contractRepository.findActiveContractByDoctorId(doctor.getUserId()).orElse(new Contract()).getContractType();
-        System.out.println(contractType.name());
         recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
         recipeRepository.save(recipe);
         if (preparations!=null && preparations.size()>0) {
@@ -97,10 +96,16 @@ public class RecipeService {
     }
 
     public List<LastRecipeDTO> getRecipes(
-            String firstName, String lastName, String middleName, Long district, Field category,
-            Long regionId, Long medicineId, LocalDate startDate, LocalDate endDate, UUID doctorId) {
+            String nameQuery, Long district, Field category,
+            Long regionId, Long medicineId, LocalDate startDate, LocalDate endDate) {
+        String[] filteredParts = prepareNameParts(nameQuery);
 
-        return recipeRepository.findRecipesByFilters(firstName, lastName, middleName,regionId, district,medicineId,category , startDate, endDate)
+        // Extract name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        return recipeRepository.findRecipesByFilters(name1, name2, name3,regionId, district,medicineId,category , startDate, endDate)
                 .stream()
                 .map(this::mapToLastRecipeDTO)
                 .collect(Collectors.toList());

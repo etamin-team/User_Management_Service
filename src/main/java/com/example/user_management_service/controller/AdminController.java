@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,17 +79,10 @@ public class AdminController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Field category,
             @RequestParam(required = false) Long medicineId,
-            @RequestParam(required = false) UUID doctorId,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+            @RequestParam(required = false)  LocalDate startDate,
+            @RequestParam(required = false)  LocalDate endDate) {
 
-        String[] nameParts = name != null ? name.split(" ") : new String[0];
-        String firstName = nameParts.length > 0 ? nameParts[0] : null;
-        String lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : null;
-        String middleName = nameParts.length > 2 ? nameParts[1] : null;
-
-
-        List<LastRecipeDTO> recipes = recipeService.getRecipes(firstName, lastName, middleName, districtId, category,regionId,medicineId, startDate, endDate,doctorId);
+        List<LastRecipeDTO> recipes = recipeService.getRecipes(name,districtId, category,regionId,medicineId, startDate, endDate);
         return ResponseEntity.ok(recipes);
     }
 

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -179,8 +180,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("doctorField") Field doctorField,
             @Param("lastAnalysisFrom") LocalDate lastAnalysisFrom,
             @Param("lastAnalysisTo") LocalDate lastAnalysisTo
-
-
     );
 
 }
