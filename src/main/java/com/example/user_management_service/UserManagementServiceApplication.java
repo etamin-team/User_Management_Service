@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootApplication
 public class UserManagementServiceApplication {
@@ -26,8 +27,8 @@ public class UserManagementServiceApplication {
     CommandLineRunner createChiefUser(UserRepository userRepository) {
         return args -> {
             try {
-                User user = userRepository.findByNumber("string").get();
-                if (user == null) {
+                List<User> user = userRepository.findAll();
+                if (user == null&& user.isEmpty()) {
                     User chiefUser = new User();
                     chiefUser.setFirstName("Samandar");
                     chiefUser.setLastName("Gaybullayev");
