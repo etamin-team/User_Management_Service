@@ -28,7 +28,7 @@ public class UserManagementServiceApplication {
         return args -> {
             try {
                 List<User> user = userRepository.findByRole(Role.CHIEF);
-                if (user == null&& user.isEmpty()) {
+                if (user == null || user.isEmpty()) {
                     User chiefUser = new User();
                     chiefUser.setFirstName("Samandar");
                     chiefUser.setLastName("Gaybullayev");
