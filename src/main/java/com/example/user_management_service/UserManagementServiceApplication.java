@@ -27,7 +27,7 @@ public class UserManagementServiceApplication {
     CommandLineRunner createChiefUser(UserRepository userRepository) {
         return args -> {
             try {
-                List<User> user = userRepository.findAll();
+                List<User> user = userRepository.findByRole(Role.CHIEF);
                 if (user == null&& user.isEmpty()) {
                     User chiefUser = new User();
                     chiefUser.setFirstName("Samandar");
