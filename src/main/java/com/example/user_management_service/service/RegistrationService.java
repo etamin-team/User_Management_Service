@@ -98,7 +98,7 @@ public class RegistrationService {
         registerRequest.setPosition(request.getPosition());
         registerRequest.setGender(request.getGender());
 
-        boolean registered =  register(registerRequest, Role.DOCTOR, UserStatus.PENDING,null)!=null;
+        boolean registered = register(registerRequest, Role.DOCTOR, UserStatus.PENDING, null) != null;
 
         return registered ? AuthRandomNumberResponse.SUCCESS : AuthRandomNumberResponse.FAILED;
 
@@ -111,13 +111,13 @@ public class RegistrationService {
         user.setStatus(userStatus);
         user.setCreatorId(String.valueOf(creatorId));
         User save = userRepository.save(user);
-        if (role.equals(Role.DOCTOR)){
+        if (role.equals(Role.DOCTOR)) {
             WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).orElseThrow(
                     () -> new DataNotFoundException("Work Place Not Found")
             );
             save.setFieldName(request.getFieldName());
-            if (request.getFieldName().equals(Field.CHIEFDOCTOR)){
-                User oldChiefDoctor=workPlace.getChiefDoctor();
+            if (request.getFieldName().equals(Field.CHIEFDOCTOR)) {
+                User oldChiefDoctor = workPlace.getChiefDoctor();
                 oldChiefDoctor.setFieldName(Field.NONE);
                 userRepository.save(oldChiefDoctor);
                 workPlace.setChiefDoctor(save);
@@ -125,17 +125,24 @@ public class RegistrationService {
             save.setWorkplace(workPlace);
         }
         userRepository.save(save);
-        return userService.convertToDTO(save) ;
+        return userService.convertToDTO(save);
     }
 
     private User createUserRequest(RegisterRequest request, Role role) {
         User newUser = new User();
 
+        User user = userRepository.findByNumber(request.getNumber()).orElse(null);
+        if (user == null) {
+            newUser.setUserId(UUID.randomUUID());
+        } else {
+            newUser = user;
+        }
+
         if (request.getDistrictId() != null) {
             District district = districtRegionService.getDistrict(request.getDistrictId());
             newUser.setDistrict(district);
         }
-        newUser.setUserId(UUID.randomUUID());
+
         newUser.setFirstName(request.getFirstName());
         newUser.setMiddleName(request.getMiddleName());
         newUser.setLastName(request.getLastName());
@@ -145,7 +152,7 @@ public class RegistrationService {
         newUser.setPassword(request.getPassword());
         newUser.setCreatedDate(LocalDateTime.now());
         newUser.setRole(role);
-        newUser.setEmail(request.getEmail()==null?null:request.getEmail().trim().isEmpty() ?null:request.getEmail());
+        newUser.setEmail(request.getEmail() == null ? null : request.getEmail().trim().isEmpty() ? null : request.getEmail());
         newUser.setPosition(request.getPosition());
         newUser.setGender(request.getGender());
         newUser.setLastUpdateDate(LocalDateTime.now());
@@ -232,7 +239,6 @@ public class RegistrationService {
         saveToken(userDetails, accessToken);
         return authResponse;
     }
-
 
 
     public void sendSMS(String toPhoneNumber, int verificationCode) {
