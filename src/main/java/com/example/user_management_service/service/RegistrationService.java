@@ -167,6 +167,7 @@ public class RegistrationService {
                     .map(request -> createUserFromRequest(request, role, userStatus, creatorId))
                     .toList();
             userRepository.saveAll(users);
+
             return true;
         } catch (Exception e) {
             // Handle any specific logging or exceptions
@@ -179,6 +180,19 @@ public class RegistrationService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(userStatus);
         user.setCreatorId(String.valueOf(creatorId));
+        if (role.equals(Role.DOCTOR)) {
+            WorkPlace workPlace = workPlaceRepository.findById(request.getWorkPlaceId()).orElseThrow(
+                    () -> new DataNotFoundException("Work Place Not Found")
+            );
+            user.setFieldName(request.getFieldName());
+            if (request.getFieldName().equals(Field.CHIEFDOCTOR)) {
+                User oldChiefDoctor = workPlace.getChiefDoctor();
+                oldChiefDoctor.setFieldName(Field.NONE);
+                userRepository.save(oldChiefDoctor);
+                workPlace.setChiefDoctor(user);
+            }
+            user.setWorkplace(workPlace);
+        }
         return user;
     }
 
