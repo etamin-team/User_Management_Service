@@ -41,7 +41,7 @@ public class SalesReport {
     private ContractType contractType;
 
     @ManyToOne
-    @JoinColumn(name = "medicine_id")
+    @JoinColumn(name = "medicine_id" , referencedColumnName = "id")
     private Medicine medicine;
 
     @ManyToOne
