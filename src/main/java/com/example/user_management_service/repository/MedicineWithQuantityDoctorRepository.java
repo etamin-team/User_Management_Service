@@ -1,5 +1,6 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicineWithQuantityDoctor;
 import com.example.user_management_service.model.SalesReport;
@@ -93,5 +94,37 @@ public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<Med
 
     @Query("SELECT s FROM MedicineWithQuantityDoctor s WHERE :medicineId IS NULL OR s.medicine.id = :medicineId")
     Optional<MedicineWithQuantityDoctor> findByMedicineId(@Param("medicineId") Long medicineId);
+
+    @Query("SELECT COALESCE(SUM(m.correction), 0) " +
+            "FROM MedicineWithQuantityDoctor  m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
+    Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+                          @Param("regionId") Long regionId);
+
+    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
+            "FROM MedicineWithQuantityDoctor  m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
+    Long findTotalAllowed(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+                          @Param("regionId") Long regionId);
+
+
+    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
+            "FROM MedicineWithQuantityDoctor  m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
+    Long findTotalWritten(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+                          @Param("regionId") Long regionId);
+
 
 }

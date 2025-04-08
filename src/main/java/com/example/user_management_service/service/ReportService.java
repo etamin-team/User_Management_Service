@@ -155,9 +155,13 @@ public class ReportService {
             if (salesReport==null){
                 salesReportDTO=new SalesReportDTO();
                 salesReport=new SalesReport();
-                Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
-                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType, regionId);
-                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId);
+//                Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
+//                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType, regionId);
+//                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId);
+
+                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
+                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId);
+                Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId);
                 salesReportDTO.setAllowed(allowed);
                 salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(inFact);
