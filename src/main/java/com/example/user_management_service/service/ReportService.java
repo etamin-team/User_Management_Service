@@ -176,10 +176,12 @@ public class ReportService {
                 SalesReport save = salesReportRepository.save(salesReport);
                 salesReportDTO.setId(save.getId());
             }else {
+                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
+                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId);
                 salesReportDTO=new SalesReportDTO();
                 salesReportDTO.setId(salesReport.getId());
-                salesReportDTO.setAllowed(salesReport.getAllowed());
-                salesReportDTO.setWritten(salesReport.getWritten());
+                salesReportDTO.setAllowed(allowed);
+                salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(salesReport.getSold());
                 salesReportDTO.setMedicineId(medicine.getId());
                 salesReportDTO.setMedicine(medicine);
