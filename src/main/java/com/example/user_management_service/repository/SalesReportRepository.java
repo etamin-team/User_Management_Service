@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,30 +22,46 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
     Optional<SalesReport> findByMedicineId(@Param("medicineId") Long medicineId);
 
 
-    @Query("SELECT s FROM SalesReport s " +
-            "WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
-            "AND (:regionId IS NULL OR s.region.id = :regionId) " +
-            "AND (:startDate IS NULL OR s.startDate >= :startDate) " +
-            "AND (:endDate IS NULL OR s.endDate <= :endDate) " +
-            "ORDER BY s.id DESC LIMIT 1")
+    @Query(nativeQuery = true, value = """
+    SELECT *
+    FROM sales_report sr
+    WHERE 
+        (:medicineId IS NULL OR sr.medicine_id = :medicineId)
+        AND (:regionId IS NULL OR sr.region_id = :regionId)
+        AND (:startDate IS NULL OR sr.start_date >= :startDate)
+        AND (:endDate IS NULL OR sr.end_date <= :endDate)
+    ORDER BY sr.id DESC
+    LIMIT 1
+""")
     Optional<SalesReport> findByFilters(@Param("medicineId") Long medicineId,
                                         @Param("regionId") Long regionId,
                                         @Param("startDate") LocalDate startDate,
                                         @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT s FROM SalesReport s " +
-            "WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
-            "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
-            "    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)) " +
-            "AND (:startDate IS NULL OR s.startDate >= :startDate) " +
-            "AND (:endDate IS NULL OR s.endDate <= :endDate) " +
-            "ORDER BY s.id DESC LIMIT 1")
+
+
+
+    @Query(nativeQuery = true, value = """
+    SELECT *
+    FROM sales_report sr
+    WHERE 
+        (:medicineId IS NULL OR sr.medicine_id = :medicineId)
+        AND (
+            (:regionId IS NOT NULL AND sr.region_id = :regionId)
+            OR (:regionId IS NULL AND :regionIds IS NOT NULL AND sr.region_id IN :regionIds)
+        )
+        AND (:startDate IS NULL OR sr.start_date >= :startDate)
+        AND (:endDate IS NULL OR sr.end_date <= :endDate)
+    ORDER BY sr.id DESC
+    LIMIT 1
+""")
     Optional<SalesReport> findByFilters(
             @Param("regionIds") List<Long> regionIds,
             @Param("medicineId") Long medicineId,
             @Param("regionId") Long regionId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
 
 
     @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'RECIPE' THEN 1 ELSE 0 END), 0) " +

@@ -26,8 +26,12 @@ public class SalesReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate reportDate;
+    @Column(name = "start_date")
     private LocalDate startDate;
+
+    @Column(name = "end_date")
     private LocalDate endDate;
+
     private Long written ;
     private Long allowed ;
     private Long sold ;
