@@ -444,15 +444,19 @@ public class ContractService {
                 if (medicineEntry != null && medicineEntry.getQuote() > medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                     // Medicine exists in contract, update amounts
                     ContractMedicineDoctorAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
-                    ContractMedicineManagerAmount managerAmount = medicineEntry.getContractMedicineManagerAmount();
-                    managerAmount.setAmount(managerAmount.getAmount() + 1);
+
+
                     doctorAmount.setAmount(doctorAmount.getAmount() + 1);
+                    if (medicineEntry.getContractMedicineManagerAmount() != null) {
+                        ContractMedicineManagerAmount managerAmount = medicineEntry.getContractMedicineManagerAmount();
+                        managerAmount.setAmount(managerAmount.getAmount() + 1);
+                        contractMedicineManagerAmountRepository.save(managerAmount);
+                    }
                     if (medicineEntry.getContractMedicineMedAgentAmount() != null) {
                         ContractMedicineMedAgentAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
                         medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
                         contractMedicineMedAgentAmountRepository.save(medAgentAmount);
                     }
-                    contractMedicineManagerAmountRepository.save(managerAmount);
 
 
                     contractMedicineDoctorAmountRepository.save(doctorAmount);

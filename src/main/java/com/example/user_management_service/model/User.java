@@ -58,7 +58,7 @@ public class User implements UserDetails {
     @Column(name = "number", unique = true)
     private String number;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     @Column(name = "phone_prefix")

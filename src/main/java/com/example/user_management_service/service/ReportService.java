@@ -61,9 +61,9 @@ public class ReportService {
 
     public DoctorReportDTO getDoctorReports(Long medicineId,ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = contractRepository.findTotalAllowed(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-        Long written = contractRepository.findTotalWritten(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long allowed = contractRepository.findTotalAllowed(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName);
+        Long written = contractRepository.findTotalWritten(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName);
+        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,contractType,query,regionId, districtId, workplaceId, fieldName);
 
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);

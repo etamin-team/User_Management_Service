@@ -33,6 +33,7 @@ public class SwaggerConfiguration implements WebMvcConfigurer{
 //                        new Server().url("http://localhost:8080").description("Falcon server")
 //                        new Server().url("http://209.38.109.22:8085").description("Falcon server")
                         new Server().url("https://falcon.enterinfinit.uz:8082").description("Falcon server")
+//                        new Server().url("http://192.168.23.97:8080").description("Falcon server")
                 ))
                 .security(List.of(new SecurityRequirement().addList("bearer-key"))); // Global security requirement
     }
