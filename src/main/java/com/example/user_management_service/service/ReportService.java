@@ -147,6 +147,7 @@ public class ReportService {
                 salesReportDTO.setAllowed(allowed);
                 salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(inFact);
+                salesReportDTO.setMedicine(medicine);
                 salesReportDTO.setMedicineId(medicine.getId());
                 salesReportDTO.setContractType(contractType);
             }else {
@@ -155,6 +156,7 @@ public class ReportService {
                 salesReportDTO.setWritten(salesReport.getWritten());
                 salesReportDTO.setSold(salesReport.getSold());
                 salesReportDTO.setMedicineId(medicine.getId());
+                salesReportDTO.setMedicine(medicine);
                 salesReportDTO.setContractType(contractType);
             }
             salesReportDTOS.add(salesReportDTO);
@@ -201,6 +203,7 @@ public class ReportService {
             dto.setSb(sb);
             dto.setGz(gz);
             dto.setKb(kb);
+            dto.setMedicine(medicine);
             dto.setPercentage(percentage);
 
             result.add(dto);
@@ -235,6 +238,7 @@ public class ReportService {
             dto.setGz(gz);
             dto.setKb(kb);
             dto.setPercentage(percentage);
+            dto.setMedicine(medicine);
 
             reportDTOList.add(dto);
         }

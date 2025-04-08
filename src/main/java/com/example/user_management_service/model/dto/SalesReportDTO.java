@@ -1,6 +1,7 @@
 package com.example.user_management_service.model.dto;
 
 import com.example.user_management_service.model.ContractType;
+import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 public class SalesReportDTO {
 
     private Long id;
+    private Medicine medicine;
     private Long medicineId;
     private Long written ;
     private Long allowed ;
