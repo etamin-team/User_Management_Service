@@ -5,7 +5,7 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/world_medicine
+    url: jdbc:postgresql://localhost:5433/world_medicine2
     username: postgres
     password: postgres
 
@@ -32,7 +32,7 @@ springdoc:
     path: /swagger-ui-custom.html
 
 server:
-  port: 8080
+  port: 8085
 
 application:
   security:
