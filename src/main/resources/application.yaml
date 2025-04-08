@@ -32,7 +32,7 @@ springdoc:
     path: /swagger-ui-custom.html
 
 server:
-  port: 8080
+  port: 8085
 
 application:
   security:
