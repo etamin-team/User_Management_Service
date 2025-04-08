@@ -33,12 +33,14 @@ public class ContractService {
     private final ContractDistrictAmountRepository contractDistrictAmountRepository;
     private final ManagerGoalRepository managerGoalRepository;
     private final UserService userService;
-    private MedicineWithQuantityRepository medicineWithQuantityRepository;
+    private final ContractMedicineManagerAmountRepository contractMedicineManagerAmountRepository;
+    private final ContractMedicineMedAgentAmountRepository contractMedicineMedAgentAmountRepository;
+    private MedicineAgentGoalQuantityRepository medicineAgentGoalQuantityRepository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
     private AgentGoalRepository agentGoalRepository;
-    private final ContractMedicineAmountRepository contractMedicineAmountRepository;
-    private final MedicineGoalQuantityRepository medicineGoalQuantityRepository;
+    private final ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
+    private final MedicineManagerGoalQuantityRepository medicineManagerGoalQuantityRepository;
     private final ContractFieldAmountRepository contractFieldAmountRepository;
     private final FieldGoalQuantityRepository fieldGoalQuantityRepository;
 
@@ -104,7 +106,7 @@ public class ContractService {
         contractRepository.save(contract);
 
 
-        List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
+        List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
@@ -114,16 +116,15 @@ public class ContractService {
                     medicineWithQuantityDoctor.setCorrection(dto.getQuote());
                     medicineWithQuantityDoctor.setDoctorContract(contract);
 
-                    ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
-                    contractMedicineAmount.setAmount(0L);
-                    contractMedicineAmountRepository.save(contractMedicineAmount);
-                    medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineAmount);
-                    ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
+                    ContractMedicineDoctorAmount contractMedicineDoctorAmount = new ContractMedicineDoctorAmount();
+                    contractMedicineDoctorAmount.setAmount(0L);
+                    contractMedicineDoctorAmountRepository.save(contractMedicineDoctorAmount);
+                    medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineDoctorAmount);
+                    MedicineManagerGoalQuantity medicineGoalQuantity = medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
                             .orElse(null);
 
                     if (medicineGoalQuantity != null) {
-                        medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
-                        contractMedicineAmountRepository.save(medicineGoalQuantity);
+                        medicineWithQuantityDoctor.setContractMedicineManagerAmount(medicineGoalQuantity.getContractMedicineManagerAmount());
                     }
                     medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
                     return medicineWithQuantityDoctor;
@@ -233,7 +234,7 @@ public class ContractService {
         contract.setManager(managerGoal.getManagerId());
         contract.setContractType(contractDTO.getContractType());
         contractRepository.save(contract);
-        List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicinesWithQuantities().stream()
+        List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
@@ -244,24 +245,21 @@ public class ContractService {
                     medicineWithQuantityDoctor.setCorrection(dto.getQuote());
                     medicineWithQuantityDoctor.setDoctorContract(contract);
 
-                    ContractMedicineAmount contractMedicineAmount = new ContractMedicineAmount();
-                    contractMedicineAmount.setAmount(0L);
-                    contractMedicineAmountRepository.save(contractMedicineAmount);
-                    medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineAmount);
+                    ContractMedicineDoctorAmount contractMedicineDoctorAmount = new ContractMedicineDoctorAmount();
+                    contractMedicineDoctorAmount.setAmount(0L);
+                    contractMedicineDoctorAmountRepository.save(contractMedicineDoctorAmount);
+                    medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineDoctorAmount);
 
-                    ContractMedicineAmount medicineGoalQuantity = medicineGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), agentGoal.getManagerGoal().getGoalId())
+                    MedicineManagerGoalQuantity medicineManagerGoalQuantity = medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
                             .orElse(null);
-                    if (medicineGoalQuantity != null) {
-                        medicineWithQuantityDoctor.setContractMedicineAmount(medicineGoalQuantity);
-                        contractMedicineAmountRepository.save(medicineGoalQuantity);
+                    if (medicineManagerGoalQuantity != null) {
+                        medicineWithQuantityDoctor.setContractMedicineManagerAmount(medicineManagerGoalQuantity.getContractMedicineManagerAmount());
                     }
 
-                    ContractMedicineAmount contractMedicineMedAgentAmount = medicineWithQuantityRepository
+                    MedicineAgentGoalQuantity medicineAgentGoalQuantity = medicineAgentGoalQuantityRepository
                             .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentGoal.getId()).orElse(null);
-                    if (contractMedicineMedAgentAmount != null) {
-                        medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(contractMedicineMedAgentAmount);
-                        contractMedicineAmountRepository.save(contractMedicineMedAgentAmount);
-
+                    if (medicineAgentGoalQuantity != null) {
+                        medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(medicineAgentGoalQuantity.getContractMedicineMedAgentAmount());
                     }
                     medicineWithQuantityDoctorRepository.save(medicineWithQuantityDoctor);
                     return medicineWithQuantityDoctor;
@@ -292,7 +290,7 @@ public class ContractService {
 //                .map(mq -> mq.getMedicine().getId())
 //                .collect(Collectors.toSet());
         // Update or add medicines with quantities
-        contract.setMedicineWithQuantityDoctors(contractDTO.getMedicinesWithQuantities().stream()
+        contract.setMedicineWithQuantityDoctors(contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
@@ -304,7 +302,7 @@ public class ContractService {
 
                     if (existingMedicineWithQuantityDoctor != null) {
                         // Update existing medicine quantity
-                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= dto.getContractMedicineAmount().getAmount()) {
+                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= dto.getContractMedicineDoctorAmount().getAmount()) {
                             existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
                             existingMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
 
@@ -365,14 +363,14 @@ public class ContractService {
                     contract.getMedicineWithQuantityDoctors() != null
                             ? contract.getMedicineWithQuantityDoctors().stream()
                             .filter(Objects::nonNull) // Avoid NullPointerException inside stream
-                            .map(medicineWithQuantity -> new MedicineWithQuantityDTO(
-                                    medicineWithQuantity.getId(),
-                                    medicineWithQuantity.getMedicine() != null ? medicineWithQuantity.getMedicine().getId() : null,
-                                    medicineWithQuantity.getQuote(),
-                                    medicineWithQuantity.getCorrection(),
-                                    medicineWithQuantity.getDoctorContract().getAgentGoal() != null ? medicineWithQuantity.getDoctorContract().getAgentGoal().getId() : null,
-                                    medicineWithQuantity.getContractMedicineDoctorAmount(),
-                                    medicineWithQuantity.getMedicine()
+                            .map(medicineWithQuantityDoctor -> new MedicineWithQuantityDoctorDTO(
+                                    medicineWithQuantityDoctor.getId(),
+                                    medicineWithQuantityDoctor.getMedicine() != null ? medicineWithQuantityDoctor.getMedicine().getId() : null,
+                                    medicineWithQuantityDoctor.getQuote(),
+                                    medicineWithQuantityDoctor.getCorrection(),
+                                    medicineWithQuantityDoctor.getDoctorContract().getAgentGoal() != null ? medicineWithQuantityDoctor.getDoctorContract().getAgentGoal().getId() : null,
+                                    medicineWithQuantityDoctor.getContractMedicineDoctorAmount(),
+                                    medicineWithQuantityDoctor.getMedicine()
                             ))
                             .collect(Collectors.toList())
                             : Collections.emptyList(),
@@ -445,19 +443,19 @@ public class ContractService {
 
                 if (medicineEntry != null && medicineEntry.getQuote() > medicineEntry.getContractMedicineDoctorAmount().getAmount()) {
                     // Medicine exists in contract, update amounts
-                    ContractMedicineAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
-                    ContractMedicineAmount managerAmount = medicineEntry.getContractMedicineAmount();
+                    ContractMedicineDoctorAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
+                    ContractMedicineManagerAmount managerAmount = medicineEntry.getContractMedicineManagerAmount();
                     managerAmount.setAmount(managerAmount.getAmount() + 1);
                     doctorAmount.setAmount(doctorAmount.getAmount() + 1);
                     if (medicineEntry.getContractMedicineMedAgentAmount() != null) {
-                        ContractMedicineAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
+                        ContractMedicineMedAgentAmount medAgentAmount = medicineEntry.getContractMedicineMedAgentAmount();
                         medAgentAmount.setAmount(medAgentAmount.getAmount() + 1);
-                        contractMedicineAmountRepository.save(medAgentAmount);
+                        contractMedicineMedAgentAmountRepository.save(medAgentAmount);
                     }
-                    contractMedicineAmountRepository.save(managerAmount);
+                    contractMedicineManagerAmountRepository.save(managerAmount);
 
 
-                    contractMedicineAmountRepository.save(doctorAmount);
+                    contractMedicineDoctorAmountRepository.save(doctorAmount);
                 } else {
                     // Check if the medicine is already in out-of-contract list
                     Optional<OutOfContractMedicineAmount> existingMedicine = outOfContractMedicines.stream()
@@ -518,11 +516,11 @@ public class ContractService {
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
-        List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getId(),med.getMedicine().getId(), med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+        List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(), med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
-        contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
+        contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
         return contractDTO;
     }
 
@@ -543,12 +541,12 @@ public class ContractService {
         contractDTO.setEndDate(contract.getEndDate());
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
-        List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+        List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
+                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
-        contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
+        contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
 
 
         return contractDTO;
@@ -570,12 +568,12 @@ public class ContractService {
         contractDTO.setContractType(contract.getContractType());
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
 
-        List<MedicineWithQuantityDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(),med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineAmount(), med.getMedicine())) // mapping to DTO
+        List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
+                        med.getQuote(), med.getCorrection(),med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
-        contractDTO.setContractedMedicineWithQuantity(contractedMedicineWithQuantity);
+        contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
 
 
         return contractDTO;

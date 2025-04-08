@@ -8,12 +8,12 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "medicine_goal_quantity")
+@Table(name = "medicine_manager_goal_quantity")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class MedicineGoalQuantity {
+public class MedicineManagerGoalQuantity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class MedicineGoalQuantity {
     private ManagerGoal managerGoal;
 
     @ManyToOne
-    @JoinColumn(name = "contract_medicine_amount_id", referencedColumnName = "id")
-    private ContractMedicineAmount contractMedicineAmount;
+    @JoinColumn(name = "contract_medicine_manager_amount_id", referencedColumnName = "id")
+    private ContractMedicineManagerAmount contractMedicineManagerAmount;
 
 }

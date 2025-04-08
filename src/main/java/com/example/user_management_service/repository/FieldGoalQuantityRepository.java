@@ -1,7 +1,6 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.ContractFieldAmount;
-import com.example.user_management_service.model.ContractMedicineAmount;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.FieldGoalQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;

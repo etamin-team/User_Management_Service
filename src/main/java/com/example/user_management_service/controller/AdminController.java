@@ -135,7 +135,6 @@ public class AdminController {
 
     @PostMapping("/med-agent/new-goal")
     public ResponseEntity<AgentContractDTO> createAgentGoal(@RequestBody AgentContractDTO agentContractDTO) {
-
         AgentContractDTO createdContract = adminService.createAgentGoal(agentContractDTO);
         return ResponseEntity.ok(createdContract);
     }
@@ -156,8 +155,6 @@ public class AdminController {
 
 
     // Doctor Contract
-
-
     @GetMapping("/doctor/contracts/status")
     public ResponseEntity<Page<ContractDTO>> getContractsByStatus(
             @RequestParam GoalStatus goalStatus,

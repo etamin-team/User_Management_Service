@@ -1,7 +1,5 @@
 package com.example.user_management_service.model.dto;
 
-import com.example.user_management_service.model.Field;
-import com.example.user_management_service.model.FieldWithQuantity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +22,7 @@ public class AgentContractDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private UUID medAgentId;
-    private List<MedicineWithQuantityDTO> medicineWithQuantityDTOS;
+    private List<MedicineAgentGoalQuantityDTO> medicineAgentGoalQuantityDTOS;
     private List<FieldWithQuantityDTO> fieldWithQuantityDTOS;
     private Long managerGoalId;
     private UUID managerId;

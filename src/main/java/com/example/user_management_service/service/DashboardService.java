@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.model.ContractMedicineDoctorAmount;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Region;
@@ -28,7 +29,7 @@ public class DashboardService {
     private final RecipeRepository recipeRepository;
     private final ContractRepository contractRepository;
     private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
-    private ContractMedicineAmountRepository contractMedicineAmountRepository;
+    private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
     private UserRepository userRepository;
 
     public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, UUID userId, Long medicineId, LocalDate startDate, LocalDate endDate) {
@@ -54,7 +55,7 @@ public class DashboardService {
 
 
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotes());
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmount());
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmount());
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
         RecordRegionDTO recordRegionDTO = new RecordRegionDTO();
         recordRegionDTO.setEmployeeStatsList(userCountByRegion);
@@ -85,13 +86,13 @@ public class DashboardService {
     private RecordDTO filterByQuery(RecordDTO dto, UUID userId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = dto;
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByUserId(userId));
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByUserId(userId));
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByUserId(userId));
         return recordDTO;
     }
 
     private RecordDTO filterByField(RecordDTO dto, Long workPlaceId, Field field, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = dto;
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByWorkplaceAndField(workPlaceId, field.name()));
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByWorkplaceAndField(workPlaceId, field.name()));
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByWorkplaceAndField(workPlaceId, field.name()));
         return recordDTO;
     }
@@ -99,7 +100,7 @@ public class DashboardService {
     private RecordDTO filterByWorkplaceId(RecordDTO dto, Long workplaceId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = dto;
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrictAndWorkplace(workplaceId));
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
         List<RegionFieldDTO> results = userRepository.countUsersByFieldAndWorkplace(workplaceId);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
@@ -119,7 +120,7 @@ public class DashboardService {
     private RecordDTO filterByDistrictId(RecordDTO dto, Long districtId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = dto;
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrict(districtId));
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
         List<RegionFieldDTO>  results = userRepository.countUsersByFieldAndDistrict(districtId);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
@@ -139,7 +140,7 @@ public class DashboardService {
     private RecordDTO filterByRegionId(RecordDTO dto, Long regionId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = dto;
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByRegion(regionId));
-        recordDTO.setSales(contractMedicineAmountRepository.getTotalContractMedicineDoctorAmountByRegion(regionId));
+        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByRegion(regionId));
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByDistrictInRegion(regionId);
         RecordDistrictDTO recordDistrictDTO = new RecordDistrictDTO();
         recordDistrictDTO.setEmployeeStatsList(userCountByRegion);

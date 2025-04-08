@@ -32,7 +32,7 @@ public class AgentGoal {
     private List<FieldWithQuantity> fieldWithQuantities;
 
     @OneToMany(mappedBy = "agentGoal", cascade = CascadeType.ALL)
-    private List<MedicineWithQuantity> medicinesWithQuantities;
+    private List<MedicineAgentGoalQuantity> medicineAgentGoalQuantities;
 
 
     @Enumerated(EnumType.STRING)

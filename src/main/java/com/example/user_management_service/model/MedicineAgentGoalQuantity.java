@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MedicineWithQuantity {
+public class MedicineAgentGoalQuantity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +28,12 @@ public class MedicineWithQuantity {
     private Long quote;
 
     @ManyToOne
-    @JoinColumn(name = "contract_medicine_amount_id", referencedColumnName = "id")
-    private ContractMedicineAmount contractMedicineAmount;
+    @JoinColumn(name = "contract_medicine_manager_amount_id", referencedColumnName = "id")
+    private ContractMedicineManagerAmount contractMedicineManagerAmount;
 
     @ManyToOne
     @JoinColumn(name = "contract_medicine_med_agent_amount_id", referencedColumnName = "id")
-    private ContractMedicineAmount contractMedicineMedAgentAmount;
+    private ContractMedicineMedAgentAmount contractMedicineMedAgentAmount;
 
     @ManyToOne
     @JoinColumn(name = "goal_id")

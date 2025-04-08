@@ -1,6 +1,5 @@
 package com.example.user_management_service.model.dto;
 
-import com.example.user_management_service.model.Field;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,7 @@ public class ManagerGoalDTO {
     private Long goalId;
     private UUID managerId;
     private List<FieldGoalQuantityDTO> fieldGoalQuantities;
-    private List<MedicineGoalQuantityDTO> medicineGoalQuantities;
+    private List<MedicineManagerGoalQuantityDTO> medicineManagerGoalQuantities;
     private List<DistrictGoalQuantityDTO> districtGoalQuantities;
     private LocalDate createdAt;
     private LocalDate startDate;

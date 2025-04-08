@@ -1,7 +1,6 @@
 package com.example.user_management_service.model.dto;
 
 import com.example.user_management_service.model.ContractDistrictAmount;
-import com.example.user_management_service.model.ContractMedicineAmount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

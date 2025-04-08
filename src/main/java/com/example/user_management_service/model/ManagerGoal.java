@@ -33,7 +33,7 @@ public class ManagerGoal {
     private List<FieldGoalQuantity> fieldGoalQuantities;
 
     @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
-    private List<MedicineGoalQuantity> medicineGoalQuantities;
+    private List<MedicineManagerGoalQuantity> medicineManagerGoalQuantities;
 
     @OneToMany(mappedBy = "managerGoal", cascade = CascadeType.ALL)
     private List<DistrictGoalQuantity> districtGoalQuantities;

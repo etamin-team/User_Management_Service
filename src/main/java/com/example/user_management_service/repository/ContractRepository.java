@@ -213,7 +213,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 //    Long findTotalWritten(@Param("medicineId") Long medicineId);
 
 
-    @Query("SELECT COALESCE((SELECT SUM(cma.amount) FROM ContractMedicineAmount cma " +
+    @Query("SELECT COALESCE((SELECT SUM(cma.amount) FROM ContractMedicineDoctorAmount cma " +
             "WHERE cma.id IN (SELECT mwqd.contractMedicineDoctorAmount.id FROM MedicineWithQuantityDoctor mwqd " +
             "WHERE (:medicineId IS NULL OR mwqd.medicine.id = :medicineId))), 0)")
     Long findTotalWritten(@Param("medicineId") Long medicineId);

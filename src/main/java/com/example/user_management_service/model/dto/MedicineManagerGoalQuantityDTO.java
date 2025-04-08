@@ -1,6 +1,6 @@
 package com.example.user_management_service.model.dto;
 
-import com.example.user_management_service.model.ContractMedicineAmount;
+import com.example.user_management_service.model.ContractMedicineManagerAmount;
 import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +11,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class MedicineGoalQuantityDTO {
+public class MedicineManagerGoalQuantityDTO {
     private Long id;
     private Long quote;
     private Long medicineId;
     private Long managerGoalId;
-    private ContractMedicineAmount contractMedicineAmount;
+    private ContractMedicineManagerAmount contractMedicineManagerAmount;
     private Medicine medicine;
 }

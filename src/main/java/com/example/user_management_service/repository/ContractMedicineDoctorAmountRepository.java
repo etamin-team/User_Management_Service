@@ -1,6 +1,6 @@
 package com.example.user_management_service.repository;
 
-import com.example.user_management_service.model.ContractMedicineAmount;
+import com.example.user_management_service.model.ContractMedicineDoctorAmount;
 import com.example.user_management_service.model.Field;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ContractMedicineAmountRepository extends JpaRepository<ContractMedicineAmount, Long> {
+public interface ContractMedicineDoctorAmountRepository extends JpaRepository<ContractMedicineDoctorAmount, Long> {
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
