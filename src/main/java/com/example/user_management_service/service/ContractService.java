@@ -513,7 +513,7 @@ public class ContractService {
         contractDTO.setStartDate(contract.getStartDate());
         contractDTO.setContractType(contract.getContractType());
         contractDTO.setEndDate(contract.getEndDate());
-        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
+        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getMedAgent().getUserId() : null);
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
@@ -539,11 +539,11 @@ public class ContractService {
         contractDTO.setStartDate(contract.getStartDate());
         contractDTO.setContractType(contract.getContractType());
         contractDTO.setEndDate(contract.getEndDate());
-        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
+        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getMedAgent().getUserId() : null);
 
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
                 .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
+                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
@@ -566,15 +566,15 @@ public class ContractService {
         contractDTO.setStartDate(contract.getStartDate());
         contractDTO.setEndDate(contract.getEndDate());
         contractDTO.setContractType(contract.getContractType());
-        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getId() : null);
-
+        contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getMedAgent().getUserId() : null);
+        System.out.println("--------------------------------11111111111111111111111111111111");
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
                 .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
                         med.getQuote(), med.getCorrection(),med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
-
+        System.out.println("----------------------------22222222222222222222222222222222222222222222222222");
 
         return contractDTO;
     }

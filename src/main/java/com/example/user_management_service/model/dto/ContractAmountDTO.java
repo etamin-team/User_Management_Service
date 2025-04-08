@@ -25,7 +25,7 @@ public class ContractAmountDTO {
     private LocalDate endDate;
 
     private Long fieldId;
-    private Long agentId;
+    private UUID agentId;
     private ContractType contractType;
 
     private List<MedicineWithQuantityDoctorDTO> medicineWithQuantityDoctorDTOS;
