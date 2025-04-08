@@ -176,4 +176,70 @@ public class ReportService {
         return dto;
 
     }
+
+    public List<AdminReportDTO> getAdminReportDTOListFilters(Long regionId, LocalDate startDate, LocalDate endDate) {
+        List<AdminReportDTO> result = new ArrayList<>();
+        List<Medicine> medicines = medicineRepository.findAllSortByCreatedDate();
+
+        for (Medicine medicine : medicines) {
+            Long medicineId = medicine.getId();
+
+            Long recipe = salesReportRepository.countRecipeByMedicine(medicineId, regionId, startDate, endDate);
+            Long su = salesReportRepository.countSUByMedicine(medicineId, regionId, startDate, endDate);
+            Long sb = salesReportRepository.countSBByMedicine(medicineId, regionId, startDate, endDate);
+            Long gz = salesReportRepository.countGZByMedicine(medicineId, regionId, startDate, endDate);
+            Long kb = salesReportRepository.countKZByMedicine(medicineId, regionId, startDate, endDate);
+
+
+            Long total = recipe + su + sb + gz + kb;
+            Long percentage = total > 0 ? (recipe * 100) / total : 0;
+
+            AdminReportDTO dto = new AdminReportDTO();
+            dto.setMedicineId(medicineId);
+            dto.setRecipe(recipe);
+            dto.setSu(su);
+            dto.setSb(sb);
+            dto.setGz(gz);
+            dto.setKb(kb);
+            dto.setPercentage(percentage);
+
+            result.add(dto);
+
+        }
+
+        return result;
+    }
+
+    public List<AdminReportDTO> getFieldForceReports(List<Long> regionIds, Long regionId, LocalDate startDate, LocalDate endDate) {
+
+        List<AdminReportDTO> reportDTOList = new ArrayList<>();
+        List<Medicine> medicines = medicineRepository.findAllSortByCreatedDate();
+
+        for (Medicine medicine : medicines) {
+            Long medicineId = medicine.getId();
+
+            Long recipe = salesReportRepository.countRecipeByFilters(medicineId, regionId, regionIds, startDate, endDate);
+            Long su = salesReportRepository.countSUByFilters(medicineId, regionId, regionIds, startDate, endDate);
+            Long sb = salesReportRepository.countSBByFilters(medicineId, regionId, regionIds, startDate, endDate);
+            Long gz = salesReportRepository.countGZByFilters(medicineId, regionId, regionIds, startDate, endDate);
+            Long kb = salesReportRepository.countKZByFilters(medicineId, regionId, regionIds, startDate, endDate);
+
+            Long total = recipe + su + sb + gz + kb;
+            Long percentage = total > 0 ? (recipe * 100) / total : 0;
+
+            AdminReportDTO dto = new AdminReportDTO();
+            dto.setMedicineId(medicineId);
+            dto.setRecipe(recipe);
+            dto.setSu(su);
+            dto.setSb(sb);
+            dto.setGz(gz);
+            dto.setKb(kb);
+            dto.setPercentage(percentage);
+
+            reportDTOList.add(dto);
+        }
+
+        return reportDTOList;
+    }
+
 }

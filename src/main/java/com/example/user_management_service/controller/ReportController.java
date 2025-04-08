@@ -3,10 +3,7 @@ package com.example.user_management_service.controller;
 import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicalInstitutionType;
-import com.example.user_management_service.model.dto.DoctorReportDTO;
-import com.example.user_management_service.model.dto.SalesReportDTO;
-import com.example.user_management_service.model.dto.SalesReportListDTO;
-import com.example.user_management_service.model.dto.WorkPlaceListDTO;
+import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.ReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +68,28 @@ public class ReportController {
             @RequestParam(required = false) Field fieldName) {
 
         SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        return ResponseEntity.ok(salesReport);
+    }
+
+
+    @GetMapping("/admin/reports")
+    public ResponseEntity<List<AdminReportDTO>> getAdminReports(
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+
+        List<AdminReportDTO> salesReport= reportService.getAdminReportDTOListFilters(regionId,startDate,endDate);
+        return ResponseEntity.ok(salesReport);
+    }
+
+    @GetMapping("/field-force/reports")
+    public ResponseEntity<List<AdminReportDTO>> getFieldForceSalesReports(
+            @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+
+         List<AdminReportDTO> salesReport=  reportService.getFieldForceReports(regionIds,regionId,startDate,endDate);
         return ResponseEntity.ok(salesReport);
     }
 
