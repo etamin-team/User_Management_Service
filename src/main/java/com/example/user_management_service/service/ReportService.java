@@ -143,15 +143,17 @@ public class ReportService {
                 Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
                 Long written = contractRepository.findTotalWritten(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
                 Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
-
                 salesReportDTO.setAllowed(allowed);
                 salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(inFact);
                 salesReportDTO.setMedicine(medicine);
                 salesReportDTO.setMedicineId(medicine.getId());
                 salesReportDTO.setContractType(contractType);
+                SalesReport save = salesReportRepository.save(salesReport);
+                salesReportDTO.setId(save.getId());
             }else {
                 salesReportDTO=new SalesReportDTO();
+                salesReportDTO.setId(salesReport.getId());
                 salesReportDTO.setAllowed(salesReport.getAllowed());
                 salesReportDTO.setWritten(salesReport.getWritten());
                 salesReportDTO.setSold(salesReport.getSold());
