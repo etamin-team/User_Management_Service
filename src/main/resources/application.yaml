@@ -5,7 +5,7 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/world_medicine2
+    url: jdbc:postgresql://localhost:5432/world_medicine
     username: postgres
     password: postgres
 
