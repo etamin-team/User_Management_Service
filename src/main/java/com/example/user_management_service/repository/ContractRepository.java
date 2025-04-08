@@ -1,6 +1,7 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.Contract;
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.dto.DashboardDoctorsCoverage;
@@ -130,6 +131,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
             "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
             "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
@@ -137,6 +139,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:endDate IS NULL OR c.endDate <= :endDate) " +
             "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
     Long findTotalAllowed(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
                           @Param("query") String query,
                           @Param("regionId") Long regionId,
                           @Param("districtId") Long districtId,
@@ -153,6 +156,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
             "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
             "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
@@ -160,6 +164,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:endDate IS NULL OR c.endDate <= :endDate) " +
             "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
     Long findTotalWritten(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
                           @Param("query") String query,
                           @Param("regionId") Long regionId,
                           @Param("districtId") Long districtId,
@@ -227,6 +232,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "      LOWER(d.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "      LOWER(d.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
             "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
             "AND (:districtId IS NULL OR d.district.id = :districtId) " +
             "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
             "AND (:workplaceId IS NULL OR d.workplace.id = :workplaceId) " +
@@ -234,6 +240,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND (:endDate IS NULL OR c.endDate <= :endDate) " +
             "AND (:fieldName IS NULL OR d.fieldName = :fieldName)")
     Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
+                                @Param("contractType") ContractType contractType,
                                 @Param("query") String query,
                                 @Param("regionId") Long regionId,
                                 @Param("districtId") Long districtId,

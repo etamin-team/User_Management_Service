@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.ContractType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class SalesReportDTO {
     private Long written ;
     private Long allowed ;
     private Long sold ;
+    private ContractType contractType;
 
     private List<DoctorReportListDTO> doctorReportListDTOS;
 }

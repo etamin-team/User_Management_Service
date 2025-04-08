@@ -48,11 +48,11 @@ public class ReportService {
     }
 
 
-    public DoctorReportDTO getDoctorReports(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
+    public DoctorReportDTO getDoctorReports(Long medicineId,ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = contractRepository.findTotalAllowed(medicineId,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-        Long written = contractRepository.findTotalWritten(medicineId,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long allowed = contractRepository.findTotalAllowed(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long written = contractRepository.findTotalWritten(medicineId,contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long inFact = contractRepository.findTotalWrittenInFact(medicineId,contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
 
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
@@ -131,15 +131,34 @@ public class ReportService {
 
     }
 
-    public List<DoctorReportDTO> getDoctorReportsList(String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
+    public List<SalesReportDTO> getSalesReportDTOList(ContractType contractType,String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         List<Medicine> medicines=medicineRepository.findAllSortByCreatedDate();
-        List<DoctorReportDTO> doctorReportDTOS=new ArrayList<>();
+        List<SalesReportDTO> salesReportDTOS=new ArrayList<>();
         for (Medicine medicine:medicines) {
-            DoctorReportDTO dto=getDoctorReports(medicine.getId(),query,regionId,districtId,workplaceId, startDate, endDate, fieldName);
-            dto.setMedicine(medicine);
-            doctorReportDTOS.add(dto);
+            SalesReportDTO salesReportDTO;
+            SalesReport salesReport=salesReportRepository.findByFilters(medicine.getId(),regionId, startDate, endDate).orElse(null);
+            if (salesReport==null){
+                salesReportDTO=new SalesReportDTO();
+                Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+
+                salesReportDTO.setAllowed(allowed);
+                salesReportDTO.setWritten(written);
+                salesReportDTO.setSold(inFact);
+                salesReportDTO.setMedicineId(medicine.getId());
+                salesReportDTO.setContractType(contractType);
+            }else {
+                salesReportDTO=new SalesReportDTO();
+                salesReportDTO.setAllowed(salesReport.getAllowed());
+                salesReportDTO.setWritten(salesReport.getWritten());
+                salesReportDTO.setSold(salesReport.getSold());
+                salesReportDTO.setMedicineId(medicine.getId());
+                salesReportDTO.setContractType(contractType);
+            }
+            salesReportDTOS.add(salesReportDTO);
         }
-        return doctorReportDTOS;
+        return salesReportDTOS;
     }
 
     public SalesReportDTO getFieldForceSalesReportsByFilters(List<Long> regionIds, Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {

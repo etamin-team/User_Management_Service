@@ -32,6 +32,9 @@ public class SalesReport {
     private Long allowed ;
     private Long sold ;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ContractType contractType;
 
     @ManyToOne
     @JoinColumn(name = "medicine_id")

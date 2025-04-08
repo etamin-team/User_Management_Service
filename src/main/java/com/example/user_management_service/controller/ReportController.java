@@ -1,5 +1,6 @@
 package com.example.user_management_service.controller;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.dto.DoctorReportDTO;
@@ -31,27 +32,29 @@ public class ReportController {
     public ResponseEntity<DoctorReportDTO> getDoctorReports(
             @PathVariable Long medicineId,
             @RequestParam(required = false,defaultValue = "") String query,
+            @RequestParam ContractType contractType,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
-        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
+        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
 
     @GetMapping("/manager/report-list")
-    public ResponseEntity<List<DoctorReportDTO>> getDoctorReportsList(
+    public ResponseEntity<List<SalesReportDTO>> getDoctorReportsList(
             @RequestParam(required = false,defaultValue = "") String query,
-            @RequestParam(required = false) Long regionId,
+            @RequestParam ContractType contractType,
+            @RequestParam Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
-        List<DoctorReportDTO> doctorReportDTO = reportService.getDoctorReportsList(query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
-        return ResponseEntity.ok(doctorReportDTO);
+        List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
+        return ResponseEntity.ok(salesReportDTOS);
     }
 
 
