@@ -149,6 +149,11 @@ public class ReportService {
                 salesReportDTO.setMedicine(medicine);
                 salesReportDTO.setMedicineId(medicine.getId());
                 salesReportDTO.setContractType(contractType);
+                salesReport.setAllowed(allowed);
+                salesReport.setWritten(written);
+                salesReport.setSold(inFact);
+                salesReport.setMedicine(medicine);
+                salesReport.setContractType(contractType);
                 SalesReport save = salesReportRepository.save(salesReport);
                 salesReportDTO.setId(save.getId());
             }else {

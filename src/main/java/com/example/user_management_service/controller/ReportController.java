@@ -33,8 +33,8 @@ public class ReportController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
         DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
@@ -47,8 +47,8 @@ public class ReportController {
             @RequestParam Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
         List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
         return ResponseEntity.ok(salesReportDTOS);
@@ -63,8 +63,8 @@ public class ReportController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
 
         SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
@@ -101,8 +101,8 @@ public class ReportController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
 
         SalesReportDTO salesReport= reportService.getFieldForceSalesReportsByFilters(regionIds,medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
