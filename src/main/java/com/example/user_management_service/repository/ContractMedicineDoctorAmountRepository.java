@@ -14,13 +14,13 @@ public interface ContractMedicineDoctorAmountRepository extends JpaRepository<Co
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id",
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id",
             nativeQuery = true)
     Long getTotalContractMedicineDoctorAmount();
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
             "JOIN contracts c ON m.contract_id = c.contract_id " +
             "JOIN users u ON c.doctor_id = u.user_id " +
             "JOIN districts d ON u.district_id = d.id " +
@@ -31,7 +31,7 @@ public interface ContractMedicineDoctorAmountRepository extends JpaRepository<Co
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
             "JOIN contracts c ON m.contract_id = c.contract_id " +
             "WHERE c.doctor_id = :userId",
             nativeQuery = true)
@@ -39,7 +39,7 @@ public interface ContractMedicineDoctorAmountRepository extends JpaRepository<Co
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
             "JOIN contracts c ON m.contract_id = c.contract_id " +
             "JOIN users u ON c.doctor_id = u.user_id " +
             "WHERE u.workplace_id = :workplaceId AND u.field_name = :fieldName",
@@ -52,7 +52,7 @@ public interface ContractMedicineDoctorAmountRepository extends JpaRepository<Co
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
             "JOIN contracts c ON m.contract_id = c.contract_id " +
             "JOIN users u ON c.doctor_id = u.user_id " +
             "WHERE  u.workplace_id = :workplaceId",
@@ -64,7 +64,7 @@ public interface ContractMedicineDoctorAmountRepository extends JpaRepository<Co
 
     @Query(value = "SELECT COALESCE(SUM(cma.amount), 0) " +
             "FROM medicine_with_quantity_doctor m " +
-            "JOIN contract_medicine_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
+            "JOIN contract_medicine_doctor_amounts cma ON m.contract_medicine_doctor_amount_id = cma.id " +
             "JOIN contracts c ON m.contract_id = c.contract_id " +
             "JOIN users u ON c.doctor_id = u.user_id " +
             "WHERE  u.district_id = :districtId",
