@@ -147,6 +147,22 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                           @Param("fieldName") Field fieldName,
                           @Param("startDate") LocalDate startDate,
                           @Param("endDate") LocalDate endDate);
+    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
+            "FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
+            "AND (:startDate IS NULL OR c.startDate >= :startDate) " +
+            "AND (:endDate IS NULL OR c.endDate <= :endDate)")
+    Long findTotalAllowed(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+                          @Param("regionId") Long regionId,
+                          @Param("startDate") LocalDate startDate,
+                          @Param("endDate") LocalDate endDate);
+
+
 
 
     @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
@@ -173,6 +189,20 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                           @Param("startDate") LocalDate startDate,
                           @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
+            "FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
+            "AND (:startDate IS NULL OR c.startDate >= :startDate) " +
+            "AND (:endDate IS NULL OR c.endDate <= :endDate)")
+    Long findTotalWritten(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+                          @Param("regionId") Long regionId,
+                          @Param("startDate") LocalDate startDate,
+                          @Param("endDate") LocalDate endDate);
 //    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
 //            "FROM Contract c " +
 //            "JOIN c.medicineWithQuantityDoctors m " +
@@ -246,6 +276,22 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                 @Param("districtId") Long districtId,
                                 @Param("workplaceId") Long workplaceId,
                                 @Param("fieldName") Field fieldName,
+                                @Param("startDate") LocalDate startDate,
+                                @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT COALESCE(SUM(m.correction), 0) " +
+            "FROM Contract c " +
+            "JOIN c.medicineWithQuantityDoctors m " +
+            "JOIN c.doctor d " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
+            "AND (:regionId IS NULL OR d.district.region.id = :regionId) " +
+            "AND (:startDate IS NULL OR c.startDate >= :startDate) " +
+            "AND (:endDate IS NULL OR c.endDate <= :endDate) ")
+    Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
+                                @Param("contractType") ContractType contractType,
+                                @Param("regionId") Long regionId,
                                 @Param("startDate") LocalDate startDate,
                                 @Param("endDate") LocalDate endDate);
 

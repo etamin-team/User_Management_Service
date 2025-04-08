@@ -42,15 +42,11 @@ public class ReportController {
 
     @GetMapping("/manager/report-list")
     public ResponseEntity<List<SalesReportDTO>> getDoctorReportsList(
-            @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam ContractType contractType,
             @RequestParam Long regionId,
-            @RequestParam(required = false) Long districtId,
-            @RequestParam(required = false) Long workplaceId,
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
-            @RequestParam(required = false) Field fieldName) {
-        List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
+            @RequestParam LocalDate endDate) {
+        List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType,regionId,startDate,endDate);
         return ResponseEntity.ok(salesReportDTOS);
     }
 

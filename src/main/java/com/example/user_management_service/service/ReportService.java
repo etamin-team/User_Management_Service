@@ -132,7 +132,7 @@ public class ReportService {
 
     }
 
-    public List<SalesReportDTO> getSalesReportDTOList(ContractType contractType,String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
+    public List<SalesReportDTO> getSalesReportDTOList(ContractType contractType, Long regionId,  LocalDate startDate, LocalDate endDate) {
         List<Medicine> medicines=medicineRepository.findAllSortByCreatedDate();
         List<SalesReportDTO> salesReportDTOS=new ArrayList<>();
         for (Medicine medicine:medicines) {
@@ -140,9 +140,9 @@ public class ReportService {
             SalesReport salesReport=salesReportRepository.findByFilters(medicine.getId(),regionId, startDate, endDate).orElse(null);
             if (salesReport==null){
                 salesReportDTO=new SalesReportDTO();
-                Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType,query, regionId, districtId, workplaceId, fieldName,startDate,endDate);
-                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+                Long allowed = contractRepository.findTotalAllowed(medicine.getId(),contractType, regionId, startDate,endDate);
+                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType, regionId, startDate,endDate);
+                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId, startDate,endDate);
                 salesReportDTO.setAllowed(allowed);
                 salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(inFact);
