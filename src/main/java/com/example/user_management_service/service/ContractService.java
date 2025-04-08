@@ -102,7 +102,7 @@ public class ContractService {
         contract.setCreatedAt(LocalDate.now());
         contract.setStatus(GoalStatus.APPROVED);
         contract.setManager(managerGoal.getManagerId());
-        contract.setContractType(contract.getContractType());
+        contract.setContractType(contractDTO.getContractType());
         contractRepository.save(contract);
 
 

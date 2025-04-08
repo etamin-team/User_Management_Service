@@ -97,6 +97,7 @@ public class ReportService {
             report.setSold(dto.getSold());
             report.setStartDate(salesReportListDTO.getStartDate());
             report.setEndDate(salesReportListDTO.getEndDate());
+            report.setContractType(dto.getContractType());
 
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
