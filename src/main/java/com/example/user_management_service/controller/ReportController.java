@@ -95,6 +95,7 @@ public class ReportController {
             @PathVariable Long medicineId,
             @RequestParam(required = false, defaultValue = "") String query,
             @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam ContractType contractType,
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
@@ -102,7 +103,7 @@ public class ReportController {
             @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
 
-        SalesReportDTO salesReport= reportService.getFieldForceSalesReportsByFilters(regionIds,medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        SalesReportDTO salesReport= reportService.getFieldForceSalesReportsByFilters(regionIds,contractType,medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
         return ResponseEntity.ok(salesReport);
     }
 

@@ -71,12 +71,14 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                         OR 
                         (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)
                     )
+                AND (:contractType IS NULL OR s.contractType = :contractType)
                 AND (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
                 AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
                 ORDER BY s.id DESC
             """)
     List<SalesReport> findByFilters(
             @Param("regionIds") List<Long> regionIds,
+            @Param("contractType") ContractType contractType,
             @Param("medicineId") Long medicineId,
             @Param("regionId") Long regionId,
             @Param("startDate") LocalDate startDate,

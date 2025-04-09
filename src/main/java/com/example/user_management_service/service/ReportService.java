@@ -62,7 +62,7 @@ public class ReportService {
         dto.setMedicine(report.getMedicine());
         dto.setId(report.getId());
         dto.setContractType(contractType);
-        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(medicineId,query,regionId,districtId,workplaceId,fieldName));
+        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(medicineId,contractType,query,regionId,districtId,workplaceId,fieldName,startDate,endDate));
 
         return dto;
     }
@@ -78,12 +78,12 @@ public class ReportService {
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
         doctorReportDTO.setWrittenInFact(inFact);
-        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,query,regionId,districtId,workplaceId,fieldName));
+        doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId,contractType,query,regionId,districtId,workplaceId,fieldName,startDate,endDate));
 
         return doctorReportDTO;
     }
-    public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,query,regionId, districtId, workplaceId, fieldName);
+    public List<DoctorReportListDTO> getDoctorReportListDTOList(Long medicineId,ContractType contractType,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName,LocalDate startDate, LocalDate endDate) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(medicineId,contractType,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
 
         return contracts.stream()
                 .map(contract -> {
@@ -95,8 +95,8 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    public List<DoctorReportListDTO> getDoctorReportListDTOList(List<Long> regionIds,Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName) {
-        List<Contract> contracts = contractRepository.findContractsByFilters(regionIds,medicineId,query,regionId, districtId, workplaceId, fieldName);
+    public List<DoctorReportListDTO> getDoctorReportListDTOList(List<Long> regionIds,ContractType contractType, Long medicineId,String query, Long regionId, Long districtId, Long workplaceId, Field fieldName,LocalDate startDate, LocalDate endDate) {
+        List<Contract> contracts = contractRepository.findContractsByFilters(regionIds,contractType, medicineId,query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
 
         return contracts.stream()
                 .map(contract -> {
@@ -210,11 +210,11 @@ public class ReportService {
         return salesReportDTOS;
     }
 
-    public SalesReportDTO getFieldForceSalesReportsByFilters(List<Long> regionIds, Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
+    public SalesReportDTO getFieldForceSalesReportsByFilters(List<Long> regionIds,ContractType contractType, Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
         SalesReportDTO dto =  new SalesReportDTO();
         List<SalesReport> results = salesReportRepository.findByFilters(
-                regionIds, medicineId, regionId,startDate,endDate
+                regionIds,contractType, medicineId, regionId,startDate,endDate
         );
 
         SalesReport report = results.isEmpty() ? null : results.get(0); // or throw an exception if needed
@@ -224,7 +224,11 @@ public class ReportService {
         dto.setAllowed(report.getAllowed());
         dto.setSold(report.getSold());
         dto.setMedicineId(medicineId);
-        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(regionIds,medicineId,query,regionId,districtId,workplaceId,fieldName));
+        dto.setMedicineId(medicineId);
+        dto.setMedicine(report.getMedicine());
+        dto.setId(report.getId());
+        dto.setContractType(contractType);
+        dto.setDoctorReportListDTOS(getDoctorReportListDTOList(regionIds,contractType,medicineId,query,regionId,districtId,workplaceId,fieldName,startDate,endDate));
 
         return dto;
 
