@@ -124,25 +124,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                           @Param("fieldName") Field fieldName);
 
 
-    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
-            "FROM Contract c " +
-            "JOIN c.medicineWithQuantityDoctors m " +
-            "WHERE (:query IS NULL OR " +
-            "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
-            "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
-            "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
-    Long findTotalAllowed(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-                          @Param("query") String query,
-                          @Param("regionId") Long regionId,
-                          @Param("districtId") Long districtId,
-                          @Param("workplaceId") Long workplaceId,
-                          @Param("fieldName") Field fieldName);
+
     @Query("SELECT COALESCE(SUM(m.quote), 0) " +
             "FROM Contract c " +
             "JOIN c.medicineWithQuantityDoctors m " +
@@ -157,25 +139,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
 
 
-    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
-            "FROM Contract c " +
-            "JOIN c.medicineWithQuantityDoctors m " +
-            "WHERE (:query IS NULL OR " +
-            "      LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "      LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))  " +
-            "AND (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR c.contractType = :contractType) " +
-            "AND (:districtId IS NULL OR c.doctor.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)")
-    Long findTotalWritten(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-                          @Param("query") String query,
-                          @Param("regionId") Long regionId,
-                          @Param("districtId") Long districtId,
-                          @Param("workplaceId") Long workplaceId,
-                          @Param("fieldName") Field fieldName);
+
 
     @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
             "FROM Contract c " +

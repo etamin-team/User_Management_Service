@@ -126,5 +126,54 @@ public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<Med
                           @Param("contractType") ContractType contractType,
                           @Param("regionId") Long regionId);
 
+    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
+            "FROM MedicineWithQuantityDoctor m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
+            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
+    Long findTotalWritten(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+//                          @Param("query") String query,
+                          @Param("regionId") Long regionId,
+                          @Param("districtId") Long districtId,
+                          @Param("workplaceId") Long workplaceId,
+                          @Param("fieldName") Field fieldName);
 
+    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
+            "FROM MedicineWithQuantityDoctor m " +
+            "WHERE "+
+            "(:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
+            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
+    Long findTotalAllowed(@Param("medicineId") Long medicineId,
+                          @Param("contractType") ContractType contractType,
+//                          @Param("query") String query,
+                          @Param("regionId") Long regionId,
+                          @Param("districtId") Long districtId,
+                          @Param("workplaceId") Long workplaceId,
+                          @Param("fieldName") Field fieldName);
+
+    @Query("SELECT COALESCE(SUM(m.correction), 0) " +
+            "FROM MedicineWithQuantityDoctor m " +
+            "WHERE "+
+            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
+            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
+            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
+            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
+            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
+            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
+    Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
+                                @Param("contractType") ContractType contractType,
+//                                @Param("query") String query,
+                                @Param("regionId") Long regionId,
+                                @Param("districtId") Long districtId,
+                                @Param("workplaceId") Long workplaceId,
+                                @Param("fieldName") Field fieldName);
 }
