@@ -59,11 +59,12 @@ public class ReportController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
+            @RequestParam ContractType contractType,
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate,
             @RequestParam(required = false) Field fieldName) {
 
-        SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId,contractType, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
         return ResponseEntity.ok(salesReport);
     }
 

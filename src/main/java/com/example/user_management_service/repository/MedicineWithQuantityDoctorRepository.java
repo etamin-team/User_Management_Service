@@ -10,33 +10,32 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 
 @Repository
-public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<MedicineWithQuantityDoctor, Long> {
-
-
+public interface MedicineWithQuantityDoctorRepository extends JpaRepository<MedicineWithQuantityDoctor, Long> {
 
 
     @Query("""
-        SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 
-        FROM MedicineWithQuantityDoctor m 
-        JOIN m.contractMedicineDoctorAmount cma
-        JOIN m.doctorContract dc
-        JOIN dc.doctor d
-        JOIN d.district dist
-        JOIN dist.region reg
-        JOIN d.workplace wp
-        WHERE (:districtId IS NULL OR dist.id = :districtId)
-        AND (:regionId IS NULL OR reg.id = :regionId)
-        AND (:workplaceId IS NULL OR wp.id = :workplaceId)
-        GROUP BY m.medicine 
-        ORDER BY SUM(cma.amount) DESC
-        LIMIT 6
-    """)
+                SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 
+                FROM MedicineWithQuantityDoctor m 
+                JOIN m.contractMedicineDoctorAmount cma
+                JOIN m.doctorContract dc
+                JOIN dc.doctor d
+                JOIN d.district dist
+                JOIN dist.region reg
+                JOIN d.workplace wp
+                WHERE (:districtId IS NULL OR dist.id = :districtId)
+                AND (:regionId IS NULL OR reg.id = :regionId)
+                AND (:workplaceId IS NULL OR wp.id = :workplaceId)
+                GROUP BY m.medicine 
+                ORDER BY SUM(cma.amount) DESC
+                LIMIT 6
+            """)
     List<TopProductsOnSellDTO> findTop6MostSoldMedicinesWithFilters(
             @Param("districtId") Long districtId,
             @Param("regionId") Long regionId,
@@ -95,85 +94,134 @@ public interface MedicineWithQuantityDoctorRepository  extends JpaRepository<Med
     @Query("SELECT s FROM MedicineWithQuantityDoctor s WHERE :medicineId IS NULL OR s.medicine.id = :medicineId")
     Optional<MedicineWithQuantityDoctor> findByMedicineId(@Param("medicineId") Long medicineId);
 
-    @Query("SELECT COALESCE(SUM(m.correction), 0) " +
-            "FROM MedicineWithQuantityDoctor  m " +
-            "WHERE "+
-            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
-    Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-                          @Param("regionId") Long regionId);
+    @Query("""
+                SELECT COALESCE(SUM(m.correction), 0) 
+                FROM MedicineWithQuantityDoctor m 
+                WHERE 
+                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+                AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) 
+                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalWrittenInFact(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
-    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
-            "FROM MedicineWithQuantityDoctor  m " +
-            "WHERE "+
-            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
-    Long findTotalAllowed(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-                          @Param("regionId") Long regionId);
+    @Query("""
+                SELECT COALESCE(SUM(m.quote), 0) 
+                FROM MedicineWithQuantityDoctor m 
+                WHERE 
+                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+                AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) 
+                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalAllowed(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Query("""
+                SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) 
+                FROM MedicineWithQuantityDoctor m 
+                WHERE 
+                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+                AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) 
+                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalWritten(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
 
-    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
-            "FROM MedicineWithQuantityDoctor  m " +
-            "WHERE "+
-            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) ")
-    Long findTotalWritten(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-                          @Param("regionId") Long regionId);
+    @Query("""
+                SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0)
+                FROM MedicineWithQuantityDoctor m
+                WHERE 
+                    (:medicineId IS NULL OR m.medicine.id = :medicineId)
+                    AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType)
+                    AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+                    AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                    AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
+                    AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
+                    AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                    AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalWritten(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
-    @Query("SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) " +
-            "FROM MedicineWithQuantityDoctor m " +
-            "WHERE "+
-            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
-    Long findTotalWritten(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-//                          @Param("query") String query,
-                          @Param("regionId") Long regionId,
-                          @Param("districtId") Long districtId,
-                          @Param("workplaceId") Long workplaceId,
-                          @Param("fieldName") Field fieldName);
 
-    @Query("SELECT COALESCE(SUM(m.quote), 0) " +
-            "FROM MedicineWithQuantityDoctor m " +
-            "WHERE "+
-            "(:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
-    Long findTotalAllowed(@Param("medicineId") Long medicineId,
-                          @Param("contractType") ContractType contractType,
-//                          @Param("query") String query,
-                          @Param("regionId") Long regionId,
-                          @Param("districtId") Long districtId,
-                          @Param("workplaceId") Long workplaceId,
-                          @Param("fieldName") Field fieldName);
+    @Query("""
+    SELECT COALESCE(SUM(m.quote), 0)
+    FROM MedicineWithQuantityDoctor m
+    WHERE 
+        (:medicineId IS NULL OR m.medicine.id = :medicineId)
+        AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType)
+        AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+        AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+        AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
+        AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
+        AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+        AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            
+""")
+    Long findTotalAllowed(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
-    @Query("SELECT COALESCE(SUM(m.correction), 0) " +
-            "FROM MedicineWithQuantityDoctor m " +
-            "WHERE "+
-            " (:medicineId IS NULL OR m.medicine.id = :medicineId) " +
-            "AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) " +
-            "AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId) " +
-            "AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId) " +
-            "AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId) " +
-            "AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)")
-    Long findTotalWrittenInFact(@Param("medicineId") Long medicineId,
-                                @Param("contractType") ContractType contractType,
-//                                @Param("query") String query,
-                                @Param("regionId") Long regionId,
-                                @Param("districtId") Long districtId,
-                                @Param("workplaceId") Long workplaceId,
-                                @Param("fieldName") Field fieldName);
+    @Query("""
+                SELECT COALESCE(SUM(m.correction), 0)
+                FROM MedicineWithQuantityDoctor m
+                WHERE 
+                    (:medicineId IS NULL OR m.medicine.id = :medicineId)
+                    AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType)
+                    AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+                    AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                    AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
+                    AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
+                    AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                    AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalWrittenInFact(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+
 }

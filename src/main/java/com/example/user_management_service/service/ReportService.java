@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
@@ -35,13 +36,18 @@ public class ReportService {
     private final RegionRepository regionRepository;
     private final SalesService salesService;
     private final RecipeRepository recipeRepository;
+    private final DistrictRegionService districtRegionService;
 
-    public SalesReportDTO getSalesReportsByFilters(Long medicineId, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
+    public SalesReportDTO getSalesReportsByFilters(Long medicineId, ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
         SalesReportDTO dto =  new SalesReportDTO();
 
         List<SalesReport> reports = salesReportRepository.findByFilters(
-                medicineId, regionId
+                medicineId,
+                regionId,
+                contractType,
+                startDate,
+                endDate
         );
 
         if (reports.isEmpty()) {
@@ -53,6 +59,9 @@ public class ReportService {
         dto.setAllowed(report.getAllowed());
         dto.setSold(report.getSold());
         dto.setMedicineId(medicineId);
+        dto.setMedicine(report.getMedicine());
+        dto.setId(report.getId());
+        dto.setContractType(contractType);
         dto.setDoctorReportListDTOS(getDoctorReportListDTOList(medicineId,query,regionId,districtId,workplaceId,fieldName));
 
         return dto;
@@ -61,10 +70,11 @@ public class ReportService {
 
     public DoctorReportDTO getDoctorReports(Long medicineId,ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicineId,contractType,regionId, districtId, workplaceId, fieldName);
-        Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicineId,contractType, regionId, districtId, workplaceId, fieldName);
-        Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicineId,contractType,regionId, districtId, workplaceId, fieldName);
+        Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicineId,contractType,regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicineId,contractType, regionId, districtId, workplaceId, fieldName,startDate,endDate);
+        Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicineId,contractType,regionId, districtId, workplaceId, fieldName,startDate,endDate);
 
+        doctorReportDTO.setMedicine(medicineRepository.findById(medicineId).orElseThrow(()->new ReportException("Medicine not found")));
         doctorReportDTO.setAllowed(allowed);
         doctorReportDTO.setWritten(written);
         doctorReportDTO.setWrittenInFact(inFact);
@@ -148,10 +158,14 @@ public class ReportService {
         List<SalesReportDTO> salesReportDTOS=new ArrayList<>();
         for (Medicine medicine:medicines) {
             SalesReportDTO salesReportDTO;
-            System.out.println("-----------111111111");
-            List<SalesReport> results=salesReportRepository.findByFilters(medicine.getId(),regionId);
+            List<SalesReport> results = salesReportRepository.findByFilters(
+                    medicine.getId(),
+                    regionId,
+                    contractType,
+                    startDate,
+                    endDate
+            );
             SalesReport salesReport = results.isEmpty() ? null : results.get(0); // or throw an exception if needed
-            System.out.println("-----------222222222");
             if (salesReport==null){
                 salesReportDTO=new SalesReportDTO();
                 salesReport=new SalesReport();
@@ -159,9 +173,9 @@ public class ReportService {
 //                Long written = contractRepository.findTotalWritten(medicine.getId(),contractType, regionId);
 //                Long inFact = contractRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId);
 
-                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
-                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId);
-                Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId);
+                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId,startDate,endDate);
+                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId,startDate,endDate);
+                Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId,startDate,endDate);
                 salesReportDTO.setAllowed(allowed);
                 salesReportDTO.setWritten(written);
                 salesReportDTO.setSold(inFact);
@@ -173,11 +187,15 @@ public class ReportService {
                 salesReport.setSold(inFact);
                 salesReport.setMedicine(medicine);
                 salesReport.setContractType(contractType);
+                salesReport.setReportDate(LocalDate.now());
+                salesReport.setStartDate(startDate);
+                salesReport.setEndDate(endDate);
+                salesReport.setRegion(regionRepository.findById(regionId) .orElseThrow(() -> new DataNotFoundException("Region with ID " + regionId + " not found")));
                 SalesReport save = salesReportRepository.save(salesReport);
                 salesReportDTO.setId(save.getId());
             }else {
-                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId);
-                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId);
+                Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId,startDate,endDate);
+                Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId,startDate,endDate);
                 salesReportDTO=new SalesReportDTO();
                 salesReportDTO.setId(salesReport.getId());
                 salesReportDTO.setAllowed(allowed);
@@ -196,7 +214,7 @@ public class ReportService {
 
         SalesReportDTO dto =  new SalesReportDTO();
         List<SalesReport> results = salesReportRepository.findByFilters(
-                regionIds, medicineId, regionId
+                regionIds, medicineId, regionId,startDate,endDate
         );
 
         SalesReport report = results.isEmpty() ? null : results.get(0); // or throw an exception if needed

@@ -1,5 +1,6 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.SalesReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -7,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import org.springframework.data.domain.Pageable;
+
+import java.sql.Date;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,26 +26,62 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
     Optional<SalesReport> findByMedicineId(@Param("medicineId") Long medicineId);
 
 
-    @Query("SELECT s FROM SalesReport s " +
-            "WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
-            "AND (:regionId IS NULL OR s.region.id = :regionId) " +
-            "ORDER BY s.id DESC")
-    List<SalesReport> findByFilters(@Param("medicineId") Long medicineId,
-                                        @Param("regionId") Long regionId);
+//    @Query("""
+//    SELECT s FROM SalesReport s
+//    WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId)
+//    AND (:regionId IS NULL OR s.region.id = :regionId)
+//    AND (:contractType IS NULL OR s.contractType = :contractType)
+//    AND (:startDate IS NULL OR (s.startDate IS NOT NULL AND s.startDate > :startDate))
+//    AND (:endDate IS NULL OR (s.endDate IS NOT NULL AND s.endDate < :endDate))
+//    ORDER BY s.id DESC
+//    """)
+//    List<SalesReport> findByFilters(
+//            @Param("medicineId") Long medicineId,
+//            @Param("regionId") Long regionId,
+//            @Param("contractType") ContractType contractType,
+//            @Param("startDate") LocalDate startDate,
+//            @Param("endDate") LocalDate endDate
+//    );
+
+    @Query("""
+                SELECT s FROM SalesReport s
+                WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId)
+                AND (:regionId IS NULL OR s.region.id = :regionId)
+                AND (:contractType IS NULL OR s.contractType = :contractType)
+                AND (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
+                ORDER BY s.id DESC
+            """)
+    List<SalesReport> findByFilters(
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("contractType") ContractType contractType,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
 
-
-
-    @Query("SELECT s FROM SalesReport s " +
-            "WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
-            "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
-            "    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)) " +
-            "ORDER BY s.id DESC")
+    @Query("""
+                SELECT s 
+                FROM SalesReport s 
+                WHERE 
+                    (:medicineId IS NULL OR s.medicine.id = :medicineId) 
+                    AND (
+                        (:regionId IS NOT NULL AND s.region.id = :regionId) 
+                        OR 
+                        (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)
+                    )
+                AND (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
+                ORDER BY s.id DESC
+            """)
     List<SalesReport> findByFilters(
             @Param("regionIds") List<Long> regionIds,
             @Param("medicineId") Long medicineId,
-            @Param("regionId") Long regionId
-            );
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
     @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'RECIPE' THEN 1 ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
