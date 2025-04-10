@@ -20,6 +20,8 @@ public class AdminReportDTO {
 
     private Long percentage;
 
+    private Long allowed;
+
     private Long recipe;
 
     private Long su;

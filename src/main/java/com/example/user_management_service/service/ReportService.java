@@ -246,7 +246,7 @@ public class ReportService {
             Long sb = salesReportRepository.countSBByMedicine(medicineId, regionId, startDate, endDate);
             Long gz = salesReportRepository.countGZByMedicine(medicineId, regionId, startDate, endDate);
             Long kb = salesReportRepository.countKZByMedicine(medicineId, regionId, startDate, endDate);
-
+            Long allowed=salesReportRepository.countAllowedByFilters(medicineId, regionId, startDate, endDate);
 
             Long total = recipe + su + sb + gz + kb;
             Long percentage = total > 0 ? (recipe * 100) / total : 0;
@@ -258,6 +258,7 @@ public class ReportService {
             dto.setSb(sb);
             dto.setGz(gz);
             dto.setKb(kb);
+            dto.setAllowed(allowed);
             dto.setMedicine(medicine);
             dto.setPercentage(percentage);
 
@@ -281,6 +282,7 @@ public class ReportService {
             Long sb = salesReportRepository.countSBByFilters(medicineId, regionId, regionIds, startDate, endDate);
             Long gz = salesReportRepository.countGZByFilters(medicineId, regionId, regionIds, startDate, endDate);
             Long kb = salesReportRepository.countKZByFilters(medicineId, regionId, regionIds, startDate, endDate);
+            Long allowed=salesReportRepository.countAllowedByFilters(medicineId, regionId,regionIds, startDate, endDate);
 
             Long total = recipe + su + sb + gz + kb;
             Long percentage = total > 0 ? (recipe * 100) / total : 0;
@@ -293,6 +295,7 @@ public class ReportService {
             dto.setGz(gz);
             dto.setKb(kb);
             dto.setPercentage(percentage);
+            dto.setAllowed(allowed);
             dto.setMedicine(medicine);
 
             reportDTOList.add(dto);
