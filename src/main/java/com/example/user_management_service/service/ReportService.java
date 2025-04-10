@@ -285,7 +285,7 @@ public class ReportService {
             Long allowed=salesReportRepository.countAllowedByFilters(medicineId, regionId,regionIds, startDate, endDate);
 
             Long total = recipe + su + sb + gz + kb;
-            Long percentage = total > 0 ? (recipe * 100) / total : 0;
+            Long percentage = total > 0 ? (total * 100) / allowed : 0;
 
             AdminReportDTO dto = new AdminReportDTO();
             dto.setMedicineId(medicineId);
