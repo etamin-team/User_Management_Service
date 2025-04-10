@@ -141,21 +141,22 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
             "   OR (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)) " +
-            "AND (:startDate IS NULL OR s.reportDate >= :startDate) " +
-            "AND (:endDate IS NULL OR s.reportDate <= :endDate)")
+            "AND (CAST(:startDate AS date) IS NULL OR s.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR s.reportDate <= :endDate)")
     Long countRecipeByFilters(@Param("medicineId") Long medicineId,
                               @Param("regionId") Long regionId,
                               @Param("regionIds") List<Long> regionIds,
                               @Param("startDate") LocalDate startDate,
                               @Param("endDate") LocalDate endDate);
 
+
     @Query("SELECT COALESCE(SUM(s.allowed), 0) FROM SalesReport s " +
             "WHERE  " +
             " (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
             "   OR (:regionId IS NULL AND :regionIds IS NOT NULL AND s.region.id IN :regionIds)) " +
-            "AND (:startDate IS NULL OR s.reportDate >= :startDate) " +
-            "AND (:endDate IS NULL OR s.reportDate <= :endDate)")
+            "AND (CAST(:startDate AS date) IS NULL OR s.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR s.reportDate <= :endDate)")
     Long countAllowedByFilters(@Param("medicineId") Long medicineId,
                               @Param("regionId") Long regionId,
                               @Param("regionIds") List<Long> regionIds,
