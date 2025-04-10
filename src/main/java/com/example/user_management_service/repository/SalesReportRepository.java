@@ -165,6 +165,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
     @Query("SELECT COALESCE(SUM(s.allowed), 0) FROM SalesReport s " +
             "WHERE  " +
             " (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
+            "AND (:regionId IS NOT NULL AND s.region.id = :regionId) " +
             "AND (:startDate IS NULL OR s.reportDate >= :startDate) " +
             "AND (:endDate IS NULL OR s.reportDate <= :endDate)")
     Long countAllowedByFilters(@Param("medicineId") Long medicineId,
