@@ -89,7 +89,8 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
-            "AND sr.reportDate BETWEEN :startDate AND :endDate")
+            "AND (CAST(:startDate AS date) IS NULL OR sr.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR sr.reportDate <= :endDate)")
     Long countRecipeByMedicine(@Param("medicineId") Long medicineId,
                                @Param("regionId") Long regionId,
                                @Param("startDate") LocalDate startDate,
@@ -99,7 +100,8 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
-            "AND sr.reportDate BETWEEN :startDate AND :endDate")
+            "AND (CAST(:startDate AS date) IS NULL OR sr.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR sr.reportDate <= :endDate)")
     Long countSUByMedicine(@Param("medicineId") Long medicineId,
                            @Param("regionId") Long regionId,
                            @Param("startDate") LocalDate startDate,
@@ -109,7 +111,8 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
-            "AND sr.reportDate BETWEEN :startDate AND :endDate")
+            "AND (CAST(:startDate AS date) IS NULL OR sr.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR sr.reportDate <= :endDate)")
     Long countSBByMedicine(@Param("medicineId") Long medicineId,
                            @Param("regionId") Long regionId,
                            @Param("startDate") LocalDate startDate,
@@ -119,7 +122,8 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
-            "AND sr.reportDate BETWEEN :startDate AND :endDate")
+            "AND (CAST(:startDate AS date) IS NULL OR sr.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR sr.reportDate <= :endDate)")
     Long countGZByMedicine(@Param("medicineId") Long medicineId,
                            @Param("regionId") Long regionId,
                            @Param("startDate") LocalDate startDate,
@@ -129,7 +133,8 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
-            "AND sr.reportDate BETWEEN :startDate AND :endDate")
+            "AND (CAST(:startDate AS date) IS NULL OR sr.reportDate >= :startDate) " +
+            "AND (CAST(:endDate AS date) IS NULL OR sr.reportDate <= :endDate)")
     Long countKZByMedicine(@Param("medicineId") Long medicineId,
                            @Param("regionId") Long regionId,
                            @Param("startDate") LocalDate startDate,
