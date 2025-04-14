@@ -56,6 +56,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleSalesLoadException(SalesLoadException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(ChartException.class)
+    public ResponseEntity<Map<String, String>> handleChartException(ChartException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
+    }
     @ExceptionHandler(DataBaseException.class)
     public ResponseEntity<Map<String, String>> handleDataBaseException(DataBaseException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));

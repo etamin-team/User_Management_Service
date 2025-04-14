@@ -265,6 +265,20 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             @Param("middleName") String middleName
     );
 
+
+    @Query("""
+    SELECT SUM(mwd.quote)
+    FROM Contract c
+    JOIN c.medicineWithQuantityDoctors mwd
+    WHERE 
+        (:startDate IS NULL OR CAST(c.startDate AS date) >= CAST(:startDate AS date))
+        AND (:endDate IS NULL OR CAST(c.endDate AS date) <= CAST(:endDate AS date))
+""")
+    Long getTotalContractQuotesBetweenDates(@Param("startDate") LocalDate startDate,
+                                            @Param("endDate") LocalDate endDate);
+
+
+
 }
 
 

@@ -111,7 +111,7 @@ public class ReportService {
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
-            SalesReport report = new SalesReport();
+            SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(()->new ReportException("Sales report not found"));
             report.setReportDate(salesReportListDTO.getDate());
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
@@ -120,14 +120,9 @@ public class ReportService {
             report.setEndDate(salesReportListDTO.getEndDate());
             report.setContractType(dto.getContractType());
 
-
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
-            report.setMedicine(medicine);
-
             Region region=regionRepository.findById(salesReportListDTO.getRegionId()).orElseThrow(() -> new ReportException("Region not found"));
-            report.setRegion(region);
-
             salesReportRepository.save(report);
             salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,region,medicine);
         }

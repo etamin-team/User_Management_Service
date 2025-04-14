@@ -184,4 +184,31 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("lastAnalysisTo") LocalDate lastAnalysisTo
     );
 
+    @Query("""
+    SELECT SUM(m.cip)
+    FROM Recipe r
+    JOIN r.preparations p
+    JOIN p.medicine m
+    WHERE CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+    AND r.doctorId.userId = :doctorId
+""")
+    Long getTotalPriceBetweenDatesAndDoctor(@Param("doctorId") UUID doctorId,
+                                            @Param("startDate") LocalDate startDate,
+                                            @Param("endDate") LocalDate endDate);
+
+    @Query("""
+    SELECT SUM(m.cip)
+    FROM Recipe r
+    JOIN r.preparations p
+    JOIN p.medicine m
+    WHERE CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+    
+""")
+    Long getTotalPriceBetweenDatesAndDoctor(
+                                            @Param("startDate") LocalDate startDate,
+                                            @Param("endDate") LocalDate endDate);
+
+
+
+
 }

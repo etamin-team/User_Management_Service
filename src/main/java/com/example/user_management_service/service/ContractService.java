@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -292,6 +293,7 @@ public class ContractService {
         // Update or add medicines with quantities
         contract.setMedicineWithQuantityDoctors(contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
                 .map(dto -> {
+                    if (dto==null) return null;
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
 
@@ -634,6 +636,28 @@ public class ContractService {
 
         // Convert each Contract entity to DTO and maintain pagination
         return contractPage.map(this::convertToDTO);
+    }
+
+    public List<LineChart> getDoctorRecipeChart(UUID doctorId, LocalDate startDate, LocalDate endDate, int numberOfParts) {
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
+        if (totalDays <= 0 || numberOfParts <= 0) {
+            throw new ChartException("Invalid date range or part count");
+        }
+
+        long interval = totalDays / numberOfParts;
+        List<LineChart> chart = new ArrayList<>();
+
+        for (int i = 0; i < numberOfParts; i++) {
+            LocalDate from = startDate.plusDays(i * interval);
+            LocalDate to = (i == numberOfParts - 1) ? endDate : from.plusDays(interval - 1);
+
+            Long totalPrice = recipeRepository.getTotalPriceBetweenDatesAndDoctor(doctorId, from, to);
+            if (totalPrice == null) totalPrice = 0L;
+
+            chart.add(new LineChart(from, to, totalPrice));
+        }
+
+        return chart;
     }
 
 }

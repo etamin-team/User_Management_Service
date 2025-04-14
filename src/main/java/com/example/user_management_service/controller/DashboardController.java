@@ -1,6 +1,7 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Field;
+import com.example.user_management_service.model.dto.LineChart;
 import com.example.user_management_service.model.dto.RecordDTO;
 import com.example.user_management_service.service.DashboardService;
 import lombok.AllArgsConstructor;
@@ -40,6 +41,23 @@ public class DashboardController {
         RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, userId, medicineId, startDate, endDate);
         return ResponseEntity.ok(records);
     }
-
+    @GetMapping("/chart/sales")
+    public ResponseEntity<List<LineChart>> getSalesRecipeChart(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "36") int numberOfParts
+    ) {
+        List<LineChart> chart = dashboardService.getRecipeChartSales( startDate, endDate, numberOfParts);
+        return ResponseEntity.ok(chart);
+    }
+    @GetMapping("/chart/quote")
+    public ResponseEntity<List<LineChart>> getQuoteRecipeChart(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "36") int numberOfParts
+    ) {
+        List<LineChart> chart = dashboardService.getRecipeChartQuote( startDate, endDate, numberOfParts);
+        return ResponseEntity.ok(chart);
+    }
 
 }

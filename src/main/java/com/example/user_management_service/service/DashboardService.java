@@ -1,6 +1,6 @@
 package com.example.user_management_service.service;
 
-import com.example.user_management_service.model.ContractMedicineDoctorAmount;
+import com.example.user_management_service.exception.ChartException;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Region;
@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -200,6 +201,51 @@ public class DashboardService {
         }
 
         return list;
+    }
+
+
+    public List<LineChart> getRecipeChartSales(LocalDate startDate, LocalDate endDate, int numberOfParts) {
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
+        if (totalDays <= 0 || numberOfParts <= 0) {
+            throw new ChartException("Invalid date range or part count");
+        }
+
+        long interval = totalDays / numberOfParts;
+        List<LineChart> chart = new ArrayList<>();
+
+        for (int i = 0; i < numberOfParts; i++) {
+            LocalDate from = startDate.plusDays(i * interval);
+            LocalDate to = (i == numberOfParts - 1) ? endDate : from.plusDays(interval - 1);
+
+            Long totalPrice = recipeRepository.getTotalPriceBetweenDatesAndDoctor( from, to);
+            if (totalPrice == null) totalPrice = 0L;
+
+            chart.add(new LineChart(from, to, totalPrice));
+        }
+
+        return chart;
+    }
+
+    public List<LineChart> getRecipeChartQuote(LocalDate startDate, LocalDate endDate, int numberOfParts) {
+        long totalDays = ChronoUnit.DAYS.between(startDate, endDate);
+        if (totalDays <= 0 || numberOfParts <= 0) {
+            throw new ChartException("Invalid date range or part count");
+        }
+
+        long interval = totalDays / numberOfParts;
+        List<LineChart> chart = new ArrayList<>();
+
+        for (int i = 0; i < numberOfParts; i++) {
+            LocalDate from = startDate.plusDays(i * interval);
+            LocalDate to = (i == numberOfParts - 1) ? endDate : from.plusDays(interval - 1);
+
+            Long totalPrice = contractRepository.getTotalContractQuotesBetweenDates( from, to);
+            if (totalPrice == null) totalPrice = 0L;
+
+            chart.add(new LineChart(from, to, totalPrice));
+        }
+
+        return chart;
     }
 
 }

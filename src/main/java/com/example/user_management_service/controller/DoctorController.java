@@ -1,19 +1,18 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Medicine;
-import com.example.user_management_service.model.Recipe;
-import com.example.user_management_service.model.Template;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.ContractService;
 import com.example.user_management_service.service.DoctorService;
 import com.example.user_management_service.service.RecipeService;
 import com.example.user_management_service.service.RoleService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -100,6 +99,19 @@ public class DoctorController {
         DoctorRecipeStatsDTO contractAmountDTO = contractService.getDoctorRecipeStatsDTOByDoctorId(doctorId);
         return ResponseEntity.ok(contractAmountDTO);
     }
+
+    @GetMapping("/chart/{doctorId}")
+    public ResponseEntity<List<LineChart>> getDoctorRecipeChart(
+            @PathVariable UUID doctorId,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "36") int numberOfParts
+    ) {
+        List<LineChart> chart = contractService.getDoctorRecipeChart(doctorId, startDate, endDate, numberOfParts);
+        return ResponseEntity.ok(chart);
+    }
+
+
 
 
 }
