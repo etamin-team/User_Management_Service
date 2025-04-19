@@ -168,10 +168,10 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/upload-doctors")
-    public ResponseEntity<String> uploadDoctors(@RequestBody List<RegisterRequest> requests) {
-        return uploadUsers(requests, Role.DOCTOR, "Doctors");
-    }
+//    @PostMapping("/upload-doctors")
+//    public ResponseEntity<String> uploadDoctors(@RequestBody List<RegisterRequest> requests) {
+//        return uploadUsers(requests, Role.DOCTOR, "Doctors");
+//    }
     @PostMapping(value = "/upload-doctors", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadDoctors(@RequestParam("file") MultipartFile file) throws IOException {
         List<RegisterRequest> requests = userService.parseFileDoctors(file);
