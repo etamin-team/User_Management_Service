@@ -12,9 +12,12 @@ import com.example.user_management_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -167,6 +170,11 @@ public class UserController {
 
     @PostMapping("/upload-doctors")
     public ResponseEntity<String> uploadDoctors(@RequestBody List<RegisterRequest> requests) {
+        return uploadUsers(requests, Role.DOCTOR, "Doctors");
+    }
+    @PostMapping(value = "/upload-doctors", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadDoctors(@RequestParam("file") MultipartFile file) throws IOException {
+        List<RegisterRequest> requests = userService.parseFileDoctors(file);
         return uploadUsers(requests, Role.DOCTOR, "Doctors");
     }
 

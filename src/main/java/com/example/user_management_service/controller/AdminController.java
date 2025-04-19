@@ -71,7 +71,6 @@ public class AdminController {
     }
 
 
-
     @GetMapping("/recipes")
     public ResponseEntity<List<LastRecipeDTO>> getAllLastRecipes(
             @RequestParam(required = false) String name,
@@ -79,13 +78,12 @@ public class AdminController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Field category,
             @RequestParam(required = false) Long medicineId,
-            @RequestParam(required = false)  LocalDate startDate,
-            @RequestParam(required = false)  LocalDate endDate) {
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
 
-        List<LastRecipeDTO> recipes = recipeService.getRecipes(name,districtId, category,regionId,medicineId, startDate, endDate);
+        List<LastRecipeDTO> recipes = recipeService.getRecipes(name, districtId, category, regionId, medicineId, startDate, endDate);
         return ResponseEntity.ok(recipes);
     }
-
 
 
     //manager goal
@@ -141,7 +139,7 @@ public class AdminController {
 
     @PutMapping("/med-agent/goal/{goalId}")
     public ResponseEntity<AgentContractDTO> updateAgentGoal(@PathVariable Long goalId,
-                                                                @RequestBody   AgentContractDTO agentContractDTO) {
+                                                            @RequestBody AgentContractDTO agentContractDTO) {
         AgentContractDTO updatedContract = adminService.updateAgentGoal(goalId, agentContractDTO);
         return ResponseEntity.ok(updatedContract);
     }
@@ -160,7 +158,7 @@ public class AdminController {
             @RequestParam GoalStatus goalStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTO> contracts = contractService.getContractsByStatus(goalStatus,page, size);
+        Page<ContractDTO> contracts = contractService.getContractsByStatus(goalStatus, page, size);
         return ResponseEntity.ok(contracts);
     }
 
@@ -176,6 +174,14 @@ public class AdminController {
         contractService.declineContract(id);
         return ResponseEntity.ok("Contract  has been declined successfully.");
     }
+
+
+//    @GetMapping("/manager/kpi/{id}")
+//    public ResponseEntity<ManagerKpiDTO> getManagerKpi(@PathVariable UUID id) {
+//
+//
+//        return id;
+//    }
 
 
 }

@@ -10,12 +10,17 @@ import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -338,4 +343,15 @@ public class UserService {
                 fieldForceRegions.getRegionIds()
         );
     }
+
+
+    public List<RegisterRequest> parseFileDoctors(MultipartFile file) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper.readValue(
+                file.getInputStream(),
+                new TypeReference<List<RegisterRequest>>() {}
+        );
+    }
+
 }
