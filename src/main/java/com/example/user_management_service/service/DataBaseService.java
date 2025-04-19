@@ -5,12 +5,17 @@ import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -216,5 +221,15 @@ public class DataBaseService {
     public Page<Medicine> findAllMedicinesPageable(Pageable pageable) {
         return medicineRepository.findAllSortByCreatedDatePageable(pageable);
 
+    }
+
+
+    public List<MNN> parseFileDoctors(MultipartFile file) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper.readValue(
+                file.getInputStream(),
+                new TypeReference<List<MNN>>() {}
+        );
     }
 }

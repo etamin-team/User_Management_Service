@@ -2,17 +2,21 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.role.Role;
 import com.example.user_management_service.service.*;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -317,11 +321,20 @@ public class DataBaseController {
         return ResponseEntity.ok(mnn1);
     }
 
-    @PostMapping("/mnn/add-bulk")
-    public ResponseEntity<Void> saveMNNList(@RequestBody List<MNN> mnn) {
+//    @PostMapping("/mnn/add-bulk")
+//    public ResponseEntity<Void> saveMNNList(@RequestBody List<MNN> mnn) {
+//        dataBaseService.saveMNNList(mnn);
+//        return ResponseEntity.ok().build();
+//    }
+
+
+    @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> uploadDoctors(@RequestParam("file") MultipartFile file) throws IOException {
+        List<MNN> mnn  = dataBaseService.parseFileDoctors(file);
         dataBaseService.saveMNNList(mnn);
         return ResponseEntity.ok().build();
     }
+
 
 
     @DeleteMapping("/mnn/delete/{mnn}")
