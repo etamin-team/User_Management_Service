@@ -42,6 +42,31 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByNumber(String number);
 
     Optional<User> findByEmail(String email);
+    @Query("""
+        SELECT u FROM User u 
+        WHERE u.role = :role
+        AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+        AND (:regionId IS NULL OR u.district.region.id = :regionId)
+        AND (:districtId IS NULL OR u.district.id = :districtId)
+        AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+        AND (
+               (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+               OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+               OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+        )
+        AND u.status = 'ENABLED'
+        """)
+    Page<User> findUsersByFiltersPaginated(
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            Pageable pageable
+    );
 
     @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
             "r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian, COUNT(u)) " +

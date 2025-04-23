@@ -14,12 +14,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -118,6 +122,28 @@ public class UserService {
                 .map(this::convertToDTO)
                 .toList();
     }
+    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, int page, int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+
+        return userRepository.findUsersByFiltersPaginated(
+                Role.DOCTOR,
+                creatorId != null ? String.valueOf(creatorId) : null,
+                regionId,
+                districtId,
+                workplaceId,
+                name1,
+                name2,
+                name3,
+                pageable
+        ).map(this::convertToDTO);
+    }
+
 
     public List<UserDTO> getManagers(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
         String[] filteredParts = prepareNameParts(nameQuery);

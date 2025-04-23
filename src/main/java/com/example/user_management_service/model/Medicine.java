@@ -77,7 +77,6 @@ public class Medicine {
     @Column(name = "recipe_ball")
     private Integer recipeBall;
 
-
     @Column(name = "su_percentage")
     private Double suPercentage;
 
