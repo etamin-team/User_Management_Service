@@ -57,6 +57,8 @@ public class Medicine {
 
     private Integer quantity;
 
+    private Integer noMore;
+
     private Double prescription;
 
     @Enumerated(EnumType.STRING)
