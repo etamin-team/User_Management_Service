@@ -371,7 +371,7 @@ public class AdminService {
                 .orElseThrow(() -> new AgentGoalException("Med Agent not found")));
         agentGoal.setManager(userRepository.findById(agentContractDTO.getManagerId())
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
-        ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
+        ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId()).orElse(null);
         agentGoal.setManagerGoal(managerGoal);
         DistrictGoalQuantity districtGoalQuantity = districtGoalQuantityRepository
                 .findByGoalIdAndDistrictId(agentGoal.getManagerGoal().getGoalId(),
@@ -380,7 +380,7 @@ public class AdminService {
         agentGoalRepository.save(agentGoal);
 
 
-        if (agentContractDTO.getMedicineAgentGoalQuantityDTOS() != null && managerGoal.getMedicineManagerGoalQuantities() != null) {
+        if (managerGoal!=null&&agentContractDTO.getMedicineAgentGoalQuantityDTOS() != null && managerGoal.getMedicineManagerGoalQuantities() != null) {
             Set<Long> medicineIds = managerGoal.getMedicineManagerGoalQuantities()
                     .stream()
                     .map(mq -> mq.getMedicine().getId())
@@ -395,7 +395,7 @@ public class AdminService {
                     .collect(Collectors.toList()));
         }
 
-        if (agentContractDTO.getFieldWithQuantityDTOS() != null && managerGoal.getFieldGoalQuantities() != null) {
+        if (managerGoal!=null&&agentContractDTO.getFieldWithQuantityDTOS() != null && managerGoal.getFieldGoalQuantities() != null) {
             Set<Field> fieldIds = managerGoal.getFieldGoalQuantities()
                     .stream()
                     .map(fq -> fq.getField())
@@ -499,7 +499,7 @@ public class AdminService {
                 .orElseThrow(() -> new AgentGoalException("Manager not found")));
 
         ManagerGoal managerGoal = managerGoalRepository.findById(agentContractDTO.getManagerGoalId())
-                .orElseThrow(() -> new AgentGoalException("Manager Goal not found"));
+                .orElse(null);
 
         Set<Long> medicineIds = agentGoal.getMedicineAgentGoalQuantities()
                 .stream()
@@ -538,7 +538,7 @@ public class AdminService {
             return medicineAgentGoalQuantity;
         }
 
-        boolean isNewQuantity = managerGoal.getMedicineManagerGoalQuantities().stream()
+        boolean isNewQuantity =managerGoal!=null && managerGoal.getMedicineManagerGoalQuantities().stream()
                 .noneMatch(mq -> mq.getMedicine().getId().equals(dto.getMedicineId()));
 
         if (isNewQuantity) {
@@ -584,7 +584,7 @@ public class AdminService {
             return fieldWithQuantity;
         }
 
-        boolean isNewQuantity = managerGoal.getFieldGoalQuantities().stream()
+        boolean isNewQuantity = managerGoal!=null&&managerGoal.getFieldGoalQuantities().stream()
                 .noneMatch(mq -> mq.getField().equals(dto.getFieldName()));
 
         if (isNewQuantity) {

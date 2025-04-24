@@ -25,7 +25,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -122,8 +124,10 @@ public class UserService {
                 .map(this::convertToDTO)
                 .toList();
     }
-    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, int page, int size) {
+    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, LocalDate startDate,LocalDate endDate, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
+        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = endDate != null ? endDate.atTime(LocalTime.MAX) : null;
 
         String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
@@ -140,8 +144,11 @@ public class UserService {
                 name1,
                 name2,
                 name3,
+                startDateTime,
+                endDateTime,
                 pageable
         ).map(this::convertToDTO);
+
     }
 
 

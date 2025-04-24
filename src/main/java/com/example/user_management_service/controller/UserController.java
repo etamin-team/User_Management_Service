@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Page;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -123,10 +124,12 @@ public class UserController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery, page, size);
+        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,startDate,endDate, page, size);
         return ResponseEntity.ok(doctors);
     }
 

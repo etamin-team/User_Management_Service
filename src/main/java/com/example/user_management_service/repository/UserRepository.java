@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +55,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
         )
+        AND (:startDateTime IS NULL OR u.createdDate >= :startDateTime)
+        AND (:endDateTime IS NULL OR u.createdDate <= :endDateTime)
         AND u.status = 'ENABLED'
         """)
     Page<User> findUsersByFiltersPaginated(
@@ -65,8 +68,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
+            @Param("startDateTime") LocalDateTime startDateTime,
+            @Param("endDateTime") LocalDateTime endDateTime,
             Pageable pageable
     );
+
 
     @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
             "r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian, COUNT(u)) " +

@@ -52,23 +52,23 @@ public class ContractService {
         if (contractRepository.findActiveOrPendingContractByDoctorId(contractDTO.getDoctorId()).isPresent()) {
             throw new DoctorContractExistsException("Doctor had already assigned contract doctorId:" + contractDTO.getDoctorId());
         }
-        ManagerGoal managerGoal = managerGoalRepository.getGoalsByManagerId(contractDTO.getManagerId()).orElseThrow(() -> new DoctorContractException("Manager Goal Doesn't exists"));
+        ManagerGoal managerGoal = managerGoalRepository.getGoalsByManagerId(contractDTO.getManagerId()).orElse(null);
 
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
-        List<DistrictGoalQuantity> districtGoalQuantities = managerGoal.getDistrictGoalQuantities();
+        List<DistrictGoalQuantity> districtGoalQuantities = managerGoal != null ? managerGoal.getDistrictGoalQuantities() : null;
 
         boolean isDistrictIdMatches = districtGoalQuantities
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
                 .anyMatch(id -> id.equals(doctor.getDistrict().getId()));
-        if (managerGoal.getDistrictGoalQuantities() != null && managerGoal.getDistrictGoalQuantities().size() > 0 && !isDistrictIdMatches) {
+        if (managerGoal != null && managerGoal.getDistrictGoalQuantities() != null && managerGoal.getDistrictGoalQuantities().size() > 0 && !isDistrictIdMatches) {
 //            throw new DoctorContractException("DistrictId of Agent Contract   doesn't match with Doctors districtId");
             ;
             DistrictGoalQuantity districtGoalQuantity = districtGoalQuantities
                     .stream()
                     .filter(dq ->
-                         dq.getDistrict().getId().equals(doctor.getDistrict().getId())
+                            dq.getDistrict().getId().equals(doctor.getDistrict().getId())
                     ).findAny().orElse(null);
 
             if (districtGoalQuantity != null) {
@@ -78,7 +78,7 @@ public class ContractService {
             }
 
         }
-        List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
+        List<FieldGoalQuantity> fieldGoalQuantities = managerGoal != null ? managerGoal.getFieldGoalQuantities() : null;
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
 //            throw new DoctorContractException("No fields found in ManagerGoal.");
         } else {
@@ -102,7 +102,7 @@ public class ContractService {
         contract.setEndDate(contractDTO.getEndDate());
         contract.setCreatedAt(LocalDate.now());
         contract.setStatus(GoalStatus.APPROVED);
-        contract.setManager(managerGoal.getManagerId());
+        contract.setManager(managerGoal != null ? managerGoal.getManagerId() : null);
         contract.setContractType(contractDTO.getContractType());
         contractRepository.save(contract);
 
@@ -121,9 +121,11 @@ public class ContractService {
                     contractMedicineDoctorAmount.setAmount(0L);
                     contractMedicineDoctorAmountRepository.save(contractMedicineDoctorAmount);
                     medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineDoctorAmount);
-                    MedicineManagerGoalQuantity medicineGoalQuantity = medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
-                            .orElse(null);
-
+                    MedicineManagerGoalQuantity medicineGoalQuantity = null;
+                    if (managerGoal != null) {
+                        medicineGoalQuantity = medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
+                                .orElse(null);
+                    }
                     if (medicineGoalQuantity != null) {
                         medicineWithQuantityDoctor.setContractMedicineManagerAmount(medicineGoalQuantity.getContractMedicineManagerAmount());
                     }
@@ -143,15 +145,15 @@ public class ContractService {
         }
         // Fetch the agent contract based on the agentId
         AgentGoal agentGoal = agentGoalRepository.findById(contractDTO.getAgentContractId())
-                .orElseThrow(() -> new AgentGoalExistsException("AgentGoal not found"));
-        ManagerGoal managerGoal = agentGoal.getManagerGoal();
+                .orElse(null);
+        ManagerGoal managerGoal = agentGoal != null ? agentGoal.getManagerGoal() : null;
         if (managerGoal == null) {
-            throw new DoctorContractException("AgentGoal does not have an associated ManagerGoal.");
+//            throw new DoctorContractException("AgentGoal does not have an associated ManagerGoal.");
         }
         // Fetch the doctor based on doctorId
         User doctor = userRepository.findById(contractDTO.getDoctorId())
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
-        if (agentGoal.getDistrictGoalQuantity() != null && agentGoal.getDistrictGoalQuantity().getDistrict() != null && doctor.getDistrict().getId() == agentGoal.getDistrictGoalQuantity().getDistrict().getId()) {
+        if (agentGoal != null && agentGoal.getDistrictGoalQuantity() != null && agentGoal.getDistrictGoalQuantity().getDistrict() != null && doctor.getDistrict().getId() == agentGoal.getDistrictGoalQuantity().getDistrict().getId()) {
             ContractDistrictAmount contractDistrictAmount = agentGoal.getDistrictGoalQuantity().getContractDistrictAmount();
             contractDistrictAmount.setAmount(contractDistrictAmount.getAmount() + 1);
             contractDistrictAmountRepository.save(contractDistrictAmount);
@@ -159,7 +161,7 @@ public class ContractService {
 
         // Fetch fields from ManagerGoal
 
-        List<FieldGoalQuantity> fieldGoalQuantities = managerGoal.getFieldGoalQuantities();
+        List<FieldGoalQuantity> fieldGoalQuantities = managerGoal != null ? managerGoal.getFieldGoalQuantities() : null;
         if (fieldGoalQuantities == null || fieldGoalQuantities.isEmpty()) {
 
 //            throw new DoctorContractException("No fields found in ManagerGoal.");
@@ -174,7 +176,7 @@ public class ContractService {
                 }
             }
 
-            List<FieldWithQuantity> fieldWithQuantities = agentGoal.getFieldWithQuantities();
+            List<FieldWithQuantity> fieldWithQuantities = agentGoal != null ? agentGoal.getFieldWithQuantities() : null;
 
 
             if (fieldWithQuantities != null) {
@@ -217,7 +219,6 @@ public class ContractService {
                 fieldWithQuantities.add(newFieldWithQuantity);
 
 
-
             }
             agentGoal.setFieldWithQuantities(fieldWithQuantities);
 
@@ -231,8 +232,8 @@ public class ContractService {
         contract.setStartDate(contractDTO.getStartDate());
         contract.setEndDate(contractDTO.getEndDate());
         contract.setCreatedAt(LocalDate.now());
-        contract.setMedAgent(agentGoal.getMedAgent());
-        contract.setManager(managerGoal.getManagerId());
+        contract.setMedAgent(userRepository.findById(contractDTO.getAgentId()).orElse(null));
+        contract.setManager(managerGoal!=null?managerGoal.getManagerId():null);
         contract.setContractType(contractDTO.getContractType());
         contractRepository.save(contract);
         List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
@@ -251,14 +252,14 @@ public class ContractService {
                     contractMedicineDoctorAmountRepository.save(contractMedicineDoctorAmount);
                     medicineWithQuantityDoctor.setContractMedicineDoctorAmount(contractMedicineDoctorAmount);
 
-                    MedicineManagerGoalQuantity medicineManagerGoalQuantity = medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
-                            .orElse(null);
+                    MedicineManagerGoalQuantity medicineManagerGoalQuantity = managerGoal!=null? medicineManagerGoalQuantityRepository.findContractMedicineAmountByMedicineIdAndGoalId(medicine.getId(), managerGoal.getGoalId())
+                            .orElse(null):null;
                     if (medicineManagerGoalQuantity != null) {
                         medicineWithQuantityDoctor.setContractMedicineManagerAmount(medicineManagerGoalQuantity.getContractMedicineManagerAmount());
                     }
 
-                    MedicineAgentGoalQuantity medicineAgentGoalQuantity = medicineAgentGoalQuantityRepository
-                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentGoal.getId()).orElse(null);
+                    MedicineAgentGoalQuantity medicineAgentGoalQuantity =agentGoal!=null? medicineAgentGoalQuantityRepository
+                            .findContractMedicineAmountByMedicineIdAndContractId(dto.getMedicineId(), agentGoal.getId()).orElse(null):null;
                     if (medicineAgentGoalQuantity != null) {
                         medicineWithQuantityDoctor.setContractMedicineMedAgentAmount(medicineAgentGoalQuantity.getContractMedicineMedAgentAmount());
                     }
@@ -293,7 +294,7 @@ public class ContractService {
         // Update or add medicines with quantities
         contract.setMedicineWithQuantityDoctors(contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
                 .map(dto -> {
-                    if (dto==null) return null;
+                    if (dto == null) return null;
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
 
@@ -523,7 +524,7 @@ public class ContractService {
 
         // Mapping contracted medicines (MedicineWithQuantityDTO)
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(), med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(), med.getMedicine().getId(), med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal().getId(), med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
@@ -548,8 +549,8 @@ public class ContractService {
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getMedAgent().getUserId() : null);
 
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(), med.getMedicine().getId(),
+                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal() != null ? med.getDoctorContract().getAgentGoal().getId() : null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
@@ -557,6 +558,7 @@ public class ContractService {
 
         return contractDTO;
     }
+
     public ContractAmountDTO getActiveContractByDoctorId(UUID doctorId) {
         Optional<Contract> contractOptional = contractRepository.findActiveContractByDoctorId(doctorId);
         if (contractOptional.isEmpty()) {
@@ -575,8 +577,8 @@ public class ContractService {
         contractDTO.setAgentId(contract.getAgentGoal() != null ? contract.getAgentGoal().getMedAgent().getUserId() : null);
         System.out.println("--------------------------------11111111111111111111111111111111");
         List<MedicineWithQuantityDoctorDTO> contractedMedicineWithQuantity = contract.getMedicineWithQuantityDoctors().stream()
-                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(),med.getMedicine().getId(),
-                        med.getQuote(), med.getCorrection(),med.getDoctorContract().getAgentGoal()!=null?med.getDoctorContract().getAgentGoal().getId():null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
+                .map(med -> new MedicineWithQuantityDoctorDTO(med.getId(), med.getMedicine().getId(),
+                        med.getQuote(), med.getCorrection(), med.getDoctorContract().getAgentGoal() != null ? med.getDoctorContract().getAgentGoal().getId() : null, med.getContractMedicineDoctorAmount(), med.getMedicine())) // mapping to DTO
                 .collect(Collectors.toList());
 
         contractDTO.setMedicineWithQuantityDoctorDTOS(contractedMedicineWithQuantity);
@@ -632,7 +634,7 @@ public class ContractService {
         Page<Contract> contractPage = contractRepository.findContracts(regionId, districtId, workPlaceId,
                 firstName, lastName, middleName,
                 fieldName, startDate, endDate,
-                 pageable);
+                pageable);
 
         // Convert each Contract entity to DTO and maintain pagination
         return contractPage.map(this::convertToDTO);
