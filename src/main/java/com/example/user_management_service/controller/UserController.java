@@ -129,7 +129,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,startDate,endDate, page, size);
+        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery, page, size);
         return ResponseEntity.ok(doctors);
     }
 
