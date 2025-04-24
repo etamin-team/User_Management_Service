@@ -29,6 +29,7 @@ public class DashboardService {
     private final DistrictRepository districtRepository;
     private final RecipeRepository recipeRepository;
     private final ContractRepository contractRepository;
+    private final UserService userService;
     private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
     private UserRepository userRepository;
@@ -64,13 +65,14 @@ public class DashboardService {
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillRegion();
         recordRegionDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
         List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion();
+        Long inFact = userService.getDoctorsWithApprovedContractsCount(null,regionId,districtId,workplaceId,null);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
         for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField( row.getField());
             workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
-            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(inFact);
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
@@ -103,13 +105,14 @@ public class DashboardService {
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrictAndWorkplace(workplaceId));
         recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByDistrictAndWorkplace(workplaceId));
         List<RegionFieldDTO> results = userRepository.countUsersByFieldAndWorkplace(workplaceId);
+        Long inFact = userService.getDoctorsWithApprovedContractsCount(null,null,null,workplaceId,null);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
         for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
             workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
-            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(inFact);
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         RecordWorkPlaceDTO recordWorkPlaceDTO= new RecordWorkPlaceDTO();
@@ -123,13 +126,14 @@ public class DashboardService {
         recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotesByDistrict(districtId));
         recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmountByDistrictId(districtId));
         List<RegionFieldDTO>  results = userRepository.countUsersByFieldAndDistrict(districtId);
+        Long inFact = userService.getDoctorsWithApprovedContractsCount(null,null,districtId,null,null);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
         for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
             workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
-            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(inFact);
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         RecordDistrictDTO recordDistrictDTO= new RecordDistrictDTO();
@@ -149,13 +153,14 @@ public class DashboardService {
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillDistrict(regionId);
         recordDistrictDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
         List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion(regionId);
+        Long inFact = userService.getDoctorsWithApprovedContractsCount(null,regionId,null,null,null);
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS=new ArrayList<>();
         for (RegionFieldDTO row : results) {
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
             workPlaceStatsDTO.setDoctorsByDB(row.getAmount());
-            workPlaceStatsDTO.setDoctorsInFact(row.getAmount());
+            workPlaceStatsDTO.setDoctorsInFact(inFact);
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
         recordDistrictDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);

@@ -55,8 +55,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
         )
-        AND (:startDateTime IS NULL OR u.createdDate >= :startDateTime)
-        AND (:endDateTime IS NULL OR u.createdDate <= :endDateTime)
         AND u.status = 'ENABLED'
         """)
     Page<User> findUsersByFiltersPaginated(
@@ -68,8 +66,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
-            @Param("startDateTime") LocalDateTime startDateTime,
-            @Param("endDateTime") LocalDateTime endDateTime,
             Pageable pageable
     );
 
