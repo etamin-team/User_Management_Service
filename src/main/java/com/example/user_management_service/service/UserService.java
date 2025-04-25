@@ -2,10 +2,7 @@ package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.exception.NotFoundException;
-import com.example.user_management_service.model.FieldForceRegions;
-import com.example.user_management_service.model.Region;
-import com.example.user_management_service.model.User;
-import com.example.user_management_service.model.WorkPlace;
+import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import com.example.user_management_service.role.Role;
@@ -287,7 +284,7 @@ public class UserService {
         System.out.println("---------------------------------------------------------------------------------------------1111111111111");
         doctorsInfoDTO.setAllDoctors(getAllDoctorsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
         System.out.println("--------------------------------------------------------------------------22222222222222222222222222");
-        doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
+        doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery,null));
         System.out.println("----------------------33333333333333333333333333333333333333333333333333333");
         doctorsInfoDTO.setNewDoctors(getNewDoctorsCountThisMonth(creatorId, regionId, districtId, workplaceId, nameQuery));
         System.out.println("----------------------565454343434343");
@@ -307,7 +304,7 @@ public class UserService {
                 regionId, districtId, workplaceId,
                 name1, name2, name3);
     }
-    public Long getDoctorsWithApprovedContractsCount(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+    public Long getDoctorsWithApprovedContractsCount(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field fieldName) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
@@ -317,7 +314,7 @@ public class UserService {
         return contractRepository.countDoctorsWithApprovedContracts(
                 creatorId != null ? String.valueOf(creatorId) : null,
                 regionId, districtId, workplaceId,
-                name1, name2, name3
+                name1, name2, name3,fieldName
         );
     }
 

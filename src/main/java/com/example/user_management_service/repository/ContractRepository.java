@@ -253,6 +253,7 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                        OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                        OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
                 )
+                AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
                 AND c.doctor.status = 'ENABLED'
             """)
     Long countDoctorsWithApprovedContracts(
@@ -262,7 +263,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             @Param("workplaceId") Long workplaceId,
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
-            @Param("middleName") String middleName
+            @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName
     );
 
 
