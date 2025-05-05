@@ -58,7 +58,7 @@ public class ContractService {
                 .orElseThrow(() -> new DoctorContractException("Doctor not found"));
         List<DistrictGoalQuantity> districtGoalQuantities = managerGoal != null ? managerGoal.getDistrictGoalQuantities() : null;
         System.out.println("District: 222222222222222222222222222222222222222222222222222222222222222222222");
-        boolean isDistrictIdMatches = districtGoalQuantities
+        boolean isDistrictIdMatches =districtGoalQuantities!=null && districtGoalQuantities
                 .stream()
                 .map(dq -> dq.getDistrict().getId())
                 .anyMatch(id -> id.equals(doctor.getDistrict().getId()));
