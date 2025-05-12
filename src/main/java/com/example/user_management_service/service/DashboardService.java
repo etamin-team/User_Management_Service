@@ -33,6 +33,7 @@ public class DashboardService {
     private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
     private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
     private UserRepository userRepository;
+    private SalesRepository salesRepository;
 
     public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, UUID userId, Long medicineId, LocalDate startDate, LocalDate endDate) {
 //        if (medicineId != null) {
@@ -56,8 +57,8 @@ public class DashboardService {
         }
 
 
-        recordDTO.setQuote(medicineWithQuantityDoctorRepository.getTotalQuotes());
-        recordDTO.setSales(contractMedicineDoctorAmountRepository.getTotalContractMedicineDoctorAmount());
+        recordDTO.setQuote(salesRepository.getTotalQuotes(regionId,startDate, endDate));
+        recordDTO.setSales(salesRepository.getTotalAmounts(regionId,startDate, endDate));
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
         RecordRegionDTO recordRegionDTO = new RecordRegionDTO();
         recordRegionDTO.setEmployeeStatsList(userCountByRegion);

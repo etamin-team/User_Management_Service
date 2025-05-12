@@ -42,8 +42,6 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
             @Param("workplaceId") Long workplaceId
     );
 
-    @Query("SELECT COALESCE(SUM(m.quote), 0) FROM MedicineWithQuantityDoctor m")
-    Long getTotalQuotes();
 
     @Query(value = "SELECT COALESCE(SUM(m.quote), 0) " +
             "FROM medicine_with_quantity_doctor m " +

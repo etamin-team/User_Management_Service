@@ -27,5 +27,28 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
             @Param("endDate") LocalDate endDate
     );
 
+    @Query("""
+            SELECT COALESCE(SUM(s.quote), 0) FROM Sales s 
+             WHERE (:regionId IS NULL OR s.region.id = :regionId)
+              AND  (:startDate IS NULL OR CAST(s.startDate AS date) >= CAST(:startDate AS date))
+              AND (:endDate IS NULL OR CAST(s.endDate AS date) <= CAST(:endDate AS date))
+            """)
+    Long getTotalQuotes(
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Query("""
+            SELECT COALESCE(SUM(s.total), 0) FROM Sales s 
+             WHERE (:regionId IS NULL OR s.region.id = :regionId)
+              AND  (:startDate IS NULL OR CAST(s.startDate AS date) >= CAST(:startDate AS date))
+              AND (:endDate IS NULL OR CAST(s.endDate AS date) <= CAST(:endDate AS date))
+            """)
+    Long getTotalAmounts(
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
 }
