@@ -34,7 +34,7 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
     @Query("""
     SELECT u FROM Medicine u 
     WHERE u.status = 'ACTIVE'
-    ORDER BY u.createdDate DESC
+    ORDER BY u.name ASC 
 """)
     List<Medicine> findAllSortByCreatedDate();
 
