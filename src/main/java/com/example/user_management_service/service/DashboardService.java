@@ -57,8 +57,8 @@ public class DashboardService {
         }
 
 
-        recordDTO.setQuote(salesRepository.getTotalQuotes(regionId,startDate, endDate));
-        recordDTO.setSales(salesRepository.getTotalAmounts(regionId,startDate, endDate));
+        recordDTO.setQuote(salesRepository.getTotalQuotes(regionId ));
+        recordDTO.setSales(salesRepository.getTotalAmounts(regionId));
         List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
         RecordRegionDTO recordRegionDTO = new RecordRegionDTO();
         recordRegionDTO.setEmployeeStatsList(userCountByRegion);
