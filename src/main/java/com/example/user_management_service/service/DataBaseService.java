@@ -205,9 +205,7 @@ public class DataBaseService {
     }
 
     public void saveMNNList(List<MNN> mnns) {
-        for (MNN mnn : mnns) {
-            saveMNN(mnn);
-        }
+        mnnRepository.saveAll(mnns);
     }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
