@@ -344,7 +344,16 @@ public class DataBaseController {
 
     @GetMapping("/mnn/list")
     public ResponseEntity<List<MNN>> listMNN() {
-        List<MNN> mnn1 = dataBaseService.getAllMnn();
-        return ResponseEntity.ok(mnn1);
+        List<MNN> mnn = dataBaseService.getAllMnn();
+        return ResponseEntity.ok(mnn);
+    }
+
+    @GetMapping("/mnn/list-page")
+    public ResponseEntity<Page<MNN>> listMNN(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<MNN> mnnPage = dataBaseService.getAllMnnPaginated(page, size);
+        return ResponseEntity.ok(mnnPage);
     }
 }

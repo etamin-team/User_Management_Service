@@ -11,7 +11,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -210,12 +212,16 @@ public class DataBaseService {
         System.out.println("Done Saving -------------------------------------");
     }
 
+
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
         for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
             createWorkPlace(workPlaceDTO);
         }
     }
-
+    public Page<MNN> getAllMnnPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return mnnRepository.findAll(pageable);
+    }
     public Page<Medicine> findAllMedicinesPageable(Pageable pageable) {
         return medicineRepository.findAllSortByCreatedDatePageable(pageable);
 
