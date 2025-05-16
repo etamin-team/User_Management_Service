@@ -205,7 +205,9 @@ public class DataBaseService {
     }
 
     public void saveMNNList(List<MNN> mnns) {
+        System.out.println("in process------------------------------");
         mnnRepository.saveAll(mnns);
+        System.out.println("Done Saving -------------------------------------");
     }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
