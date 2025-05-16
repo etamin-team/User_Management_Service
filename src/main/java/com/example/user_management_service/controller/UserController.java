@@ -94,6 +94,12 @@ public class UserController {
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/number/{number}")
+    public ResponseEntity<UserDTO> getUserByNumber(@PathVariable("number") String number) {
+        UserDTO user = userService.getUserByNumber(number);
+        return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
+    }
+
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         boolean isPasswordChanged = userService.changePassword(changePasswordRequest);

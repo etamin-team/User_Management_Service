@@ -381,4 +381,8 @@ public class UserService {
         );
     }
 
+    public UserDTO getUserByNumber(String number) {
+        return convertToDTO(userRepository.findByNumber(number).orElseThrow(() -> new DataNotFoundException("User not found by number " + number)));
+
+    }
 }
