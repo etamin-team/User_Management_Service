@@ -24,4 +24,25 @@ public class MNN {
 
     @Column(length = 4000)
     private String name;
+
+    @Column(length = 4000,name = "latin_name")
+    private String latinName;
+
+    @Column(length = 4000)
+    private String combination;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private PreparationType type;
+
+    private String dosage;
+
+
+    @Column(length = 4000)
+    private String wm_ru;
+
+    @Column(length = 4000,name = "pharmacotherapeutic_group")
+    private String pharmacotherapeuticGroup ;
+
+
 }

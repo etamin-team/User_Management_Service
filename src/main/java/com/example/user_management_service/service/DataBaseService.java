@@ -192,9 +192,7 @@ public class DataBaseService {
     }
 
     public MNN saveMNN(MNN mnn) {
-        MNN mnn1 = new MNN();
-        mnn1.setName(mnn.getName().trim());
-        return mnnRepository.save(mnn1);
+        return mnnRepository.save(mnn);
 
     }
 
