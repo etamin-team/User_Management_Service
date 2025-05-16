@@ -22,7 +22,7 @@ public class MNN {
     @Column(name = "id")
     private Long id;
 
-    @Column(length = 4000)
+    @Column(length = 4000, nullable = false)
     private String name;
 
     @Column(length = 4000,name = "latin_name")
