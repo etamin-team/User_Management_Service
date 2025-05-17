@@ -23,6 +23,7 @@ pipeline {
                             cd /root/User_Management_Service
                             git pull
                             sleep 5
+                            echo "hereeeeeee---------------------------"
                             mvn clean install
                             PORT=$(yq e '.server.port' src/main/resources/application.yaml)
                             PID=$(lsof -t -i:$PORT -sTCP:LISTEN)
