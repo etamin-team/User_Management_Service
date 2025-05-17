@@ -19,10 +19,10 @@ pipeline {
                 script {
                     sshagent(credentials: ['server-ssh-key']) {
                         bat '''
-                        scp target/User_Management_Service-0.0.1-SNAPSHOT.jar root@209.38.109.22:/root/User_Management_Service/
                         ssh root@209.38.109.22 << EOF
                             cd /root/User_Management_Service
                             git pull
+                            sleep 5
                             mvn clean install
                             PORT=$(yq e '.server.port' src/main/resources/application.yaml)
                             PID=$(lsof -t -i:$PORT -sTCP:LISTEN)
