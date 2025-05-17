@@ -15,7 +15,7 @@ pipeline {
                             cd /root/User_Management_Service
                             git pull
                             mvn clean install
-                            # Verify application.yaml
+                            # Debug: Verify application.yaml
                             cat src/main/resources/application.yaml
                             # Ensure PostgreSQL is running
                             sudo systemctl restart postgresql
@@ -26,9 +26,10 @@ pipeline {
                             if [ -n "$PID" ]; then
                                 kill $PID
                             fi
-                            # Start the app with verbose logging
+                            # Start the app
                             nohup java -jar target/User_Management_Service-0.0.1-SNAPSHOT.jar > prod.log 2>&1 &
                             sleep 5
+                            # Debug: Check logs
                             cat prod.log
                             exit
                         EOF
