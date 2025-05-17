@@ -111,7 +111,10 @@ public class ReportService {
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
-            SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(()->new ReportException("Sales report not found"));
+            SalesReport report = salesReportRepository.findById(dto.getId()).orElse(null);
+        if (report == null) {
+            report = new SalesReport();
+        }
             report.setReportDate(salesReportListDTO.getDate());
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
