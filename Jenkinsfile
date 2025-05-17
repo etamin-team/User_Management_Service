@@ -9,9 +9,9 @@ pipeline {
         stage('Deploy to Server') {
             steps {
                 script {
-                    sshagent(credentials: ['server-ssh-key']) {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'server-ssh-key', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
                         bat '''
-                        ssh root@209.38.109.22 << EOF
+                        ssh -i %SSH_KEY% %SSH_USER%@209.38.109.22 << EOF
                             cd /root/User_Management_Service
                             git pull
                             # Debug: Verify application.yaml
