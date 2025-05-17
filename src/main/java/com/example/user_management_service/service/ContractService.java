@@ -296,9 +296,16 @@ public class ContractService {
                 .orElseThrow(() -> new DoctorContractException("Contract not found"));
 
         // Update contract details
-        contract.setStartDate(contractDTO.getStartDate());
-        contract.setEndDate(contractDTO.getEndDate());
-        contract.setContractType(contractDTO.getContractType());
+        if (contractDTO.getStartDate()!=null){
+            contract.setStartDate(contractDTO.getStartDate());
+        }
+        if (contractDTO.getEndDate()!=null){
+            contract.setEndDate(contractDTO.getEndDate());
+        }
+        if (contractDTO.getContractType()!=null){
+            contract.setContractType(contractDTO.getContractType());
+        }
+
 
 //        Set<Long> medicineIds = contract.getMedicineWithQuantityDoctors()
 //                .stream()
@@ -324,7 +331,7 @@ public class ContractService {
 
                             return existingMedicineWithQuantityDoctor;
                         } else {
-                            throw new DoctorContractException("Contract Medicine Quote does not match Contract Medicine Quote");
+                            throw new DoctorContractException("Contract Medicine Quote is not match with required amount");
                         }
 
                     } else {
@@ -334,6 +341,7 @@ public class ContractService {
                         newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
                         newMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
                         newMedicineWithQuantityDoctor.setDoctorContract(contract);
+                        medicineWithQuantityDoctorRepository.save(newMedicineWithQuantityDoctor);
                         return newMedicineWithQuantityDoctor;
                     }
                 })
