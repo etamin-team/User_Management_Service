@@ -1,6 +1,7 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.exception.UnauthorizedAccessException;
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.FieldForceRegions;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.*;
@@ -117,9 +118,10 @@ public class UserController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) Field field,
             @RequestParam(required = false) String nameQuery
     ) {
-        List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery);
+        List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery,field);
         return ResponseEntity.ok(doctors);
     }
 
@@ -130,12 +132,13 @@ public class UserController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery,
+            @RequestParam(required = false) Field field,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery, page, size);
+        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,field, page, size);
         return ResponseEntity.ok(doctors);
     }
 

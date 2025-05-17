@@ -1,5 +1,6 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.ContractTypeSalesData;
 import com.example.user_management_service.model.dto.DashboardDoctorsCoverage;
@@ -50,6 +51,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         AND (:regionId IS NULL OR u.district.region.id = :regionId)
         AND (:districtId IS NULL OR u.district.id = :districtId)
         AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+        AND (:fieldName IS NULL OR u.fieldName = :fieldName)
         AND (
                (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
@@ -66,6 +68,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName,
             Pageable pageable
     );
 
@@ -117,6 +120,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                 AND (:regionId IS NULL OR u.district.region.id = :regionId)
                 AND (:districtId IS NULL OR u.district.id = :districtId)
                 AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (:field IS NULL OR u.fieldName= :field)              
                 AND (
                        (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
                        OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
@@ -134,7 +138,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("workplaceId") Long workplaceId,
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
-            @Param("middleName") String middleName
+            @Param("middleName") String middleName,
+            @Param("field") Field field
     );
 
     @Query("""

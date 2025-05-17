@@ -108,7 +108,7 @@ public class UserService {
 
     }
 
-    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
@@ -116,12 +116,12 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,field)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
     }
-    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery,  int page, int size) {
+    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
 
@@ -140,6 +140,7 @@ public class UserService {
                 name1,
                 name2,
                 name3,
+                field,
                 pageable
         ).map(this::convertToDTO);
 
@@ -154,7 +155,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -168,7 +169,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -183,7 +184,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.ADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -197,7 +198,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3)
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
