@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven'
+        maven 'Maven'  // Ensure 'Maven' is configured in Global Tool Configuration
     }
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/etamin-team/User_Management_Service.git', branch: 'master'
+                git url: 'https://github.com/etamin-team/User_Management_Service.git', branch: 'main'
             }
         }
         stage('Build') {
@@ -16,25 +16,23 @@ pipeline {
         }
         stage('Deploy to Server') {
             steps {
-                sshagent(credentials: ['server-ssh-key']) {
+                script {
                     def deployScript = '''
-                    cd /root/User_Management_Service
-                    git pull
-                    mvn clean install
-                    PORT=$(yq e '.server.port' src/main/resources/application.yaml)
-                    PID=$(lsof -t -i:$PORT -sTCP:LISTEN)
-                    if [ -n "$PID" ]; then
-                        kill $PID
-                    fi
-                    nohup java -jar target/User_Management_Service-0.0.1-SNAPSHOT.jar > prod.log 2>&1 &
-                    exit
+                        cd /root/User_Management_Service
+                        git pull
+                        mvn clean install
+                        pkill -f 'java -jar.*User_Management_Service' || true
+                        nohup java -jar target/User_Management_Service-0.0.1-SNAPSHOT.jar > prod.log 2>&1 &
+                        exit
                     '''
-                    bat """
-                    scp target/User_Management_Service-0.0.1-SNAPSHOT.jar root@209.38.109.22:/root/User_Management_Service/
-                    ssh root@209.38.109.22 << EOF
-                    ${deployScript}
-                    EOF
-                    """
+                    sshagent(credentials: ['server-ssh-key']) {
+                        bat """
+                        scp target/User_Management_Service-0.0.1-SNAPSHOT.jar root@209.38.109.22:/root/User_Management_Service/
+                        ssh root@209.38.109.22 << EOF
+                        ${deployScript}
+                        EOF
+                        """
+                    }
                 }
             }
         }
