@@ -328,12 +328,12 @@ public class DataBaseController {
 //    }
 
 
-    @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadDoctors(@RequestParam("file") MultipartFile file) throws IOException {
-        List<MNN> mnn  = dataBaseService.parseFileDoctors(file);
-        dataBaseService.saveMNNList(mnn);
+    @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> uploadDoctors(@RequestBody List<MNN> mnnList) {
+        dataBaseService.saveMNNList(mnnList);
         return ResponseEntity.ok().build();
     }
+
 
 
 
