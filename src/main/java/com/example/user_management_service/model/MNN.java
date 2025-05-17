@@ -31,9 +31,8 @@ public class MNN {
     @Column(length = 4000)
     private String combination;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private PreparationType type;
+    private String type;
 
     private String dosage;
 
