@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.BulkSaveException;
 import com.example.user_management_service.exception.DataBaseException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
@@ -207,11 +208,23 @@ public class DataBaseService {
     }
 
     public void saveMNNList(List<MNN> mnns) {
-        System.out.println("in process------------------------------");
-        mnnRepository.saveAll(mnns);
-        System.out.println("Done Saving -------------------------------------");
-    }
+        List<BulkSaveException.ErrorDetail> errors = new ArrayList<>();
 
+        System.out.println("in process------------------------------");
+        for (MNN mnn : mnns) {
+            try {
+               saveMNN(mnn);
+
+            } catch (Exception e) {
+                errors.add(new BulkSaveException.ErrorDetail(mnn, e.getMessage()));
+            }
+        }
+        System.out.println("Done Saving -------------------------------------");
+
+        if (!errors.isEmpty()) {
+            throw new BulkSaveException(errors);
+        }
+    }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
         for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {

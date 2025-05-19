@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -21,7 +22,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
     }
 
-
+    @ExceptionHandler(BulkSaveException.class)
+    public ResponseEntity<Map<String, Object>> handleBulkSaveException(BulkSaveException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "Bulk save failed");
+        response.put("details", ex.getErrors());
+        return ResponseEntity.status(HttpStatus.MULTI_STATUS).body(response);
+    }
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<Object> handleInvalidToken(InvalidTokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", ex.getMessage()));

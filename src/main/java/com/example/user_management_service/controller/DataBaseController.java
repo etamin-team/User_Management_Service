@@ -329,7 +329,7 @@ public class DataBaseController {
 
 
     @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> uploadDoctors(@RequestBody List<MNN> mnnList) {
+    public ResponseEntity<Void> uploadMNN(@RequestBody List<MNN> mnnList) {
         dataBaseService.saveMNNList(mnnList);
         return ResponseEntity.ok().build();
     }
