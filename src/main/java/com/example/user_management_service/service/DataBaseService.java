@@ -239,8 +239,38 @@ public class DataBaseService {
         return medicineRepository.findAllSortByCreatedDatePageable(pageable);
 
     }
+    public List<Long> deleteMNNs(List<Long> mnnIds) {
+        List<Long> deletedIds = new ArrayList<>();
+        List<BulkSaveException.ErrorDetail> errors = new ArrayList<>();
 
+        System.out.println("Deleting MNNs in process------------------------------");
+        for (Long id : mnnIds) {
+            try {
+                Optional<MNN> mnn = mnnRepository.findById(id);
+                if (mnn.isPresent()) {
+                    mnnRepository.deleteById(id);
+                    deletedIds.add(id);
+                } else {
+                    errors.add(new BulkSaveException.ErrorDetail(null, "MNN with ID " + id + " not found"));
+                }
+            } catch (Exception e) {
+                errors.add(new BulkSaveException.ErrorDetail(null, e.getMessage()));
+            }
+        }
+        System.out.println("Done Deleting -------------------------------------");
 
+        if (!errors.isEmpty()) {
+            throw new BulkSaveException(errors);
+        }
+        return deletedIds;
+    }
+    public void deleteAllMNNs() {
+        try {
+            mnnRepository.deleteAll();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete all MNNs", e);
+        }
+    }
     public List<MNN> parseFileDoctors(MultipartFile file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());

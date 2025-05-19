@@ -356,4 +356,16 @@ public class DataBaseController {
         Page<MNN> mnnPage = dataBaseService.getAllMnnPaginated(page, size);
         return ResponseEntity.ok(mnnPage);
     }
+
+    @DeleteMapping(value = "/mnn/delete-bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Long>> deleteMNNs(@RequestBody List<Long> mnnIds) {
+        List<Long> deletedIds = dataBaseService.deleteMNNs(mnnIds);
+        return ResponseEntity.ok(deletedIds);
+    }
+
+    @DeleteMapping("/mnn/delete-all")
+    public ResponseEntity<Void> deleteAllMNNs() {
+        dataBaseService.deleteAllMNNs();
+        return ResponseEntity.ok().build();
+    }
 }
