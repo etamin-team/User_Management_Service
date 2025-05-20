@@ -62,16 +62,20 @@ public class RecipeService {
         recipe.setDateCreation(LocalDate.now());
         User doctor = userRepository.findById(recipeDto.getDoctorId()).orElseThrow(() -> new DoctorContractException("Doctor not found"));
         recipe.setDoctorId(doctor);
-        System.out.println("---------------------------------------");
+        System.out.println("111111111---------------------------------------");
         ContractType contractType = contractRepository.findActiveContractByDoctorId(doctor.getUserId()).orElse(new Contract()).getContractType();
         recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
         recipeRepository.save(recipe);
+        System.out.println("22222222222222222222222222222222---------------------------------------");
+
         if (preparations!=null && preparations.size()>0) {
             List<Long> medicineIds = preparations.stream()
                     .map(Preparation::getMedicine)
                     .filter(Objects::nonNull)  // Ensure no null medicines
                     .map(Medicine::getId)
                     .collect(Collectors.toList());
+            System.out.println("333333333333333---------------------------------------");
+
 
             contractService.saveContractMedicineAmount(recipe.getDoctorId().getUserId(), medicineIds);
         }
@@ -89,7 +93,7 @@ public class RecipeService {
 
 
         Medicine medicine = medicineRepository.findById(preparationDto.getMedicineId())
-                .orElseThrow(() -> new IllegalArgumentException("Medicine with ID " + preparationDto.getMedicineId() + " not found"));
+                .orElseThrow(() -> new DoctorContractException("Medicine with ID " + preparationDto.getMedicineId() + " not found"));
         preparation.setMedicine(medicine);
 
         return preparation;

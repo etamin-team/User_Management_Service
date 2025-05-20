@@ -424,8 +424,11 @@ public class ContractService {
         // Fetch active contract for the doctor
         Contract contract = contractRepository.findActiveContractByDoctorId(doctorId).orElse(null);
         List<OutOfContractMedicineAmount> outOfContractMedicines = outOfContractMedicineAmountRepository.findAllForDoctorThisMonth(doctorId).orElse(null);
+        System.out.println("44444444444444444444444444444444444444444444444444---------------------------------------");
 
         if (contract == null) {
+            System.out.println("5555555555555555555555555555555555555555555555555555---------------------------------------");
+
             for (Long medicineId : medicineIds) {
                 Optional<OutOfContractMedicineAmount> existingMedicine = outOfContractMedicines.stream()
                         .filter(m -> m.getMedicine().getId().equals(medicineId))
@@ -449,6 +452,7 @@ public class ContractService {
                 }
             }
         } else {
+            System.out.println("666666666666666666666666666666666666666666666666666666666666---------------------------------------");
 
             List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = contract.getMedicineWithQuantityDoctors();
 
@@ -461,6 +465,7 @@ public class ContractService {
                     .collect(Collectors.toMap(m -> m.getMedicine().getId(), m -> m));
 
             // Fetch existing out-of-contract medicines
+            System.out.println("77777777777777777777777777777777777777777777777777777777777777---------------------------------------");
 
             for (Long medicineId : medicineIds) {
                 MedicineWithQuantityDoctor medicineEntry = medicineMap.get(medicineId);
@@ -469,6 +474,7 @@ public class ContractService {
                     // Medicine exists in contract, update amounts
                     ContractMedicineDoctorAmount doctorAmount = medicineEntry.getContractMedicineDoctorAmount();
 
+                    System.out.println("888888888888888888888888888888888888888888888888888888888888888888888888---------------------------------------");
 
                     doctorAmount.setAmount(doctorAmount.getAmount() + 1);
                     if (medicineEntry.getContractMedicineManagerAmount() != null) {
@@ -482,6 +488,7 @@ public class ContractService {
                         contractMedicineMedAgentAmountRepository.save(medAgentAmount);
                     }
 
+                    System.out.println("9999999999999999999999999999999999999999999999999999999999999---------------------------------------");
 
                     contractMedicineDoctorAmountRepository.save(doctorAmount);
                 } else {
@@ -489,6 +496,7 @@ public class ContractService {
                     Optional<OutOfContractMedicineAmount> existingMedicine = outOfContractMedicines.stream()
                             .filter(m -> m.getMedicine().getId().equals(medicineId))
                             .findFirst();
+                    System.out.println("1-11-1-1-1-1-1--1-1-1-1-1-1-1-000000000000000000000000000000000---------------------------------------");
 
                     if (existingMedicine.isPresent()) {
                         // If medicine exists, increment the amount
@@ -508,6 +516,9 @@ public class ContractService {
 
                         outOfContractMedicineAmountRepository.save(newOutOfContractMedicine);
                     }
+
+                    System.out.println("12           12                   12            12---------------------------------------");
+
                 }
             }
         }
