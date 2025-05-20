@@ -459,6 +459,7 @@ public class ContractService {
             if (medicineWithQuantityDoctors == null || medicineWithQuantityDoctors.isEmpty()) {
                 throw new DoctorContractException("No medicines found for the contract of doctor ID: " + doctorId);
             }
+            System.out.println("00000000000000000000000000000000000000000000000000000000000000000000000000000000000---------------------------------------");
 
             // Convert existing medicines to a map for quick lookup
             Map<Long, MedicineWithQuantityDoctor> medicineMap = medicineWithQuantityDoctors.stream()
