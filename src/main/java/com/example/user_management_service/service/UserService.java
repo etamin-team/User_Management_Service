@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,7 +88,35 @@ public class UserService {
                 user.getDistrict() == null ? null : user.getDistrict().getId(),
                 user.getRole(),
                 districtRegionService.regionDistrictDTO(user.getDistrict()),
-                convertToDTO(user.getWorkplace())
+                convertToDTO(user.getWorkplace()),
+                false
+        );
+    }
+
+    public UserDTO convertToDTOWithContract(User user) {
+        boolean isContractPresent = contractRepository.findActiveOrPendingContractByDoctorId(user.getUserId()).isEmpty();
+        if (user == null) return null;
+        return new UserDTO(
+                user.getUserId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getMiddleName(),
+                user.getDateOfBirth(),
+                user.getCreatedDate(),
+                user.getPhoneNumber(),
+                user.getNumber(),
+                user.getEmail(),
+                user.getPosition(),
+                user.getFieldName(),
+                user.getGender(),
+                user.getStatus(),
+                user.getCreatorId(),
+                user.getWorkplace() == null ? null : user.getWorkplace().getId(),
+                user.getDistrict() == null ? null : user.getDistrict().getId(),
+                user.getRole(),
+                districtRegionService.regionDistrictDTO(user.getDistrict()),
+                convertToDTO(user.getWorkplace()),
+                !isContractPresent
         );
     }
 
@@ -108,19 +137,25 @@ public class UserService {
 
     }
 
-    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field) {
+    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, boolean withContracts) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
         // Get name components (first, second, third name parts)
         String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+        List<User> users = userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
 
-        return userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,field)
-                .stream()
+        if (withContracts) {
+            return users.stream()
+                    .map(this::convertToDTOWithContract)
+                    .toList();
+        }
+        return users.stream()
                 .map(this::convertToDTO)
                 .toList();
     }
+
     public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
@@ -155,7 +190,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
+        return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -169,7 +204,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
+        return userRepository.findUsersByFilters(Role.SUPERADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -184,7 +219,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.ADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
+        return userRepository.findUsersByFilters(Role.ADMIN, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -198,7 +233,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3,null)
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -278,14 +313,12 @@ public class UserService {
     }
 
 
-
-
     public DoctorsInfoDTO getDoctorsInfo(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
-        DoctorsInfoDTO doctorsInfoDTO=new DoctorsInfoDTO();
+        DoctorsInfoDTO doctorsInfoDTO = new DoctorsInfoDTO();
         System.out.println("---------------------------------------------------------------------------------------------1111111111111");
         doctorsInfoDTO.setAllDoctors(getAllDoctorsCount(creatorId, regionId, districtId, workplaceId, nameQuery));
         System.out.println("--------------------------------------------------------------------------22222222222222222222222222");
-        doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery,null));
+        doctorsInfoDTO.setDoctorsInFact(getDoctorsWithApprovedContractsCount(creatorId, regionId, districtId, workplaceId, nameQuery, null));
         System.out.println("----------------------33333333333333333333333333333333333333333333333333333");
         doctorsInfoDTO.setNewDoctors(getNewDoctorsCountThisMonth(creatorId, regionId, districtId, workplaceId, nameQuery));
         System.out.println("----------------------565454343434343");
@@ -305,6 +338,7 @@ public class UserService {
                 regionId, districtId, workplaceId,
                 name1, name2, name3);
     }
+
     public Long getDoctorsWithApprovedContractsCount(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field fieldName) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
@@ -315,7 +349,7 @@ public class UserService {
         return contractRepository.countDoctorsWithApprovedContracts(
                 creatorId != null ? String.valueOf(creatorId) : null,
                 regionId, districtId, workplaceId,
-                name1, name2, name3,fieldName
+                name1, name2, name3, fieldName
         );
     }
 
@@ -324,7 +358,7 @@ public class UserService {
 
         return userRepository.countUsersCreatedThisMonth(
                 Role.DOCTOR,
-                creatorId!=null?creatorId.toString():null,
+                creatorId != null ? creatorId.toString() : null,
                 regionId,
                 districtId,
                 workplaceId,
@@ -345,7 +379,7 @@ public class UserService {
     }
 
     public FieldForceRegionsInfoDTO getFieldForceRegionsByUserId(UUID userId) {
-        FieldForceRegions fieldForceRegions = fieldForceRegionsRepository.findByUserId(userId).orElseThrow(()->new NotFoundException("FieldForceRegions not found"));
+        FieldForceRegions fieldForceRegions = fieldForceRegionsRepository.findByUserId(userId).orElseThrow(() -> new NotFoundException("FieldForceRegions not found"));
         if (fieldForceRegions == null) {
             return null; // Return null if no data is found
         }
@@ -356,6 +390,7 @@ public class UserService {
                 fieldForceRegions.getRegionIds()
         );
     }
+
     public List<FieldForceRegionsInfoDTO> getFieldForceRegions() {
         List<FieldForceRegions> fieldForceRegionsList = fieldForceRegionsRepository.findAll();
 
@@ -378,7 +413,8 @@ public class UserService {
         mapper.registerModule(new JavaTimeModule());
         return mapper.readValue(
                 file.getInputStream(),
-                new TypeReference<List<RegisterRequest>>() {}
+                new TypeReference<List<RegisterRequest>>() {
+                }
         );
     }
 

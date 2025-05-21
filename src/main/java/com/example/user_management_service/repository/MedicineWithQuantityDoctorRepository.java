@@ -89,8 +89,10 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
     Long getTotalQuotesByDistrict(
             @Param("districtId") Long districtId);
 
-    @Query("SELECT s FROM MedicineWithQuantityDoctor s WHERE :medicineId IS NULL OR s.medicine.id = :medicineId")
-    Optional<MedicineWithQuantityDoctor> findByMedicineId(@Param("medicineId") Long medicineId);
+
+
+    @Query("SELECT s FROM MedicineWithQuantityDoctor s WHERE (:medicineId IS NULL OR s.medicine.id = :medicineId ) AND  (:contractId IS NULL  OR s.doctorContract.id = :contractId)  ")
+    Optional<MedicineWithQuantityDoctor> findByMedicineIdAndContractId(@Param("medicineId") Long medicineId, @Param("contractId") Long contractId);
 
     @Query("""
                 SELECT COALESCE(SUM(m.correction), 0) 

@@ -116,7 +116,8 @@ public class ContractService {
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
 
                     System.out.println("After Medicine 88888888888888888888888888888888");
-
+                    boolean isQuantityDoctorMedicineExists = medicineWithQuantityDoctorRepository.findByMedicineIdAndContractId(medicine.getId(), contract.getId()).isPresent();
+                    if (isQuantityDoctorMedicineExists) {return null;}
                     MedicineWithQuantityDoctor medicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                     medicineWithQuantityDoctor.setMedicine(medicine);
                     medicineWithQuantityDoctor.setQuote(dto.getQuote());
@@ -253,7 +254,8 @@ public class ContractService {
                 .map(dto -> {
                     Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                             .orElseThrow(() -> new DoctorContractException("Medicine not found"));
-
+                    boolean isQuantityDoctorMedicineExists = medicineWithQuantityDoctorRepository.findByMedicineIdAndContractId(medicine.getId(), contract.getId()).isPresent();
+                    if (isQuantityDoctorMedicineExists) {return null;}
                     MedicineWithQuantityDoctor medicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                     medicineWithQuantityDoctor.setMedicine(medicine);
                     medicineWithQuantityDoctor.setQuote(dto.getQuote());

@@ -41,4 +41,7 @@ public class UserDTO {
 
     private RegionDistrictDTO regionDistrictDTO;
     private WorkPlaceDTO workPlaceDTO;
+
+    private boolean isContractAvailable;
+
 }

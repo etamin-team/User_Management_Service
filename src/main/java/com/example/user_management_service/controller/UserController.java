@@ -119,9 +119,10 @@ public class UserController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) Field field,
-            @RequestParam(required = false) String nameQuery
+            @RequestParam(required = false) String nameQuery,
+            @RequestParam(required = false, defaultValue = "false") boolean withContracts
     ) {
-        List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery,field);
+        List<UserDTO> doctors = userService.getDoctors(creatorId, regionId, districtId, workplaceId, nameQuery,field,withContracts);
         return ResponseEntity.ok(doctors);
     }
 
