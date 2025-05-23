@@ -148,13 +148,13 @@ public class DoctorService {
         return template;
     }
 
-    public List<Medicine> findMedicinesByInn(List<String> inn,boolean exact) {
-        if (inn == null || inn.isEmpty() ) {
+    public List<Medicine> findMedicinesByMnnIds(List<Long> mnnIds, boolean exact) {
+        if (mnnIds == null || mnnIds.isEmpty()) {
             return medicineRepository.findAllSortByCreatedDate();
-        } else if (exact){
-            return medicineRepository.findByAllInn(inn,inn.size());
-        }else {
-            return medicineRepository.findByInn(inn);
+        } else if (exact) {
+            return medicineRepository.findByAllMnnIds(mnnIds, mnnIds.size());
+        } else {
+            return medicineRepository.findByMnnIds(mnnIds);
         }
     }
 }

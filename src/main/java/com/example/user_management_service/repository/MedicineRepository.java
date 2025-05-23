@@ -21,16 +21,15 @@ import java.util.List;
 @Repository
 public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
 
-    @Query("SELECT m FROM Medicine m JOIN m.inn i WHERE LOWER(i) IN :inns")
-    List<Medicine> findByInn(@Param("inns") List<String> inns);
+    @Query("SELECT m FROM Medicine m JOIN m.mnn i WHERE i.id IN :mnnIds ORDER BY m.name asc")
+    List<Medicine> findByMnnIds(@Param("mnnIds") List<Long> mnnIds);
 
-    @Query("SELECT m FROM Medicine m JOIN m.inn i " +
-            "WHERE LOWER(i) IN :inns " +
+    @Query("SELECT m FROM Medicine m JOIN m.mnn i " +
+            "WHERE i.id IN :mnnIds " +
             "GROUP BY m " +
-            "HAVING COUNT(DISTINCT i) = :size")
-    List<Medicine> findByAllInn(@Param("inns") List<String> inns, @Param("size") long size);
-
-
+            "HAVING COUNT(DISTINCT i.id) = :size "+
+            "ORDER BY m.name asc ")
+    List<Medicine> findByAllMnnIds(@Param("mnnIds") List<Long> mnnIds, @Param("size") long size);
     @Query("""
     SELECT u FROM Medicine u 
     WHERE u.status = 'ACTIVE'

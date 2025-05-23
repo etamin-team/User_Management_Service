@@ -128,7 +128,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             
                 )
                 AND u.status = 'ENABLED'
-                ORDER BY u.createdDate DESC
+                ORDER BY u.firstName ASC 
             """)
     List<User> findUsersByFilters(
             @Param("role") Role role,

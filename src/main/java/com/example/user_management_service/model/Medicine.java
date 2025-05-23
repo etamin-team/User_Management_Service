@@ -48,10 +48,13 @@ public class Medicine {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @ElementCollection
-    @CollectionTable(name = "medicine_inn", joinColumns = @JoinColumn(name = "medicine_id"))
-    @Column(name = "inn")
-    private List<String> inn;
+    @ManyToMany
+    @JoinTable(
+            name = "medicine_mnn",
+            joinColumns = @JoinColumn(name = "medicine_id"),
+            inverseJoinColumns = @JoinColumn(name = "mnn_id")
+    )
+    private List<MNN> mnn;
 
     private Long cip;
 

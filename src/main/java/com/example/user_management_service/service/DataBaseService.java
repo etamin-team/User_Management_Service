@@ -204,7 +204,7 @@ public class DataBaseService {
     }
 
     public List<MNN> getAllMnn() {
-        return mnnRepository.findAll();
+        return mnnRepository.findAllByOrderByNameAsc();
     }
 
     public void saveMNNList(List<MNN> mnns) {

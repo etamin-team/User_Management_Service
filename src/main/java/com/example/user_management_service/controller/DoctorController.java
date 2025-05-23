@@ -63,12 +63,13 @@ public class DoctorController {
         return doctorService.getTemplates(saved, sortBy, searchText, roleService.getCurrentUserId());
     }
 
-    @GetMapping("/find-medicines-by-inn")
-    public ResponseEntity<List<Medicine>> findMedicineByInn(@RequestParam(required = false) List<String> inn, @RequestParam boolean exact) {
-        List<Medicine> medicines = doctorService.findMedicinesByInn(inn,exact);
+    @GetMapping("/find-medicines-by-mnn")
+    public ResponseEntity<List<Medicine>> findMedicineByMnn(
+            @RequestParam(required = false) List<Long> mnnIds,
+            @RequestParam boolean exact) {
+        List<Medicine> medicines = doctorService.findMedicinesByMnnIds(mnnIds, exact);
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
-
 
     @PostMapping("/save-recipe")
     public ResponseEntity<Boolean> saveRecipe(@RequestBody RecipeDto recipe) {
