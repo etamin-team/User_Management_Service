@@ -271,7 +271,7 @@ public class DataBaseService {
             throw new RuntimeException("Failed to delete all MNNs", e);
         }
     }
-    public List<MNN> parseFileDoctors(MultipartFile file) throws IOException {
+    public List<MNN> parseFileMNN(MultipartFile file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         return mapper.readValue(
