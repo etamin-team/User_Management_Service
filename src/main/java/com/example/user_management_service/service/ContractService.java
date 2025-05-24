@@ -654,11 +654,14 @@ public class ContractService {
         return doctorRecipeStatsDTO;
     }
 
-    public List<ContractDTO> getContractsByMedAgent(UUID medAgentId) {
-        List<Contract> contracts = contractRepository.findAllByMedAgentId(medAgentId);
-        return contracts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    public List<ContractDTO> getContractsByMedAgent(UUID medAgentId, Long regionId, Long districtId, Long workPlaceId,
+                                                    String firstName, String lastName, String middleName, Field fieldName) {
+        List<Contract> contracts = contractRepository.findAllByMedAgentId(medAgentId, regionId, districtId, workPlaceId,
+                firstName, lastName, middleName, fieldName);
+        return contracts.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
-
 
     public Page<ContractDTO> getFilteredContracts(Long regionId, Long districtId, Long workPlaceId,
                                                   String firstName, String lastName, String middleName,

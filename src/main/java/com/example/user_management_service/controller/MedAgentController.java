@@ -1,5 +1,6 @@
 package com.example.user_management_service.controller;
 
+import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.dto.AgentContractDTO;
 import com.example.user_management_service.model.dto.ContractAmountDTO;
 import com.example.user_management_service.model.dto.ContractDTO;
@@ -84,8 +85,16 @@ public class MedAgentController {
     }
 
     @GetMapping("/{medAgentId}/contracts")
-    public ResponseEntity<List<ContractDTO>> getContractsByMedAgent(@PathVariable UUID medAgentId) {
-        List<ContractDTO> contracts = contractService.getContractsByMedAgent(medAgentId);
+    public ResponseEntity<List<ContractDTO>> getContractsByMedAgent(
+            @PathVariable UUID medAgentId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workPlaceId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String middleName,
+            @RequestParam(required = false) Field fieldName) {
+        List<ContractDTO> contracts = contractService.getContractsByMedAgent(medAgentId, regionId, districtId, workPlaceId, firstName, lastName, middleName, fieldName);
         return ResponseEntity.ok(contracts);
     }
 }
