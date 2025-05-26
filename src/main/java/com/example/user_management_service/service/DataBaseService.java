@@ -207,23 +207,33 @@ public class DataBaseService {
         return mnnRepository.findAllByOrderByNameAsc();
     }
 
-    public void saveMNNList(List<MNN> mnns) {
-        List<BulkSaveException.ErrorDetail> errors = new ArrayList<>();
+    public Map<Long, String> saveMNNList(List<MNN> mnns) {
+        Map<Long, String> errors = new HashMap<>();
 
         System.out.println("in process------------------------------");
         for (MNN mnn : mnns) {
             try {
-               saveMNN(mnn);
-
+                saveMNN(mnn);
             } catch (Exception e) {
-                errors.add(new BulkSaveException.ErrorDetail(mnn, e.getMessage()));
+                String column = identifyErrorColumn(e, mnn);
+                errors.put(mnn.getId(), String.format("Error in %s: %s", column, e.getMessage()));
             }
         }
         System.out.println("Done Saving -------------------------------------");
 
-        if (!errors.isEmpty()) {
-            throw new BulkSaveException(errors);
-        }
+        return errors;
+    }
+
+    private String identifyErrorColumn(Exception e, MNN mnn) {
+        String message = e.getMessage().toLowerCase();
+        if (mnn.getName() == null && message.contains("not-null")) return "name";
+        if (message.contains("latin_name")) return "latinName";
+        if (message.contains("combination")) return "combination";
+        if (message.contains("type")) return "type";
+        if (message.contains("dosage")) return "dosage";
+        if (message.contains("wm_ru")) return "wm_ru";
+        if (message.contains("pharmacotherapeutic_group")) return "pharmacotherapeuticGroup";
+        return "unknown";
     }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
