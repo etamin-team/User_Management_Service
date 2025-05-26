@@ -31,9 +31,11 @@ public class MNN {
     @Column(length = 4000)
     private String combination;
 
-    @Column(name = "type")
+
+    @Column(name = "type",length = 4000)
     private String type;
 
+    @Column(length = 4000)
     private String dosage;
 
 
