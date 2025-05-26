@@ -327,7 +327,7 @@ public class ContractService {
 
                     if (existingMedicineWithQuantityDoctor != null) {
                         // Update existing medicine quantity
-                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= dto.getContractMedicineDoctorAmount().getAmount()) {
+                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= existingMedicineWithQuantityDoctor.getContractMedicineDoctorAmount().getAmount()) {
                             existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
                             existingMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
 
