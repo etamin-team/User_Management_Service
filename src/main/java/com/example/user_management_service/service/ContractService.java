@@ -395,13 +395,13 @@ public class ContractService {
                                     medicineWithQuantityDoctor.getMedicine() != null ? medicineWithQuantityDoctor.getMedicine().getId() : null,
                                     medicineWithQuantityDoctor.getQuote(),
                                     medicineWithQuantityDoctor.getCorrection(),
-                                    medicineWithQuantityDoctor.getDoctorContract().getAgentGoal() != null ? medicineWithQuantityDoctor.getDoctorContract().getAgentGoal().getId() : null,
+                                    medicineWithQuantityDoctor.getDoctorContract() != null && medicineWithQuantityDoctor.getDoctorContract().getAgentGoal() != null ? medicineWithQuantityDoctor.getDoctorContract().getAgentGoal().getId() : null,
                                     medicineWithQuantityDoctor.getContractMedicineDoctorAmount(),
                                     medicineWithQuantityDoctor.getMedicine()
                             ))
                             .collect(Collectors.toList())
                             : Collections.emptyList(),
-                    districtRegionService.regionDistrictDTO(contract.getDoctor().getDistrict()),
+                    districtRegionService.regionDistrictDTO(contract.getDoctor() !=null ?contract.getDoctor().getDistrict():null),
                     userService.convertToDTO(contract.getDoctor())
             );
         } catch (Exception e) {
