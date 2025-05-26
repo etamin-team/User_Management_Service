@@ -308,10 +308,16 @@ public class ContractService {
             contract.setContractType(contractDTO.getContractType());
         }
 
-        // Update medicines with quantities in-place
+        // Get existing medicines and their IDs
         List<MedicineWithQuantityDoctor> existingMedicines = contract.getMedicineWithQuantityDoctors();
-        existingMedicines.clear(); // Clear existing relationships (orphans will be removed due to orphanRemoval=true)
+        Set<Long> dtoMedicineIds = contractDTO.getMedicineWithQuantityDoctorDTOS() != null
+                ? contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
+                .filter(dto -> dto != null && dto.getMedicineId() != null)
+                .map(MedicineWithQuantityDoctorDTO::getMedicineId)
+                .collect(Collectors.toSet())
+                : Set.of();
 
+        // Update or add medicines
         if (contractDTO.getMedicineWithQuantityDoctorDTOS() != null) {
             for (MedicineWithQuantityDoctorDTO dto : contractDTO.getMedicineWithQuantityDoctorDTOS()) {
                 if (dto == null || dto.getMedicineId() == null) {
@@ -321,24 +327,33 @@ public class ContractService {
                 Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                         .orElseThrow(() -> new DoctorContractException("Medicine not found with ID: " + dto.getMedicineId()));
 
-                // Create new MedicineWithQuantityDoctor
-                MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
-                newMedicineWithQuantityDoctor.setMedicine(medicine);
-                newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
-                newMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
-                newMedicineWithQuantityDoctor.setDoctorContract(contract); // Set bidirectional relationship
+                // Find existing MedicineWithQuantityDoctor by medicineId
+                MedicineWithQuantityDoctor existingMedicine = existingMedicines.stream()
+                        .filter(m -> m.getMedicine() != null && m.getMedicine().getId().equals(dto.getMedicineId()))
+                        .findFirst()
+                        .orElse(null);
 
-                // Validate quote against contractMedicineDoctorAmount if available
-                if (dto.getQuote() != null && newMedicineWithQuantityDoctor.getContractMedicineDoctorAmount() != null) {
-                    if (dto.getQuote() < newMedicineWithQuantityDoctor.getContractMedicineDoctorAmount().getAmount()) {
-                        throw new DoctorContractException("Contract Medicine Quote is less than required amount");
+                if (existingMedicine != null) {
+                    // Update existing entry
+                    if (dto.getQuote() != null && existingMedicine.getContractMedicineDoctorAmount() != null) {
+                        if (dto.getQuote() >= existingMedicine.getContractMedicineDoctorAmount().getAmount()) {
+                            existingMedicine.setQuote(dto.getQuote());
+                            existingMedicine.setCorrection(dto.getQuote());
+                        } else {
+                            throw new DoctorContractException("Quote for medicine ID " + dto.getMedicineId() + " is less than required amount");
+                        }
                     }
+                } else {
+                    // Add new entry
+                    MedicineWithQuantityDoctor newMedicine = new MedicineWithQuantityDoctor();
+                    newMedicine.setMedicine(medicine);
+                    newMedicine.setQuote(dto.getQuote());
+                    newMedicine.setCorrection(dto.getQuote());
+                    newMedicine.setDoctorContract(contract); // Set bidirectional relationship
+                    existingMedicines.add(newMedicine);
                 }
-
-                existingMedicines.add(newMedicineWithQuantityDoctor); // Add to existing collection
             }
         }
-
         // Save the contract (cascades to MedicineWithQuantityDoctor due to cascade=ALL)
         Contract save = contractRepository.save(contract);
         return convertToDTO(save);
