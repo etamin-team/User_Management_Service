@@ -353,7 +353,7 @@ public class ContractService {
 
         Contract savedContract = contractRepository.save(contract);
 
-
+        System.out.println("heereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         return convertToDTO(savedContract);
     }
 
@@ -407,7 +407,6 @@ public class ContractService {
         } catch (Exception e) {
             throw new DoctorContractException("Converting problem server error");
         }
-
     }
 
 
