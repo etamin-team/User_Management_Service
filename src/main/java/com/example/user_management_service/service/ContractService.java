@@ -291,69 +291,57 @@ public class ContractService {
         return convertToDTO(savedContract);
     }
 
-    // Update an existing Contract
-    public void updateContract(Long contractId, ContractDTO contractDTO) {
-        System.out.println("11111111111111111111111111111111111111111111111");
+    @Transactional
+    public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
         // Fetch the existing Contract entity
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new DoctorContractException("Contract not found"));
 
         // Update contract details
-        if (contractDTO.getStartDate()!=null){
+        if (contractDTO.getStartDate() != null) {
             contract.setStartDate(contractDTO.getStartDate());
         }
-        if (contractDTO.getEndDate()!=null){
+        if (contractDTO.getEndDate() != null) {
             contract.setEndDate(contractDTO.getEndDate());
         }
-        if (contractDTO.getContractType()!=null){
+        if (contractDTO.getContractType() != null) {
             contract.setContractType(contractDTO.getContractType());
         }
-        System.out.println("222222222222222222222222222222222222222222222222");
 
-//        Set<Long> medicineIds = contract.getMedicineWithQuantityDoctors()
-//                .stream()
-//                .map(mq -> mq.getMedicine().getId())
-//                .collect(Collectors.toSet());
-        // Update or add medicines with quantities
-        contract.setMedicineWithQuantityDoctors(contractDTO.getMedicineWithQuantityDoctorDTOS().stream()
-                .map(dto -> {
-                    if (dto == null) return null;
-                    Medicine medicine = medicineRepository.findById(dto.getMedicineId())
-                            .orElseThrow(() -> new DoctorContractException("Medicine not found"));
+        // Update medicines with quantities in-place
+        List<MedicineWithQuantityDoctor> existingMedicines = contract.getMedicineWithQuantityDoctors();
+        existingMedicines.clear(); // Clear existing relationships (orphans will be removed due to orphanRemoval=true)
 
-                    MedicineWithQuantityDoctor existingMedicineWithQuantityDoctor = contract.getMedicineWithQuantityDoctors().stream()
-                            .filter(m -> m.getMedicine().getId().equals(dto.getMedicineId()))
-                            .findFirst()
-                            .orElse(null);
-                    System.out.println("333333333333333333333333333333333333333333333333333333333");
-                    if (existingMedicineWithQuantityDoctor != null) {
-                        // Update existing medicine quantity
-                        if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= existingMedicineWithQuantityDoctor.getContractMedicineDoctorAmount().getAmount()) {
-                            existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
-                            existingMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
-                            System.out.println("4444444444444444444444444444444444444444444444444444444444444444444444444");
-                            return existingMedicineWithQuantityDoctor;
-                        } else {
-                            throw new DoctorContractException("Contract Medicine Quote is not match with required amount");
-                        }
-                    } else {
-                        // Add new medicine with quantity
-                        System.out.println("5555555555555555555555555555555555555555555555555555555555555555555");
-                        MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
-                        newMedicineWithQuantityDoctor.setMedicine(medicine);
-                        newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
-                        newMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
-                        newMedicineWithQuantityDoctor.setDoctorContract(contract);
-                        medicineWithQuantityDoctorRepository.save(newMedicineWithQuantityDoctor);
-                        return newMedicineWithQuantityDoctor;
+        if (contractDTO.getMedicineWithQuantityDoctorDTOS() != null) {
+            for (MedicineWithQuantityDoctorDTO dto : contractDTO.getMedicineWithQuantityDoctorDTOS()) {
+                if (dto == null || dto.getMedicineId() == null) {
+                    continue; // Skip null DTOs
+                }
+
+                Medicine medicine = medicineRepository.findById(dto.getMedicineId())
+                        .orElseThrow(() -> new DoctorContractException("Medicine not found with ID: " + dto.getMedicineId()));
+
+                // Create new MedicineWithQuantityDoctor
+                MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
+                newMedicineWithQuantityDoctor.setMedicine(medicine);
+                newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
+                newMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
+                newMedicineWithQuantityDoctor.setDoctorContract(contract); // Set bidirectional relationship
+
+                // Validate quote against contractMedicineDoctorAmount if available
+                if (dto.getQuote() != null && newMedicineWithQuantityDoctor.getContractMedicineDoctorAmount() != null) {
+                    if (dto.getQuote() < newMedicineWithQuantityDoctor.getContractMedicineDoctorAmount().getAmount()) {
+                        throw new DoctorContractException("Contract Medicine Quote is less than required amount");
                     }
-                })
-                .collect(Collectors.toList()));
-        System.out.println("66666666666666666666666666666666666666666666666666666666666666666666666666666");
+                }
 
-       contractRepository.save(contract);
+                existingMedicines.add(newMedicineWithQuantityDoctor); // Add to existing collection
+            }
+        }
 
-        System.out.println("heereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+        // Save the contract (cascades to MedicineWithQuantityDoctor due to cascade=ALL)
+        Contract save = contractRepository.save(contract);
+        return convertToDTO(save);
     }
 
     // Delete a Contract
