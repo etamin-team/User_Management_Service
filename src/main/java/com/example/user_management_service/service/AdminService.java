@@ -753,9 +753,9 @@ public class AdminService {
         }
     }
 
-    public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
+    public void updateContract(Long contractId, ContractDTO contractDTO) {
 
-        return contractService.updateContract(contractId, contractDTO);
+         contractService.updateContract(contractId, contractDTO);
     }
 
     public void deleteContract(Long contractId) {

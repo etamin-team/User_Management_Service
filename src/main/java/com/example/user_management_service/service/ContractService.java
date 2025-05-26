@@ -292,7 +292,7 @@ public class ContractService {
     }
 
     // Update an existing Contract
-    public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
+    public void updateContract(Long contractId, ContractDTO contractDTO) {
         System.out.println("11111111111111111111111111111111111111111111111");
         // Fetch the existing Contract entity
         Contract contract = contractRepository.findById(contractId)
@@ -354,7 +354,6 @@ public class ContractService {
        contractRepository.save(contract);
 
         System.out.println("heereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        return null;
     }
 
     // Delete a Contract

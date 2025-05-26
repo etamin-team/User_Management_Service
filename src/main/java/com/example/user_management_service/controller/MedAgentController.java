@@ -40,9 +40,9 @@ public class MedAgentController {
 
     // Update an existing Contract
     @PutMapping("/doctor/update-contract/{contractId}")
-    public ResponseEntity<ContractDTO> updateContract(@PathVariable Long contractId, @RequestBody ContractDTO contractDTO) {
-        ContractDTO updatedContract = adminService.updateContract(contractId, contractDTO);
-        return ResponseEntity.ok(updatedContract);
+    public ResponseEntity<Void> updateContract(@PathVariable Long contractId, @RequestBody ContractDTO contractDTO) {
+        adminService.updateContract(contractId, contractDTO);
+        return ResponseEntity.ok().build();
     }
 
 
