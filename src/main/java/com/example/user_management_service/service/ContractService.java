@@ -351,10 +351,10 @@ public class ContractService {
                 .collect(Collectors.toList()));
         System.out.println("66666666666666666666666666666666666666666666666666666666666666666666666666666");
 
-        Contract savedContract = contractRepository.save(contract);
+       contractRepository.save(contract);
 
         System.out.println("heereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-        return convertToDTO(savedContract);
+        return null;
     }
 
     // Delete a Contract
