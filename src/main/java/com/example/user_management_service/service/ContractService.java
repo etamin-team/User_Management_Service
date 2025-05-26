@@ -293,6 +293,7 @@ public class ContractService {
 
     // Update an existing Contract
     public ContractDTO updateContract(Long contractId, ContractDTO contractDTO) {
+        System.out.println("11111111111111111111111111111111111111111111111");
         // Fetch the existing Contract entity
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new DoctorContractException("Contract not found"));
@@ -307,7 +308,7 @@ public class ContractService {
         if (contractDTO.getContractType()!=null){
             contract.setContractType(contractDTO.getContractType());
         }
-
+        System.out.println("222222222222222222222222222222222222222222222222");
 
 //        Set<Long> medicineIds = contract.getMedicineWithQuantityDoctors()
 //                .stream()
@@ -324,20 +325,20 @@ public class ContractService {
                             .filter(m -> m.getMedicine().getId().equals(dto.getMedicineId()))
                             .findFirst()
                             .orElse(null);
-
+                    System.out.println("333333333333333333333333333333333333333333333333333333333");
                     if (existingMedicineWithQuantityDoctor != null) {
                         // Update existing medicine quantity
                         if (dto.getQuote() >= existingMedicineWithQuantityDoctor.getQuote() || dto.getQuote() >= existingMedicineWithQuantityDoctor.getContractMedicineDoctorAmount().getAmount()) {
                             existingMedicineWithQuantityDoctor.setQuote(dto.getQuote());
                             existingMedicineWithQuantityDoctor.setCorrection(dto.getQuote());
-
+                            System.out.println("4444444444444444444444444444444444444444444444444444444444444444444444444");
                             return existingMedicineWithQuantityDoctor;
                         } else {
                             throw new DoctorContractException("Contract Medicine Quote is not match with required amount");
                         }
-
                     } else {
                         // Add new medicine with quantity
+                        System.out.println("5555555555555555555555555555555555555555555555555555555555555555555");
                         MedicineWithQuantityDoctor newMedicineWithQuantityDoctor = new MedicineWithQuantityDoctor();
                         newMedicineWithQuantityDoctor.setMedicine(medicine);
                         newMedicineWithQuantityDoctor.setQuote(dto.getQuote());
@@ -348,7 +349,7 @@ public class ContractService {
                     }
                 })
                 .collect(Collectors.toList()));
-
+        System.out.println("66666666666666666666666666666666666666666666666666666666666666666666666666666");
 
         Contract savedContract = contractRepository.save(contract);
 
