@@ -65,6 +65,7 @@ public class DataBaseService {
             saveOrUpdateMedicine(m);
         }
     }
+
     public Medicine convertToMedicineEntity(MedicineDTO dto) {
         Medicine medicine = new Medicine();
         medicine.setId(dto.getId());
@@ -229,21 +230,21 @@ public class DataBaseService {
     }
 
     public MNN saveMNN(MNN mnn) {
-        if (mnn != null && mnn.getId() != null && mnn.getId() != 0  ) {
-            MNN mnn1 = mnnRepository.findById(mnn.getId()).get();
-            if (mnn1 == null) {
-                mnnRepository.save(mnn);
+        if (mnn != null && mnn.getId() != null && mnn.getId() != 0) {
+            Optional<MNN> optional = mnnRepository.findById(mnn.getId());
+            if (optional == null || optional.isEmpty()) {
+                return mnnRepository.save(mnn);
             }
-            else {
-                mnn1.setName(mnn1.getName());
-                mnn1.setType(mnn1.getType());
-                mnn1.setDosage(mnn1.getDosage());
-                mnn1.setCombination(mnn1.getCombination());
-                mnn1.setLatinName(mnn1.getLatinName());
-                mnn1.setPharmacotherapeuticGroup(mnn1.getPharmacotherapeuticGroup());
-                mnn1.setWm_ru(mnn1.getWm_ru());
-                mnnRepository.save(mnn1);
-            }
+            MNN mnn1 = optional.get();
+            mnn1.setName(mnn.getName());
+            mnn1.setType(mnn.getType());
+            mnn1.setDosage(mnn.getDosage());
+            mnn1.setCombination(mnn.getCombination());
+            mnn1.setLatinName(mnn.getLatinName());
+            mnn1.setPharmacotherapeuticGroup(mnn.getPharmacotherapeuticGroup());
+            mnn1.setWm_ru(mnn.getWm_ru());
+            mnnRepository.save(mnn1);
+
 
         }
         return mnnRepository.save(mnn);
@@ -256,6 +257,7 @@ public class DataBaseService {
     public List<MNN> getAllMnn() {
         return mnnRepository.findAllByOrderByNameAsc();
     }
+
     public List<MNN> getAllByOrderedId() {
         return mnnRepository.findAllByOrderById();
     }
@@ -268,7 +270,7 @@ public class DataBaseService {
             try {
                 saveMNN(mnn);
             } catch (Exception e) {
-                errors.put(mnn.getId(),  mnn);
+                errors.put(mnn.getId(), mnn);
             }
         }
         System.out.println("Done Saving -------------------------------------");
@@ -282,18 +284,22 @@ public class DataBaseService {
             createWorkPlace(workPlaceDTO);
         }
     }
+
     public Page<MNN> getAllMnnPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
         return mnnRepository.findAll(pageable);
     }
+
     public Page<MNN> getAllMnnPaginatedByOrderedId(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return mnnRepository.findAll(pageable);
     }
+
     public Page<Medicine> findAllMedicinesPageable(Pageable pageable) {
         return medicineRepository.findAllSortByCreatedDatePageable(pageable);
 
     }
+
     public List<Long> deleteMNNs(List<Long> mnnIds) {
         List<Long> deletedIds = new ArrayList<>();
         List<BulkSaveException.ErrorDetail> errors = new ArrayList<>();
@@ -319,6 +325,7 @@ public class DataBaseService {
         }
         return deletedIds;
     }
+
     public List<Long> deleteAllMNNs() {
         List<MNN> mnnList = mnnRepository.findAll();
         List<Long> notDeletedIds = new ArrayList<>();
@@ -331,12 +338,14 @@ public class DataBaseService {
         }
         return notDeletedIds;
     }
+
     public List<MNN> parseFileMNN(MultipartFile file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         return mapper.readValue(
                 file.getInputStream(),
-                new TypeReference<List<MNN>>() {}
+                new TypeReference<List<MNN>>() {
+                }
         );
     }
 }
