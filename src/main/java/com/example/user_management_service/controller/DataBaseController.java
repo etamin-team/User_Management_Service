@@ -379,8 +379,8 @@ public class DataBaseController {
     }
 
     @DeleteMapping("/mnn/delete-all")
-    public ResponseEntity<Void> deleteAllMNNs() {
-        dataBaseService.deleteAllMNNs();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<Long>> deleteAllMNNs() {
+        List<Long> list= dataBaseService.deleteAllMNNs();
+        return ResponseEntity.ok(list);
     }
 }

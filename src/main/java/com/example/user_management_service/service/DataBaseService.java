@@ -303,12 +303,17 @@ public class DataBaseService {
         }
         return deletedIds;
     }
-    public void deleteAllMNNs() {
-        try {
-            mnnRepository.deleteAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to delete all MNNs", e);
+    public List<Long> deleteAllMNNs() {
+        List<MNN> mnnList = mnnRepository.findAll();
+        List<Long> notDeletedIds = new ArrayList<>();
+        for (MNN mnn : mnnList) {
+            try {
+                mnnRepository.delete(mnn);
+            } catch (Exception e) {
+                notDeletedIds.add(mnn.getId());
+            }
         }
+        return notDeletedIds;
     }
     public List<MNN> parseFileMNN(MultipartFile file) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
