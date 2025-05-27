@@ -241,7 +241,7 @@ public class DataBaseService {
         return mnnRepository.findAllByOrderByNameAsc();
     }
     public List<MNN> getAllByOrderedId() {
-        return mnnRepository.findAllByOrderByNameAsc();
+        return mnnRepository.findAllByOrderById();
     }
 
     public Map<Long, MNN> saveMNNList(List<MNN> mnns) {
@@ -268,6 +268,10 @@ public class DataBaseService {
     }
     public Page<MNN> getAllMnnPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return mnnRepository.findAll(pageable);
+    }
+    public Page<MNN> getAllMnnPaginatedByOrderedId(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
         return mnnRepository.findAll(pageable);
     }
     public Page<Medicine> findAllMedicinesPageable(Pageable pageable) {

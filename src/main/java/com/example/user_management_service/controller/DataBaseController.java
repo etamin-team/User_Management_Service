@@ -363,6 +363,14 @@ public class DataBaseController {
         Page<MNN> mnnPage = dataBaseService.getAllMnnPaginated(page, size);
         return ResponseEntity.ok(mnnPage);
     }
+    @GetMapping("/mnn/list-page-by-rdered-id")
+    public ResponseEntity<Page<MNN>> listMNNByOrderedId(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<MNN> mnnPage = dataBaseService.getAllMnnPaginatedByOrderedId(page, size);
+        return ResponseEntity.ok(mnnPage);
+    }
 
     @DeleteMapping(value = "/mnn/delete-bulk", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Long>> deleteMNNs(@RequestBody List<Long> mnnIds) {
