@@ -250,7 +250,7 @@ public class DataBaseService {
                 saveMNN(mnn);
             } catch (Exception e) {
                 String column = identifyErrorColumn(e, mnn);
-                errors.put(mnn.getId(), String.format("Error in %s: %s", column, e.getMessage()));
+                errors.put(mnn.getId(),  mnn);
             }
         }
         System.out.println("Done Saving -------------------------------------");
