@@ -229,8 +229,24 @@ public class DataBaseService {
     }
 
     public MNN saveMNN(MNN mnn) {
-        return mnnRepository.save(mnn);
+        if (mnn != null && mnn.getId() != null && mnn.getId() != 0  ) {
+            MNN mnn1 = mnnRepository.findById(mnn.getId()).get();
+            if (mnn1 == null) {
+                mnnRepository.save(mnn);
+            }
+            else {
+                mnn1.setName(mnn1.getName());
+                mnn1.setType(mnn1.getType());
+                mnn1.setDosage(mnn1.getDosage());
+                mnn1.setCombination(mnn1.getCombination());
+                mnn1.setLatinName(mnn1.getLatinName());
+                mnn1.setPharmacotherapeuticGroup(mnn1.getPharmacotherapeuticGroup());
+                mnn1.setWm_ru(mnn1.getWm_ru());
+                mnnRepository.save(mnn1);
+            }
 
+        }
+        return mnnRepository.save(mnn);
     }
 
     public void deleteMNN(Long mnn) {
