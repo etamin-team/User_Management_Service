@@ -33,4 +33,7 @@ public class District {
     @JoinColumn(name = "region_id", nullable = false)
     private Region region;
 
+    @Enumerated(EnumType.STRING)
+    private Status status=Status.ACTIVE;
+
 }

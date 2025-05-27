@@ -1,8 +1,10 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.DataBaseException;
 import com.example.user_management_service.exception.DataNotFoundException;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Region;
+import com.example.user_management_service.model.Status;
 import com.example.user_management_service.model.dto.DistrictDTO;
 import com.example.user_management_service.model.dto.RegionDTO;
 import com.example.user_management_service.model.dto.RegionDistrictDTO;
@@ -191,7 +193,16 @@ public class DistrictRegionService {
         if (!regionRepository.existsById(id)) {
             throw new DataNotFoundException("Region with ID " + id + " not found");
         }
-        regionRepository.deleteById(id);
+        try {
+            regionRepository.deleteById(id);
+        } catch (Exception e) {
+            Region region = regionRepository.findById(id).get();
+            region.setStatus(Status.DELETED);
+            for (District district : region.getDistricts()) {
+                deleteDistrict(district);
+            }
+            regionRepository.save(region);
+        }
     }
 
     @Transactional
@@ -214,6 +225,24 @@ public class DistrictRegionService {
         if (!districtRepository.existsById(id)) {
             throw new DataNotFoundException("District with ID " + id + " not found");
         }
-        districtRepository.deleteById(id);
+        try {
+            districtRepository.deleteById(id);
+        } catch (Exception e) {
+            District district = districtRepository.findById(id).get();
+            district.setStatus(Status.DELETED);
+            district.setRegion(null);
+            districtRepository.save(district);
+        }
+    }
+
+    @Transactional
+    public void deleteDistrict(District district) {
+        try {
+            districtRepository.delete(district);
+        } catch (Exception e) {
+            district.setStatus(Status.DELETED);
+            district.setRegion(null);
+            districtRepository.save(district);
+        }
     }
 }

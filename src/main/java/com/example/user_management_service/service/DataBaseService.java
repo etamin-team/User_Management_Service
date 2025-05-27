@@ -171,6 +171,7 @@ public class DataBaseService {
     public void deleteWorkPlace(Long id) {
         WorkPlace workPlace = workPlaceRepository.findById(id).orElseThrow(() -> new DataBaseException("WorkPlace doesn't exist with id: " + id));
         workPlace.setStatus(Status.DELETED);
+        workPlace.setDistrict(null);
         workPlaceRepository.save(workPlace);
     }
 

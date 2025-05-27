@@ -33,4 +33,7 @@ public class Region {
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL,fetch = FetchType.LAZY, orphanRemoval = true)
     private List<District> districts;
 
+    @Enumerated(EnumType.STRING)
+    private Status status=Status.ACTIVE;
+
 }

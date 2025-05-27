@@ -55,4 +55,6 @@ public class WorkPlace {
     @ManyToOne
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
+
+
 }
