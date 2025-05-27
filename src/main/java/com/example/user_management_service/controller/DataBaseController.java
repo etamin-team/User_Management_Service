@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -329,10 +330,10 @@ public class DataBaseController {
 
 
     @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> uploadMNN(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Map<Long, MNN>> uploadMNN(@RequestParam("file") MultipartFile file) throws IOException {
         List<MNN> mnnList=dataBaseService.parseFileMNN(file);
-        dataBaseService.saveMNNList(mnnList);
-        return ResponseEntity.ok().build();
+        Map<Long, MNN> err=dataBaseService.saveMNNList(mnnList);
+        return ResponseEntity.ok(err);
     }
 
 
