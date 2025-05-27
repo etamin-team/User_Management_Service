@@ -241,15 +241,14 @@ public class DataBaseService {
         return mnnRepository.findAllByOrderByNameAsc();
     }
 
-    public Map<Long, String> saveMNNList(List<MNN> mnns) {
-        Map<Long, String> errors = new HashMap<>();
+    public Map<Long, MNN> saveMNNList(List<MNN> mnns) {
+        Map<Long, MNN> errors = new HashMap<>();
 
         System.out.println("in process------------------------------");
         for (MNN mnn : mnns) {
             try {
                 saveMNN(mnn);
             } catch (Exception e) {
-                String column = identifyErrorColumn(e, mnn);
                 errors.put(mnn.getId(),  mnn);
             }
         }
@@ -258,17 +257,6 @@ public class DataBaseService {
         return errors;
     }
 
-    private String identifyErrorColumn(Exception e, MNN mnn) {
-        String message = e.getMessage().toLowerCase();
-        if (mnn.getName() == null && message.contains("not-null")) return "name";
-        if (message.contains("latin_name")) return "latinName";
-        if (message.contains("combination")) return "combination";
-        if (message.contains("type")) return "type";
-        if (message.contains("dosage")) return "dosage";
-        if (message.contains("wm_ru")) return "wm_ru";
-        if (message.contains("pharmacotherapeutic_group")) return "pharmacotherapeuticGroup";
-        return "unknown";
-    }
 
     public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
         for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
