@@ -59,12 +59,46 @@ public class DataBaseService {
         return medicineRepository.save(medicine);
     }
 
-    public void saveList(List<Medicine> medicines) {
-        for (Medicine medicine : medicines) {
-            saveOrUpdateMedicine(medicine);
+    public void saveList(List<MedicineDTO> medicines) {
+        for (MedicineDTO medicine : medicines) {
+            Medicine m = convertToMedicineEntity(medicine);
+            saveOrUpdateMedicine(m);
         }
     }
-
+    public Medicine convertToMedicineEntity(MedicineDTO dto) {
+        Medicine medicine = new Medicine();
+        medicine.setId(dto.getId());
+        medicine.setName(dto.getName());
+        medicine.setNameUzCyrillic(dto.getNameUzCyrillic());
+        medicine.setNameUzLatin(dto.getNameUzLatin());
+        medicine.setNameRussian(dto.getNameRussian());
+        medicine.setStatus(dto.getStatus());
+        medicine.setCreatedDate(dto.getCreatedDate());
+        medicine.setImageUrl(dto.getImageUrl());
+        medicine.setMnn(mnnRepository.findAllById(dto.getMnn()));
+        medicine.setCip(dto.getCip());
+        medicine.setQuantity(dto.getQuantity());
+        medicine.setNoMore(dto.getNoMore());
+        medicine.setPrescription(dto.getPrescription());
+        medicine.setVolume(dto.getVolume());
+        medicine.setType(dto.getType());
+        medicine.setRecipePercentage(dto.getRecipePercentage());
+        medicine.setRecipeLimit(dto.getRecipeLimit());
+        medicine.setRecipeBall(dto.getRecipeBall());
+        medicine.setSuPercentage(dto.getSuPercentage());
+        medicine.setSuLimit(dto.getSuLimit());
+        medicine.setSuBall(dto.getSuBall());
+        medicine.setSbPercentage(dto.getSbPercentage());
+        medicine.setSbLimit(dto.getSbLimit());
+        medicine.setSbBall(dto.getSbBall());
+        medicine.setGzPercentage(dto.getGzPercentage());
+        medicine.setGzLimit(dto.getGzLimit());
+        medicine.setGzBall(dto.getGzBall());
+        medicine.setKbPercentage(dto.getKbPercentage());
+        medicine.setKbLimit(dto.getKbLimit());
+        medicine.setKbBall(dto.getKbBall());
+        return medicine;
+    }
 
     // Delete a Medicine by ID
     public void deleteMedicine(Long id) {

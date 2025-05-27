@@ -45,13 +45,13 @@ public class DataBaseController {
 
     // medicine
     @PostMapping("/medicine")
-    public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody Medicine medicine) {
-        Medicine savedMedicine = dataBaseService.saveOrUpdateMedicine(medicine);
+    public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody MedicineDTO medicine) {
+        Medicine savedMedicine = dataBaseService.saveOrUpdateMedicine(dataBaseService.convertToMedicineEntity(medicine));
         return new ResponseEntity<>(savedMedicine, HttpStatus.CREATED);
     }
 
     @PostMapping("/medicine/add-bulk")
-    public ResponseEntity<Void> addListOfMedicines(@RequestBody List<Medicine> medicines) {
+    public ResponseEntity<Void> addListOfMedicines(@RequestBody List<MedicineDTO> medicines) {
         dataBaseService.saveList(medicines);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
