@@ -14,4 +14,6 @@ import java.util.List;
 @Repository
 public interface MNNRepository  extends JpaRepository<MNN, Long> {
     List<MNN> findAllByOrderByNameAsc();
+    List<MNN> findAllByOrderById();
+
 }

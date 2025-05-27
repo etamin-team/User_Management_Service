@@ -349,6 +349,11 @@ public class DataBaseController {
         List<MNN> mnn = dataBaseService.getAllMnn();
         return ResponseEntity.ok(mnn);
     }
+    @GetMapping("/mnn/list-ordered-id")
+    public ResponseEntity<List<MNN>> orderedId() {
+        List<MNN> mnn = dataBaseService.getAllByOrderedId();
+        return ResponseEntity.ok(mnn);
+    }
 
     @GetMapping("/mnn/list-page")
     public ResponseEntity<Page<MNN>> listMNN(

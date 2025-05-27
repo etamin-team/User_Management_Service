@@ -240,6 +240,9 @@ public class DataBaseService {
     public List<MNN> getAllMnn() {
         return mnnRepository.findAllByOrderByNameAsc();
     }
+    public List<MNN> getAllByOrderedId() {
+        return mnnRepository.findAllByOrderByNameAsc();
+    }
 
     public Map<Long, MNN> saveMNNList(List<MNN> mnns) {
         Map<Long, MNN> errors = new HashMap<>();
