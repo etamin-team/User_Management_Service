@@ -32,6 +32,12 @@ public interface WorkPlaceRepository extends JpaRepository<WorkPlace, Long> {
                                   @Param("medicalInstitutionType") MedicalInstitutionType medicalInstitutionType);
 
     @Query("""
+                SELECT w FROM WorkPlace w 
+                         where    w.status='ACTIVE'
+                            ORDER BY w.district.id  DESC 
+            """)
+    List<WorkPlace> findAllActive();
+    @Query("""
                 SELECT COUNT(w) FROM WorkPlace w 
                 WHERE w.district.region.id = :regionId
             """)

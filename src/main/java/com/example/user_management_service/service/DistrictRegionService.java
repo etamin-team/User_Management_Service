@@ -94,7 +94,7 @@ public class DistrictRegionService {
 
 
     public List<RegionDTO> getRegions() {
-        List<Region> regionList = regionRepository.findAll();
+        List<Region> regionList = regionRepository.findAllActive();
         return regionList.stream()
                 .map(this::mapRegionToDTO)
                 .collect(Collectors.toList());

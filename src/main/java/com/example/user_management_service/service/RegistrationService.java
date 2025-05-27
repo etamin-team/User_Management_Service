@@ -53,7 +53,7 @@ public class RegistrationService {
     private final UserService userService;
 
     public List<WorkPlaceDTO> getAllWorkPlaces() {
-        return convertToDTOs(workPlaceRepository.findAll());
+        return convertToDTOs(workPlaceRepository.findAllActive());
     }
 
     public List<WorkPlaceDTO> convertToDTOs(List<WorkPlace> workPlaces) {
