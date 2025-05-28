@@ -19,7 +19,7 @@ public class MedicineWithQuantityDoctor {
         @Column(name = "id")
         private Long id;
 
-        @ManyToOne
+        @ManyToOne(cascade = CascadeType.REMOVE)
         @JoinColumn(name = "medicine_id")
         private Medicine medicine;
 

@@ -34,7 +34,7 @@ public class Preparation {
     private PreparationType type;
 
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medicine_id", referencedColumnName = "id")
     private Medicine medicine;
 }
