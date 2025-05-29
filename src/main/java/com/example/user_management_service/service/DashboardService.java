@@ -35,7 +35,7 @@ public class DashboardService {
     private UserRepository userRepository;
     private SalesRepository salesRepository;
 
-    public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, Field field, UUID userId, Long medicineId, LocalDate startDate, LocalDate endDate) {
+    public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = new RecordDTO();
         if (workplaceId != null) {
             return filterByWorkplaceId(recordDTO, workplaceId, startDate, endDate);
@@ -45,15 +45,21 @@ public class DashboardService {
             return filterByRegionId(recordDTO, regionId, startDate, endDate);
         }
 
-        List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
+        return populateRecordDTO(recordDTO, regionId, districtId, workplaceId);
+    }
+
+    private RecordDTO populateRecordDTO(RecordDTO recordDTO, Long regionId, Long districtId, Long workplaceId) {
         RecordRegionDTO recordRegionDTO = new RecordRegionDTO();
+
+        List<StatsEmployeeDTO> userCountByRegion = userRepository.getUserCountByRegion();
         recordRegionDTO.setEmployeeStatsList(userCountByRegion);
 
         List<RecordStatsEmployeeFactDTO> recordStatsEmployeeFactDTOS = fillRegion();
         recordRegionDTO.setRecordStatsEmployeeFactList(recordStatsEmployeeFactDTOS);
-        List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion();
 
+        List<RegionFieldDTO> results = userRepository.countUsersByFieldAndRegion();
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS = new ArrayList<>();
+
         for (RegionFieldDTO row : results) {
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, regionId, districtId, workplaceId, null, row.getField());
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
@@ -62,6 +68,7 @@ public class DashboardService {
             workPlaceStatsDTO.setDoctorsInFact(inFact);
             workPlaceStatsDTOS.add(workPlaceStatsDTO);
         }
+
         recordRegionDTO.setRecordWorkPlaceStatsDTOList(workPlaceStatsDTOS);
         recordDTO.setRecordRegionDTO(recordRegionDTO);
 

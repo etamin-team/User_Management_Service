@@ -30,14 +30,9 @@ public class DashboardController {
     public ResponseEntity<RecordDTO> getMainRecords(
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
-            @RequestParam(required = false) Long workplaceId,
-            @RequestParam(required = false) Field field,
-            @RequestParam(required = false) UUID userId,
-            @RequestParam(required = false) Long medicineId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam(required = false) Long workplaceId) {
 
-        RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, field, userId, medicineId, startDate, endDate);
+        RecordDTO records = dashboardService.getFilteredRecords(regionId, districtId, workplaceId, null, null);
         return ResponseEntity.ok(records);
     }
     @GetMapping("/sales-quote")
