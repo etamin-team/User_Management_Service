@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -127,12 +128,15 @@ public class DataBaseService {
     }
 
     // Delete a Medicine by ID
+    @Transactional
     public void deleteMedicine(Long medicineId) {
         try {
             Optional<Medicine> medicineOpt = medicineRepository.findById(medicineId);
             if (medicineOpt.isEmpty()) {
                 throw new DataBaseException("Medicine with ID " + medicineId + " not found");
             }
+
+            Medicine medicine = medicineOpt.get();
 
             // Remove references from related entities
             // 1. MedicineAgentGoalQuantity
@@ -173,9 +177,8 @@ public class DataBaseService {
                 templateRepository.save(template);
             }
 
-            // 9. MNN (remove from join table)
-            Medicine medicine = medicineOpt.get();
-            medicine.getMnn().clear(); // Clear MNN references
+            // 9. MNN (remove from this Medicine's join table entries only)
+            medicine.getMnn().clear(); // Clear MNN references for this Medicine
             medicineRepository.save(medicine); // Update to remove join table entries
 
             // Delete the Medicine
@@ -308,6 +311,12 @@ public class DataBaseService {
         return workPlaceStatisticsInfoDTO;
     }
 
+    public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
+        for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
+            createWorkPlace(workPlaceDTO);
+        }
+    }
+
     public MNN saveMNN(MNN mnn) {
         if (mnn != null && mnn.getId() != null && mnn.getId() != 0) {
             Optional<MNN> optional = mnnRepository.findById(mnn.getId());
@@ -329,17 +338,6 @@ public class DataBaseService {
         return mnnRepository.save(mnn);
     }
 
-
-    public void deleteMNN(Long mnnId) {
-        // Find all Medicines referencing the MNN
-        List<Medicine> medicines = medicineRepository.findByMnnId(mnnId);
-        for (Medicine medicine : medicines) {
-            medicine.getMnn().removeIf(mnn -> mnn.getId().equals(mnnId));
-            medicineRepository.save(medicine);
-        }
-        // Delete the MNN
-        mnnRepository.deleteById(mnnId);
-    }
 
     public List<MNN> getAllMnn() {
         return mnnRepository.findAllByOrderByNameAsc();
@@ -366,11 +364,6 @@ public class DataBaseService {
     }
 
 
-    public void bulkWorkPlace(List<WorkPlaceDTO> workPlaceDTOList) {
-        for (WorkPlaceDTO workPlaceDTO : workPlaceDTOList) {
-            createWorkPlace(workPlaceDTO);
-        }
-    }
 
     public Page<MNN> getAllMnnPaginated(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
@@ -438,6 +431,27 @@ public class DataBaseService {
             }
         }
         return notDeletedIds;
+    }
+
+    public void deleteMNN(Long mnnId) {
+        try {
+            Optional<MNN> mnnOpt = mnnRepository.findById(mnnId);
+            if (mnnOpt.isEmpty()) {
+                throw new RuntimeException("MNN with ID " + mnnId + " not found");
+            }
+
+            // Remove MNN from all Medicines
+            List<Medicine> medicines = medicineRepository.findByMnnId(mnnId);
+            for (Medicine medicine : medicines) {
+                medicine.getMnn().removeIf(mnn -> mnn.getId().equals(mnnId));
+                medicineRepository.save(medicine);
+            }
+
+            // Delete the MNN
+            mnnRepository.deleteById(mnnId);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete MNN with ID " + mnnId + ": " + e.getMessage());
+        }
     }
 
     public List<MNN> parseFileMNN(MultipartFile file) throws IOException {
