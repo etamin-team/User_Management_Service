@@ -18,7 +18,8 @@ import java.util.UUID;
 
 @Repository
 public interface MedicineWithQuantityDoctorRepository extends JpaRepository<MedicineWithQuantityDoctor, Long> {
-
+    @Query("SELECT m FROM MedicineWithQuantityDoctor m WHERE m.doctorContract.id = :contractId")
+    List<MedicineWithQuantityDoctor> findByDoctorContractId(@Param("contractId") Long contractId);
 
     @Query("""
                 SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 

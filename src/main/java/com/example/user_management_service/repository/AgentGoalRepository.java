@@ -16,5 +16,6 @@ public interface AgentGoalRepository extends JpaRepository<AgentGoal, Long> {
     @Query("SELECT ac FROM AgentGoal ac WHERE ac.medAgent.userId = :medAgentId "+
             "AND ac.status = 'APPROVED' ")
     Optional<AgentGoal> getGoalsByMedAgentUserId(@Param("medAgentId") UUID medAgentId);
-
+    @Query("SELECT a FROM AgentGoal a WHERE a. = :contractId")
+    Optional<AgentGoal> findByContractId(@Param("contractId") Long contractId);
 }

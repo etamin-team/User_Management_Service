@@ -359,12 +359,33 @@ public class ContractService {
         return convertToDTO(save);
     }
 
-    // Delete a Contract
+    @Transactional
     public void deleteContract(Long contractId) {
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new DoctorContractException("Contract not found"));
+        try {
+            Optional<Contract> contractOpt = contractRepository.findById(contractId);
+            if (contractOpt.isEmpty()) {
+                throw new DoctorContractException("Contract with ID " + contractId + " not found");
+            }
 
-        contractRepository.delete(contract);
+            Contract contract = contractOpt.get();
+
+            // 1. Delete MedicineWithQuantityDoctor records (handled by cascade, but explicit for clarity)
+            List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = medicineWithQuantityDoctorRepository
+                    .findByDoctorContractId(contractId);
+            medicineWithQuantityDoctorRepository.deleteAll(medicineWithQuantityDoctors);
+
+            // 2. Clear AgentGoal reference in Contract
+            if (contract.getAgentGoal() != null) {
+                contract.setAgentGoal(null); // Remove reference to AgentGoal
+                contractRepository.save(contract); // Save to update the foreign key
+            }
+
+            // 3. Delete the Contract
+            contractRepository.deleteById(contractId);
+
+        } catch (Exception e) {
+            throw new DoctorContractException("Failed to delete Contract with ID " + contractId + ": " + e.getMessage());
+        }
     }
 
     public ContractDTO convertToDTO(Contract contract) {
