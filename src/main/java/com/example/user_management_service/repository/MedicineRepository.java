@@ -80,4 +80,5 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
     @Transactional
     @Query(value = "DELETE FROM medicine_mnn WHERE medicine_id = :medicineId", nativeQuery = true)
     void deleteMedicineMnnReferences(@Param("medicineId") Long medicineId);
+
 }

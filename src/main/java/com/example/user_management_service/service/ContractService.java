@@ -359,6 +359,7 @@ public class ContractService {
         return convertToDTO(save);
     }
 
+
     @Transactional
     public void deleteContract(Long contractId) {
         try {
@@ -368,22 +369,26 @@ public class ContractService {
             }
 
             Contract contract = contractOpt.get();
-            System.out.println("1111111111111111111111111111111111111111111111111111111111111111111");
-            // 1. Delete MedicineWithQuantityDoctor records (handled by cascade, but explicit for clarity)
+
+            // 1. Delete MedicineWithQuantityDoctor records referencing this Contract
             List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = medicineWithQuantityDoctorRepository
                     .findByDoctorContractId(contractId);
-            System.out.println("22222222222222222");
+            for (MedicineWithQuantityDoctor mwd : medicineWithQuantityDoctors) {
+                // Clear Medicine references to avoid cascading
+                mwd.setMedicine(null);
+                medicineWithQuantityDoctorRepository.save(mwd);
+            }
             medicineWithQuantityDoctorRepository.deleteAll(medicineWithQuantityDoctors);
-            System.out.println("333333333333333333333333333");
+
             // 2. Clear AgentGoal reference in Contract
             if (contract.getAgentGoal() != null) {
                 contract.setAgentGoal(null); // Remove reference to AgentGoal
                 contractRepository.save(contract); // Save to update the foreign key
             }
-            System.out.println("444444444444444444444444444444444444444");
+
             // 3. Delete the Contract
             contractRepository.deleteById(contractId);
-            System.out.println("55555");
+
         } catch (Exception e) {
             throw new DoctorContractException("Failed to delete Contract with ID " + contractId + ": " + e.getMessage());
         }
