@@ -39,6 +39,31 @@ public class DataBaseService {
     private final DistrictRepository districtRepository;
     private final MNNRepository mnnRepository;
 
+
+    @Autowired
+    private MedicineAgentGoalQuantityRepository medicineAgentGoalQuantityRepository;
+
+    @Autowired
+    private MedicineManagerGoalQuantityRepository medicineManagerGoalQuantityRepository;
+
+    @Autowired
+    private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+
+    @Autowired
+    private OutOfContractMedicineAmountRepository outOfContractMedicineAmountRepository;
+
+    @Autowired
+    private SalesRepository salesRepository;
+
+    @Autowired
+    private SalesReportRepository salesReportRepository;
+
+    @Autowired
+    private RecipeRepository recipeRepository;
+
+    @Autowired
+    private TemplateRepository templateRepository;
+
     @Autowired
     public DataBaseService(ContractRepository contractRepository, MedicineRepository medicineRepository, WorkPlaceRepository workPlaceRepository, UserRepository userRepository, UserService userService, DistrictRegionService districtRegionService, DistrictRepository districtRepository, MNNRepository mnnRepository) {
         this.contractRepository = contractRepository;
@@ -102,10 +127,63 @@ public class DataBaseService {
     }
 
     // Delete a Medicine by ID
-    public void deleteMedicine(Long id) {
-        Medicine byId = medicineRepository.findById(id).orElseThrow(() -> new DataBaseException("Medicine not found"));
-        byId.setStatus(Status.DELETED);
-        medicineRepository.save(byId);
+    public void deleteMedicine(Long medicineId) {
+        try {
+            Optional<Medicine> medicineOpt = medicineRepository.findById(medicineId);
+            if (medicineOpt.isEmpty()) {
+                throw new DataBaseException("Medicine with ID " + medicineId + " not found");
+            }
+
+            // Remove references from related entities
+            // 1. MedicineAgentGoalQuantity
+            List<MedicineAgentGoalQuantity> agentGoalQuantities = medicineRepository.findAgentGoalQuantitiesByMedicineId(medicineId);
+            medicineAgentGoalQuantityRepository.deleteAll(agentGoalQuantities);
+
+            // 2. MedicineManagerGoalQuantity
+            List<MedicineManagerGoalQuantity> managerGoalQuantities = medicineRepository.findManagerGoalQuantitiesByMedicineId(medicineId);
+            medicineManagerGoalQuantityRepository.deleteAll(managerGoalQuantities);
+
+            // 3. MedicineWithQuantityDoctor
+            List<MedicineWithQuantityDoctor> withQuantityDoctors = medicineRepository.findWithQuantityDoctorByMedicineId(medicineId);
+            medicineWithQuantityDoctorRepository.deleteAll(withQuantityDoctors);
+
+            // 4. OutOfContractMedicineAmount
+            List<OutOfContractMedicineAmount> outOfContractAmounts = medicineRepository.findOutOfContractByMedicineId(medicineId);
+            outOfContractMedicineAmountRepository.deleteAll(outOfContractAmounts);
+
+            // 5. Sales
+            List<Sales> sales = medicineRepository.findSalesByMedicineId(medicineId);
+            salesRepository.deleteAll(sales);
+
+            // 6. SalesReport
+            List<SalesReport> salesReports = medicineRepository.findSalesReportsByMedicineId(medicineId);
+            salesReportRepository.deleteAll(salesReports);
+
+            // 7. Recipe (remove Preparations referencing the Medicine)
+            List<Recipe> recipes = medicineRepository.findRecipesByMedicineId(medicineId);
+            for (Recipe recipe : recipes) {
+                recipe.getPreparations().removeIf(preparation -> preparation.getMedicine().getId().equals(medicineId));
+                recipeRepository.save(recipe);
+            }
+
+            // 8. Template (remove Preparations referencing the Medicine)
+            List<Template> templates = medicineRepository.findTemplatesByMedicineId(medicineId);
+            for (Template template : templates) {
+                template.getPreparations().removeIf(preparation -> preparation.getMedicine().getId().equals(medicineId));
+                templateRepository.save(template);
+            }
+
+            // 9. MNN (remove from join table)
+            Medicine medicine = medicineOpt.get();
+            medicine.getMnn().clear(); // Clear MNN references
+            medicineRepository.save(medicine); // Update to remove join table entries
+
+            // Delete the Medicine
+            medicineRepository.deleteById(medicineId);
+
+        } catch (Exception e) {
+            throw new DataBaseException("Failed to delete Medicine with ID " + medicineId + ": " + e.getMessage());
+        }
     }
 
     // Find a Medicine by ID
@@ -251,8 +329,16 @@ public class DataBaseService {
         return mnnRepository.save(mnn);
     }
 
-    public void deleteMNN(Long mnn) {
-        mnnRepository.deleteById(mnn);
+
+    public void deleteMNN(Long mnnId) {
+        // Find all Medicines referencing the MNN
+        List<Medicine> medicines = medicineRepository.findByMnnId(mnnId);
+        for (Medicine medicine : medicines) {
+            medicine.getMnn().removeIf(mnn -> mnn.getId().equals(mnnId));
+            medicineRepository.save(medicine);
+        }
+        // Delete the MNN
+        mnnRepository.deleteById(mnnId);
     }
 
     public List<MNN> getAllMnn() {
@@ -310,6 +396,13 @@ public class DataBaseService {
             try {
                 Optional<MNN> mnn = mnnRepository.findById(id);
                 if (mnn.isPresent()) {
+                    // Remove MNN from all Medicines
+                    List<Medicine> medicines = medicineRepository.findByMnnId(id);
+                    for (Medicine medicine : medicines) {
+                        medicine.getMnn().removeIf(m -> m.getId().equals(id));
+                        medicineRepository.save(medicine);
+                    }
+                    // Delete the MNN
                     mnnRepository.deleteById(id);
                     deletedIds.add(id);
                 } else {
@@ -332,6 +425,13 @@ public class DataBaseService {
         List<Long> notDeletedIds = new ArrayList<>();
         for (MNN mnn : mnnList) {
             try {
+                // Remove MNN from all Medicines
+                List<Medicine> medicines = medicineRepository.findByMnnId(mnn.getId());
+                for (Medicine medicine : medicines) {
+                    medicine.getMnn().removeIf(m -> m.getId().equals(mnn.getId()));
+                    medicineRepository.save(medicine);
+                }
+                // Delete the MNN
                 mnnRepository.delete(mnn);
             } catch (Exception e) {
                 notDeletedIds.add(mnn.getId());

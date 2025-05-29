@@ -43,7 +43,7 @@ public class Sales {
     @Column(name = "total")
     private Long total;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medicine_id",referencedColumnName = "id")
     private Medicine medicine;
 

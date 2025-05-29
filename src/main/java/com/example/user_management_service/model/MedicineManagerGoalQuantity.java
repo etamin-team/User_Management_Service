@@ -20,7 +20,7 @@ public class MedicineManagerGoalQuantity {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 

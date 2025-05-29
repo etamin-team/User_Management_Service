@@ -40,7 +40,7 @@ public class SalesReport {
     @Column(nullable = false)
     private ContractType contractType;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medicine_id" , referencedColumnName = "id")
     private Medicine medicine;
 

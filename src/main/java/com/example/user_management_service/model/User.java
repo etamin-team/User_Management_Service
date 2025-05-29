@@ -92,11 +92,11 @@ public class User implements UserDetails {
     private Gender gender;
 
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "district_id", referencedColumnName = "id")
     private District district;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "workplace_id", referencedColumnName = "workplace_id")
     private WorkPlace workplace;
 
