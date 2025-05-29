@@ -370,20 +370,13 @@ public class ContractService {
 
             Contract contract = contractOpt.get();
 
-            // 1. Delete MedicineWithQuantityDoctor records referencing this Contract
-            List<MedicineWithQuantityDoctor> medicineWithQuantityDoctors = medicineWithQuantityDoctorRepository
-                    .findByDoctorContractId(contractId);
-            for (MedicineWithQuantityDoctor mwd : medicineWithQuantityDoctors) {
-                // Clear Medicine references to avoid cascading
-                mwd.setMedicine(null);
-                medicineWithQuantityDoctorRepository.save(mwd);
-            }
-            medicineWithQuantityDoctorRepository.deleteAll(medicineWithQuantityDoctors);
+            // 1. Delete MedicineWithQuantityDoctor records using native query to avoid cascading
+            medicineWithQuantityDoctorRepository.deleteByContractIdNative(contractId);
 
             // 2. Clear AgentGoal reference in Contract
             if (contract.getAgentGoal() != null) {
                 contract.setAgentGoal(null); // Remove reference to AgentGoal
-                contractRepository.save(contract); // Save to update the foreign key
+                contractRepository.saveAndFlush(contract); // Save to update the foreign key
             }
 
             // 3. Delete the Contract

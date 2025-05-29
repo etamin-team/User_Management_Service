@@ -5,7 +5,9 @@ import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicineWithQuantityDoctor;
 import com.example.user_management_service.model.SalesReport;
 import com.example.user_management_service.model.dto.TopProductsOnSellDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,7 +22,10 @@ import java.util.UUID;
 public interface MedicineWithQuantityDoctorRepository extends JpaRepository<MedicineWithQuantityDoctor, Long> {
     @Query("SELECT m FROM MedicineWithQuantityDoctor m WHERE m.doctorContract.id = :contractId")
     List<MedicineWithQuantityDoctor> findByDoctorContractId(@Param("contractId") Long contractId);
-
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM medicine_with_quantity_doctor WHERE contract_id = :contractId", nativeQuery = true)
+    void deleteByContractIdNative(@Param("contractId") Long contractId);
     @Query("""
                 SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 
                 FROM MedicineWithQuantityDoctor m 
