@@ -136,58 +136,50 @@ public class DataBaseService {
                 throw new DataBaseException("Medicine with ID " + medicineId + " not found");
             }
 
-            Medicine medicine = medicineOpt.get();
+            // Remove MNN references from medicine_mnn join table
+            medicineRepository.deleteMedicineMnnReferences(medicineId);
 
             // Remove references from related entities
             // 1. MedicineAgentGoalQuantity
-            System.out.println("111111111111111111111111");
             List<MedicineAgentGoalQuantity> agentGoalQuantities = medicineRepository.findAgentGoalQuantitiesByMedicineId(medicineId);
             medicineAgentGoalQuantityRepository.deleteAll(agentGoalQuantities);
-            System.out.println("2222222222222222222222");
 
             // 2. MedicineManagerGoalQuantity
             List<MedicineManagerGoalQuantity> managerGoalQuantities = medicineRepository.findManagerGoalQuantitiesByMedicineId(medicineId);
             medicineManagerGoalQuantityRepository.deleteAll(managerGoalQuantities);
-            System.out.println("333333333333333333333");
+
             // 3. MedicineWithQuantityDoctor
             List<MedicineWithQuantityDoctor> withQuantityDoctors = medicineRepository.findWithQuantityDoctorByMedicineId(medicineId);
             medicineWithQuantityDoctorRepository.deleteAll(withQuantityDoctors);
-            System.out.println("4444444444444444444444444444");
+
             // 4. OutOfContractMedicineAmount
             List<OutOfContractMedicineAmount> outOfContractAmounts = medicineRepository.findOutOfContractByMedicineId(medicineId);
             outOfContractMedicineAmountRepository.deleteAll(outOfContractAmounts);
-            System.out.println("555555555555555555555555555555555");
+
             // 5. Sales
             List<Sales> sales = medicineRepository.findSalesByMedicineId(medicineId);
             salesRepository.deleteAll(sales);
-            System.out.println("66666666666666666666666666666666666666666");
+
             // 6. SalesReport
             List<SalesReport> salesReports = medicineRepository.findSalesReportsByMedicineId(medicineId);
             salesReportRepository.deleteAll(salesReports);
-            System.out.println("777777777777777777777777777");
+
             // 7. Recipe (remove Preparations referencing the Medicine)
             List<Recipe> recipes = medicineRepository.findRecipesByMedicineId(medicineId);
             for (Recipe recipe : recipes) {
                 recipe.getPreparations().removeIf(preparation -> preparation.getMedicine().getId().equals(medicineId));
                 recipeRepository.save(recipe);
             }
-            System.out.println("888888888888888888888888888888");
+
             // 8. Template (remove Preparations referencing the Medicine)
             List<Template> templates = medicineRepository.findTemplatesByMedicineId(medicineId);
             for (Template template : templates) {
                 template.getPreparations().removeIf(preparation -> preparation.getMedicine().getId().equals(medicineId));
                 templateRepository.save(template);
             }
-            System.out.println("9999999999999999999999999999999999999999999999999999999999999999999");
-            // 9. MNN (remove from this Medicine's join table entries only)
-            if (!medicine.getMnn().isEmpty()) {
-                medicine.getMnn().clear(); // Clear MNN references for this Medicine
-                medicineRepository.save(medicine); // Save before deletion
-            }
-            System.out.println("9999999999999999999999999999999999");
+
             // Delete the Medicine
             medicineRepository.deleteById(medicineId);
-            System.out.println("0202020202");
         } catch (Exception e) {
             throw new DataBaseException("Failed to delete Medicine with ID " + medicineId + ": " + e.getMessage());
         }

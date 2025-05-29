@@ -1,9 +1,11 @@
 package com.example.user_management_service.repository;
 
 import com.example.user_management_service.model.*;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -74,5 +76,8 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
 
     @Query("SELECT t FROM Template t WHERE EXISTS (SELECT p FROM t.preparations p WHERE p.medicine.id = :medicineId)")
     List<Template> findTemplatesByMedicineId(@Param("medicineId") Long medicineId);
-
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM medicine_mnn WHERE medicine_id = :medicineId", nativeQuery = true)
+    void deleteMedicineMnnReferences(@Param("medicineId") Long medicineId);
 }
