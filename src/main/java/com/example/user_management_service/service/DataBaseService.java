@@ -178,8 +178,10 @@ public class DataBaseService {
             }
 
             // 9. MNN (remove from this Medicine's join table entries only)
-            medicine.getMnn().clear(); // Clear MNN references for this Medicine
-            medicineRepository.save(medicine); // Update to remove join table entries
+            if (!medicine.getMnn().isEmpty()) {
+                medicine.getMnn().clear(); // Clear MNN references for this Medicine
+                medicineRepository.save(medicine); // Save before deletion
+            }
 
             // Delete the Medicine
             medicineRepository.deleteById(medicineId);
