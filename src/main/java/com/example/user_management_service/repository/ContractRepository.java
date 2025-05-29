@@ -285,12 +285,10 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
 
 
     @Query("""
-                SELECT SUM(mwd.quote)
+                SELECT COALESCE(SUM(mwd.quote), 0)
                 FROM Contract c
                 JOIN c.medicineWithQuantityDoctors mwd
-                WHERE 
-                    (:startDate IS NULL OR CAST(c.startDate AS date) >= CAST(:startDate AS date))
-                    AND (:endDate IS NULL OR CAST(c.endDate AS date) <= CAST(:endDate AS date))
+                WHERE CAST(c.startDate AS date) BETWEEN :startDate AND :endDate
             """)
     Long getTotalContractQuotesBetweenDates(@Param("startDate") LocalDate startDate,
                                             @Param("endDate") LocalDate endDate);
