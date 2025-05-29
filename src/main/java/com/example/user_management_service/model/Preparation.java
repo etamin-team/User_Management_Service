@@ -34,7 +34,7 @@ public class Preparation {
     private PreparationType type;
 
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "medicine_id", referencedColumnName = "id")
     private Medicine medicine;
 }

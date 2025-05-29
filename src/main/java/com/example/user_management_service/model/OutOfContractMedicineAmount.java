@@ -22,7 +22,7 @@ public class OutOfContractMedicineAmount {
     @Column(name = "amount", nullable = false)
     private Long amount;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "medicine_id")
     private Medicine medicine;
 
