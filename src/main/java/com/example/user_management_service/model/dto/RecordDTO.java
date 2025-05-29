@@ -17,22 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 public class RecordDTO {
 
-    private Long quote;
-    private Long sales;
-
-
     private RecordRegionDTO recordRegionDTO;
 
     private RecordDistrictDTO recordDistrictDTO;
 
     private RecordWorkPlaceDTO recordWorkPlaceDTO;
-
-    private List<TopProductsOnSellDTO> topProductsOnSellDTO;
-
-    private List<ActiveDoctorSalesData> activeDoctorSalesData;
-
-    private List<DashboardDoctorsCoverage> dashboardDoctorsCoverage;
-
-    private List<ContractTypeSalesData> contractTypeSalesData;
 
 }

@@ -38,6 +38,8 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
                 WHERE (:districtId IS NULL OR dist.id = :districtId)
                 AND (:regionId IS NULL OR reg.id = :regionId)
                 AND (:workplaceId IS NULL OR wp.id = :workplaceId)
+                AND (CAST(:startDate AS date) IS NULL OR dc.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR dc.endDate <= :endDate)
                 GROUP BY m.medicine 
                 ORDER BY SUM(cma.amount) DESC
                 LIMIT 6
@@ -45,7 +47,9 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
     List<TopProductsOnSellDTO> findTop6MostSoldMedicinesWithFilters(
             @Param("districtId") Long districtId,
             @Param("regionId") Long regionId,
-            @Param("workplaceId") Long workplaceId
+            @Param("workplaceId") Long workplaceId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
     );
 
 
