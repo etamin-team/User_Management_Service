@@ -178,7 +178,7 @@ public class DataBaseService {
                 template.getPreparations().removeIf(preparation -> preparation.getMedicine().getId().equals(medicineId));
                 templateRepository.save(template);
             }
-
+            System.out.println("9999999999999999999999999999999999999999999999999999999999999999999");
             // 9. MNN (remove from this Medicine's join table entries only)
             if (!medicine.getMnn().isEmpty()) {
                 medicine.getMnn().clear(); // Clear MNN references for this Medicine
