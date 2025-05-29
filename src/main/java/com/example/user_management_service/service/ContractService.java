@@ -349,7 +349,14 @@ public class ContractService {
                     newMedicine.setMedicine(medicine);
                     newMedicine.setQuote(dto.getQuote());
                     newMedicine.setCorrection(dto.getQuote());
-                    newMedicine.setDoctorContract(contract); // Set bidirectional relationship
+                    ContractMedicineDoctorAmount contractMedicineDoctorAmount = new ContractMedicineDoctorAmount();
+                    contractMedicineDoctorAmount.setAmount(0L);
+                    contractMedicineDoctorAmountRepository.save(contractMedicineDoctorAmount);
+                    newMedicine.setContractMedicineDoctorAmount(contractMedicineDoctorAmount);
+
+                    newMedicine.setDoctorContract(contract);
+                    medicineWithQuantityDoctorRepository.save(newMedicine);
+
                     existingMedicines.add(newMedicine);
                 }
             }
