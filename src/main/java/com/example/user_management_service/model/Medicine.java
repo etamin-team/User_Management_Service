@@ -48,7 +48,7 @@ public class Medicine {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "medicine_mnn",
             joinColumns = @JoinColumn(name = "medicine_id"),
