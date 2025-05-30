@@ -174,6 +174,38 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     );
 
     @Query("""
+                    SELECT u FROM User u 
+                    LEFT JOIN Contract c ON c.doctor.userId = u.userId
+                    WHERE u.role = :role
+                    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                    AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                    AND (:districtId IS NULL OR u.district.id = :districtId)
+                    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                    AND (:field IS NULL OR u.fieldName= :field)              
+                    AND (
+                           (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                           OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                           OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                    )
+                    AND u.status = 'ENABLED'
+                    AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
+                    AND (c.status IS NULL OR c.status = 'APPROVED')
+                    ORDER BY u.firstName ASC 
+            """)
+    List<User> findUsersByFiltersWitContracts(
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("field") Field field
+    );
+
+    @Query("""
                 SELECT COUNT(u) FROM User u 
                 WHERE u.role = :role
                 AND (:creatorId IS NULL OR u.creatorId = :creatorId)

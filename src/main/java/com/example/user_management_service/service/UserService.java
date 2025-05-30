@@ -143,13 +143,16 @@ public class UserService {
         String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
-        List<User> users = userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
 
         if (withContracts) {
+            List<User> users = userRepository.findUsersByFiltersWitContracts(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
+
             return users.stream()
                     .map(this::convertToDTOWithContract)
                     .toList();
         }
+        List<User> users = userRepository.findUsersByFilters(Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
+
         return users.stream()
                 .map(this::convertToDTO)
                 .toList();

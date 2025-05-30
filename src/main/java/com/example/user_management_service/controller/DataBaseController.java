@@ -104,9 +104,7 @@ public class DataBaseController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workPlaceId,
-            @RequestParam(required = false) String firstName,
-            @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String middleName,
+            @RequestParam(required = false) String nameQuery,
             @RequestParam(required = false) Field fieldName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -116,7 +114,7 @@ public class DataBaseController {
     ) {
 
         Page<ContractDTO> contracts = contractService.getFilteredContracts(
-                regionId, districtId, workPlaceId, firstName, lastName, middleName, fieldName, startDate, endDate, medicineId, page, size);
+                regionId, districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size);
 
         return ResponseEntity.ok(contracts);
     }

@@ -44,7 +44,7 @@ public class ContractService {
     private final MedicineManagerGoalQuantityRepository medicineManagerGoalQuantityRepository;
     private final ContractFieldAmountRepository contractFieldAmountRepository;
     private final FieldGoalQuantityRepository fieldGoalQuantityRepository;
-
+    private final RecipeService recipeService;
 
     // Doctor Contract
 
@@ -664,11 +664,16 @@ public class ContractService {
     }
 
     public Page<ContractDTO> getFilteredContracts(Long regionId, Long districtId, Long workPlaceId,
-                                                  String firstName, String lastName, String middleName,
+                                                  String nameQuery,
                                                   Field fieldName, LocalDate startDate,
                                                   LocalDate endDate, Long medicineId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        String[] filteredParts = recipeService.prepareNameParts(nameQuery);
 
+        // Extract name components (first, second, third name parts)
+        String firstName = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String lastName = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : firstName;
+        String middleName = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : firstName;
         Page<Contract> contractPage = contractRepository.findContracts(regionId, districtId, workPlaceId,
                 firstName, lastName, middleName,
                 fieldName, startDate, endDate,
