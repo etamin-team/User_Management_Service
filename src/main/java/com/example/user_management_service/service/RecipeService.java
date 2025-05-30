@@ -207,7 +207,7 @@ public class RecipeService {
         );
     }
 
-    public String[] prepareNameParts(String nameQuery) {
+    private String[] prepareNameParts(String nameQuery) {
         if (nameQuery == null || nameQuery.trim().isEmpty()) {
             return new String[0]; // Return empty array if no name query is provided
         }

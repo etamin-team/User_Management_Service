@@ -44,7 +44,6 @@ public class ContractService {
     private final MedicineManagerGoalQuantityRepository medicineManagerGoalQuantityRepository;
     private final ContractFieldAmountRepository contractFieldAmountRepository;
     private final FieldGoalQuantityRepository fieldGoalQuantityRepository;
-    private final RecipeService recipeService;
 
     // Doctor Contract
 
@@ -668,7 +667,7 @@ public class ContractService {
                                                   Field fieldName, LocalDate startDate,
                                                   LocalDate endDate, Long medicineId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        String[] filteredParts = recipeService.prepareNameParts(nameQuery);
+        String[] filteredParts = prepareNameParts(nameQuery);
 
         // Extract name components (first, second, third name parts)
         String firstName = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
@@ -681,6 +680,21 @@ public class ContractService {
 
         // Convert each Contract entity to DTO and maintain pagination
         return contractPage.map(this::convertToDTO);
+    }
+    private String[] prepareNameParts(String nameQuery) {
+        if (nameQuery == null || nameQuery.trim().isEmpty()) {
+            return new String[0]; // Return empty array if no name query is provided
+        }
+
+        String[] nameParts = nameQuery.split(" ");
+        List<String> cleanParts = new ArrayList<>();
+        for (String part : nameParts) {
+            if (part != null && !part.trim().isEmpty()) {
+                cleanParts.add(part.trim());
+            }
+        }
+
+        return cleanParts.toArray(new String[0]);
     }
 
     public List<LineChart> getDoctorRecipeChart(UUID doctorId, LocalDate startDate, LocalDate endDate, int numberOfParts) {
