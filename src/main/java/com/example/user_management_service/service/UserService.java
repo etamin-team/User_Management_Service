@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -88,7 +87,7 @@ public class UserService {
                 user.getDistrict() == null ? null : user.getDistrict().getId(),
                 user.getRole(),
                 user.getDistrict() == null ? null : districtRegionService.regionDistrictDTO(user.getDistrict()),
-                user.getWorkplace() == null ?null: convertToDTO(user.getWorkplace()),
+                user.getWorkplace() == null ? null : convertToDTO(user.getWorkplace()),
                 false
         );
     }
@@ -156,7 +155,7 @@ public class UserService {
                 .toList();
     }
 
-    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, int page, int size) {
+    public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, Long medicineId, boolean withContracts, LocalDate startDate, LocalDate endDate, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
 
@@ -165,7 +164,23 @@ public class UserService {
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
-
+        if (withContracts) {
+            return userRepository.findUsersByFiltersPaginatedWithContracts(
+                    Role.DOCTOR,
+                    creatorId != null ? String.valueOf(creatorId) : null,
+                    regionId,
+                    districtId,
+                    workplaceId,
+                    name1,
+                    name2,
+                    name3,
+                    field,
+                    medicineId,
+                    startDate,
+                    endDate,
+                    pageable
+            ).map(this::convertToDTO);
+        }
         return userRepository.findUsersByFiltersPaginated(
                 Role.DOCTOR,
                 creatorId != null ? String.valueOf(creatorId) : null,
@@ -176,6 +191,8 @@ public class UserService {
                 name2,
                 name3,
                 field,
+                startDate,
+                endDate,
                 pageable
         ).map(this::convertToDTO);
 

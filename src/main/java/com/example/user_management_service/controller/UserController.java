@@ -134,12 +134,14 @@ public class UserController {
             @RequestParam(required = false) Long workplaceId,
             @RequestParam(required = false) String nameQuery,
             @RequestParam(required = false) Field field,
+            @RequestParam(required = false) Long medicineId,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false, defaultValue = "false") boolean withContracts,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,field, page, size);
+        Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,field,medicineId,withContracts,startDate,endDate, page, size);
         return ResponseEntity.ok(doctors);
     }
 

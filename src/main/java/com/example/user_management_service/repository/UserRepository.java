@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -57,6 +58,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
         )
+        AND (:startDate IS NULL OR :endDate IS NULL OR CAST(u.createdDate AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date))
         AND u.status = 'ENABLED'
         """)
     Page<User> findUsersByFiltersPaginated(
@@ -69,9 +71,45 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("fieldName") Field fieldName,
-            Pageable pageable
-    );
-
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
+    @Query("""
+        SELECT u FROM User u 
+        LEFT JOIN Contract c ON c.doctor.userId = u.userId
+        LEFT JOIN c.medicineWithQuantityDoctors mwqd
+        LEFT JOIN mwqd.medicine m
+        WHERE u.role = :role
+        AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+        AND (:regionId IS NULL OR u.district.region.id = :regionId)
+        AND (:districtId IS NULL OR u.district.id = :districtId)
+        AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+        AND (:fieldName IS NULL OR u.fieldName = :fieldName)
+        AND (
+               (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+               OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+               OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+        )
+        AND (:startDate IS NULL OR :endDate IS NULL OR CAST(u.createdDate AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date))
+        AND u.status = 'ENABLED'
+        AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
+        AND (c.status IS NULL OR c.status = 'APPROVED')
+        AND (:medicineId IS NULL OR m.id = :medicineId)
+        """)
+    Page<User> findUsersByFiltersPaginatedWithContracts(
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName,
+            @Param("medicineId") Long medicineId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
 
     @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
             "r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian, COUNT(u)) " +
