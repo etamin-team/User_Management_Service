@@ -176,8 +176,6 @@ public class UserService {
                     name3,
                     field,
                     medicineId,
-                    startDate,
-                    endDate,
                     pageable
             ).map(this::convertToDTO);
         }
@@ -191,8 +189,6 @@ public class UserService {
                 name2,
                 name3,
                 field,
-                startDate,
-                endDate,
                 pageable
         ).map(this::convertToDTO);
 

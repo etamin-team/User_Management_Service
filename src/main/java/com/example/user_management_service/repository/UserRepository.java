@@ -58,7 +58,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
         )
-        AND (:startDate IS NULL OR :endDate IS NULL OR CAST(u.createdDate AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date))
         AND u.status = 'ENABLED'
         """)
     Page<User> findUsersByFiltersPaginated(
@@ -70,10 +69,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("firstName") String firstName,
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
-            @Param("fieldName") Field fieldName,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
-            Pageable pageable);
+            @Param("fieldName") Field fieldName, Pageable pageable);
     @Query("""
         SELECT u FROM User u 
         LEFT JOIN Contract c ON c.doctor.userId = u.userId
@@ -90,7 +86,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
                OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
         )
-        AND (:startDate IS NULL OR :endDate IS NULL OR CAST(u.createdDate AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date))
         AND u.status = 'ENABLED'
         AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
         AND (c.status IS NULL OR c.status = 'APPROVED')
@@ -107,8 +102,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("middleName") String middleName,
             @Param("fieldName") Field fieldName,
             @Param("medicineId") Long medicineId,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate,
             Pageable pageable);
 
     @Query("SELECT new com.example.user_management_service.model.dto.StatsEmployeeDTO(" +
