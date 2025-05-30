@@ -87,8 +87,8 @@ public class UserService {
                 user.getWorkplace() == null ? null : user.getWorkplace().getId(),
                 user.getDistrict() == null ? null : user.getDistrict().getId(),
                 user.getRole(),
-                districtRegionService.regionDistrictDTO(user.getDistrict()),
-                convertToDTO(user.getWorkplace()),
+                user.getDistrict() == null ? null : districtRegionService.regionDistrictDTO(user.getDistrict()),
+                user.getWorkplace() == null ?null: convertToDTO(user.getWorkplace()),
                 false
         );
     }
