@@ -8,6 +8,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/world_medicine
     username: postgres
     password: postgres
+    hikari:
+      maximum-pool-size: 20  # Max connections (adjust based on load)
+      connection-timeout: 120000  # 120s timeout
+      idle-timeout: 300000  # 5min idle timeout
+      max-lifetime: 1800000
 
   jpa:
     hibernate:
@@ -20,8 +25,8 @@ spring:
     defer-datasource-initialization: true
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 200MB
+      max-request-size: 200MB
   sql:
     init:
       mode: always
