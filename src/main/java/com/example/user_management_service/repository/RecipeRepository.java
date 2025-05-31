@@ -125,6 +125,37 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")
     Integer totalMedicineAmountByMedAgentThisMonth(@Param("medAgentId") UUID medAgentId);
 
+    @Query("""
+                SELECT r FROM Recipe r
+                WHERE (:districtId IS NULL OR r.doctorId.district.id = :districtId)
+                AND ((:regionId IS NOT NULL AND r.doctorId.district.region.id = :regionId)
+                    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND r.doctorId.district.region.id IN :regionIds))  
+                AND (:doctorField IS NULL OR r.doctorId.fieldName = :doctorField)
+                AND (:lastAnalysisFrom IS NULL OR r.dateCreation >= :lastAnalysisFrom)
+                AND (:lastAnalysisTo IS NULL OR r.dateCreation <= :lastAnalysisTo)
+                AND (
+                   (LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                   OR (LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                   OR (LOWER(r.doctorId.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            )
+                AND (:medicineId IS NULL OR r.recipeId IN (
+                            SELECT rp.recipeId FROM Recipe rp JOIN rp.preparations p WHERE p.medicine.id = :medicineId
+                        ))
+                ORDER BY r.dateCreation DESC
+            """)
+    Page<Recipe> findRecipesByFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("medicineId") Long medicineId,
+            @Param("doctorField") Field doctorField,
+            @Param("lastAnalysisFrom") LocalDate lastAnalysisFrom,
+            @Param("lastAnalysisTo") LocalDate lastAnalysisTo,
+            Pageable pageable
+    );
 
     @Query("""
         SELECT r FROM Recipe r

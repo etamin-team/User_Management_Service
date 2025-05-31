@@ -256,6 +256,33 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
                                  @Param("endDate") LocalDate endDate,
                                  Pageable pageable);
 
+    @Query(""" 
+                    SELECT DISTINCT c FROM Contract c 
+                    LEFT JOIN c.medicineWithQuantityDoctors mwqd 
+                    WHERE  (:districtId IS NULL OR c.doctor.district.id = :districtId) 
+                    AND ((:regionId IS NOT NULL AND c.doctor.district.region.id = :regionId)
+                        OR (:regionId IS NULL AND :regionIds IS NOT NULL AND c.doctor.district.region.id IN :regionIds))
+                    AND (:workPlaceId IS NULL OR c.doctor.workplace.id = :workPlaceId) 
+                    AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName) 
+                    AND (:startDate IS NULL OR  CAST(c.startDate AS date) >= :startDate) 
+                    AND (:endDate IS NULL OR CAST(c.endDate AS date) <= :endDate) 
+                    AND (:firstName IS NULL OR :firstName = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) 
+                    AND (:lastName IS NULL OR :lastName = '' OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) 
+                    AND (:middleName IS NULL OR :middleName = '' OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :middleName, '%'))) 
+            """)
+    Page<Contract> findContracts(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workPlaceId") Long workPlaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable);
+
 
     @Query("""
                 SELECT COUNT(DISTINCT c.doctor) FROM Contract c

@@ -70,6 +70,75 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("fieldName") Field fieldName, Pageable pageable);
+
+
+    @Query("""
+        SELECT u FROM User u 
+        WHERE u.role = :role
+        AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+        AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId)
+            OR (:regionId IS NULL AND :regionIds IS NOT NULL AND u.district.region.id IN :regionIds))
+        AND (:districtId IS NULL OR u.district.id = :districtId)
+        AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+        AND (:fieldName IS NULL OR u.fieldName = :fieldName)
+        AND (
+               (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+               OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+               OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+        )
+        AND u.status = 'ENABLED'
+        """)
+    Page<User> findUsersByFiltersPaginated(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName, Pageable pageable);
+
+
+
+    @Query("""
+            SELECT u FROM User u 
+            LEFT JOIN Contract c ON c.doctor.userId = u.userId
+            LEFT JOIN c.medicineWithQuantityDoctors mwqd
+            LEFT JOIN mwqd.medicine m
+            WHERE u.role = :role
+            AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+            AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId)
+                 OR (:regionId IS NULL AND :regionIds IS NOT NULL AND u.district.region.id IN :regionIds))
+            AND (:districtId IS NULL OR u.district.id = :districtId)
+            AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR u.fieldName = :fieldName)
+            AND (
+                   (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                   OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                   OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            )
+            AND u.status = 'ENABLED'
+            AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
+            AND (c.status IS NULL OR c.status = 'APPROVED')
+            AND (:medicineId IS NULL OR m.id = :medicineId)
+            """)
+    Page<User> findUsersByFiltersPaginatedWithContracts(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("fieldName") Field fieldName,
+            @Param("medicineId") Long medicineId,
+            Pageable pageable);
+
+
     @Query("""
         SELECT u FROM User u 
         LEFT JOIN Contract c ON c.doctor.userId = u.userId
@@ -173,6 +242,38 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("field") Field field
     );
 
+
+    @Query("""
+                SELECT u FROM User u 
+                WHERE u.role = :role
+                AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId)
+                    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND u.district.region.id IN :regionIds))
+                AND (:districtId IS NULL OR u.district.id = :districtId)
+                AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (:field IS NULL OR u.fieldName= :field)              
+                AND (
+                       (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                )
+                AND u.status = 'ENABLED'
+                ORDER BY u.firstName ASC 
+            """)
+    List<User> findUsersByFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("field") Field field
+    );
+
     @Query("""
                     SELECT u FROM User u 
                     LEFT JOIN Contract c ON c.doctor.userId = u.userId
@@ -204,6 +305,41 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("middleName") String middleName,
             @Param("field") Field field
     );
+
+    @Query("""
+                    SELECT u FROM User u 
+                    LEFT JOIN Contract c ON c.doctor.userId = u.userId
+                    WHERE u.role = :role
+                    AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                    AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId) 
+                     OR (:regionId IS NULL AND :regionIds IS NOT NULL AND u.district.region.id IN :regionIds))
+                    AND (:districtId IS NULL OR u.district.id = :districtId)
+                    AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                    AND (:field IS NULL OR u.fieldName= :field)              
+                    AND (
+                           (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                           OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                           OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                    )
+                    AND u.status = 'ENABLED'
+                    AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
+                    AND (c.status IS NULL OR c.status = 'APPROVED')
+                    ORDER BY u.firstName ASC 
+            """)
+    List<User> findUsersByFiltersWitContracts(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("field") Field field
+    );
+
 
     @Query("""
                 SELECT COUNT(u) FROM User u 

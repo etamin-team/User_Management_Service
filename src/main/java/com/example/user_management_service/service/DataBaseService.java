@@ -265,7 +265,8 @@ public class DataBaseService {
                         workPlace.getDescription(),
                         workPlace.getPhone(),
                         workPlace.getEmail(),
-                        workPlace.getName()))
+                        workPlace.getName(),
+                        workPlace.getChiefDoctor() == null ? null : workPlace.getChiefDoctor().getUserId()))
                 .collect(Collectors.toList());
 
     }
@@ -281,7 +282,9 @@ public class DataBaseService {
                 workPlace.getDescription(),
                 workPlace.getPhone(),
                 workPlace.getEmail(),
-                workPlace.getName());
+                workPlace.getName(),
+                workPlace.getChiefDoctor() == null ? null : workPlace.getChiefDoctor().getUserId()
+        );
     }
 
     public WorkPlaceStatisticsInfoDTO getWorkPlaceStats(Long workplaceId) {
@@ -358,7 +361,6 @@ public class DataBaseService {
 
         return errors;
     }
-
 
 
     public Page<MNN> getAllMnnPaginated(int page, int size) {
@@ -458,5 +460,23 @@ public class DataBaseService {
                 new TypeReference<List<MNN>>() {
                 }
         );
+    }
+
+    public List<WorkPlaceListDTO> getWorkPlacesByIds(List<Long> regionIds, Long regionId, Long districtId, MedicalInstitutionType medicalInstitutionType) {
+        List<WorkPlace> workplaces = workPlaceRepository.findByFilters(regionIds, regionId, districtId, medicalInstitutionType);
+        return workplaces.stream()
+                .map(workPlace -> new WorkPlaceListDTO(
+                        workPlace.getId(),
+                        workPlace.getChiefDoctor() == null ? null : userService.convertToDTO(workPlace.getChiefDoctor()),
+                        districtRegionService.regionDistrictDTO(workPlace.getDistrict()),
+                        workPlace.getMedicalInstitutionType(),
+                        workPlace.getAddress(),
+                        workPlace.getDescription(),
+                        workPlace.getPhone(),
+                        workPlace.getEmail(),
+                        workPlace.getName(),
+                        workPlace.getChiefDoctor() == null ? null : workPlace.getChiefDoctor().getUserId()
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -174,6 +174,30 @@ public class RecipeService {
         return recipes.map(this::convertToDto);
     }
 
+    public Page<RecipeDto> filterRecipes(List<Long> regionIds, String nameQuery, Long regionId, Long districtId, Long medicineId, Field doctorField,
+                                         LocalDate lastAnalysisFrom, LocalDate lastAnalysisTo,UUID doctorId, int page, int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Extract name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dateCreation").descending());
+
+        // Fetch paged results
+        Page<Recipe> recipes = recipeRepository.findRecipesByFilters(regionIds,name1, name2, name3, regionId, districtId,medicineId,
+                 doctorField, lastAnalysisFrom,
+                lastAnalysisTo, pageable);
+
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------Recipe------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("-----------------------------------------------------------------------");
+        return recipes.map(this::convertToDto);
+    }
+
 
     private RecipeDto convertToDto(Recipe recipe) {
         return new RecipeDto(

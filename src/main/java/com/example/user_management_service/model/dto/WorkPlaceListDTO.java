@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * Date-2/18/2025
  * By Sardor Tokhirov
@@ -29,4 +31,6 @@ public class WorkPlaceListDTO {
     private String phone;
     private String email;
     private String name;
+    private UUID chiefDoctorId;
+
 }

@@ -681,6 +681,27 @@ public class ContractService {
         // Convert each Contract entity to DTO and maintain pagination
         return contractPage.map(this::convertToDTO);
     }
+
+    public Page<ContractDTO> getFilteredContracts(List<Long> regionIds,Long regionId, Long districtId, Long workPlaceId,
+                                                  String nameQuery,
+                                                  Field fieldName, LocalDate startDate,
+                                                  LocalDate endDate, Long medicineId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Extract name components (first, second, third name parts)
+        String firstName = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String lastName = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : firstName;
+        String middleName = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : firstName;
+        Page<Contract> contractPage = contractRepository.findContracts(regionIds,regionId, districtId, workPlaceId,
+                firstName, lastName, middleName,
+                fieldName, startDate, endDate,
+                pageable);
+
+        // Convert each Contract entity to DTO and maintain pagination
+        return contractPage.map(this::convertToDTO);
+    }
+
     private String[] prepareNameParts(String nameQuery) {
         if (nameQuery == null || nameQuery.trim().isEmpty()) {
             return new String[0]; // Return empty array if no name query is provided

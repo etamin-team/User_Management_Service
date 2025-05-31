@@ -158,6 +158,28 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> getDoctors(UUID creatorId, Long regionId, List<Long> regionIds, Long districtId, Long workplaceId, String nameQuery, Field field, boolean withContracts) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        if (withContracts) {
+            List<User> users = userRepository.findUsersByFiltersWitContracts(regionIds,Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
+
+            return users.stream()
+                    .map(this::convertToDTOWithContract)
+                    .toList();
+        }
+        List<User> users = userRepository.findUsersByFilters(regionIds,Role.DOCTOR, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, field);
+
+        return users.stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
     public Page<UserDTO> getDoctorsPage(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, Long medicineId, boolean withContracts, LocalDate startDate, LocalDate endDate, int page, int size) {
         String[] filteredParts = prepareNameParts(nameQuery);
 
@@ -196,6 +218,46 @@ public class UserService {
         ).map(this::convertToDTO);
 
     }
+    public Page<UserDTO> getDoctorsPage(List<Long> regionIds,UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, Field field, Long medicineId, boolean withContracts, LocalDate startDate, LocalDate endDate, int page, int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        if (withContracts) {
+            return userRepository.findUsersByFiltersPaginatedWithContracts(
+                    regionIds,
+                    Role.DOCTOR,
+                    creatorId != null ? String.valueOf(creatorId) : null,
+                    regionId,
+                    districtId,
+                    workplaceId,
+                    name1,
+                    name2,
+                    name3,
+                    field,
+                    medicineId,
+                    pageable
+            ).map(this::convertToDTO);
+        }
+        return userRepository.findUsersByFiltersPaginated(
+                regionIds,
+                Role.DOCTOR,
+                creatorId != null ? String.valueOf(creatorId) : null,
+                regionId,
+                districtId,
+                workplaceId,
+                name1,
+                name2,
+                name3,
+                field,
+                pageable
+        ).map(this::convertToDTO);
+
+    }
 
 
     public List<UserDTO> getManagers(UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
@@ -207,6 +269,19 @@ public class UserService {
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
         return userRepository.findUsersByFilters(Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+    public List<UserDTO> getManagers(List<Long> regionsIds, UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        return userRepository.findUsersByFilters(regionsIds,Role.MANAGER, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();
@@ -255,6 +330,19 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserDTO> getMedAgents(List<Long> regionIds,UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        return userRepository.findUsersByFilters(regionIds,Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
 
     private String[] prepareNameParts(String nameQuery) {
         if (nameQuery == null || nameQuery.trim().isEmpty()) {
