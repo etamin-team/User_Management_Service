@@ -526,4 +526,30 @@ public class UserService {
         return convertToDTO(userRepository.findByNumber(number).orElseThrow(() -> new DataNotFoundException("User not found by number " + number)));
 
     }
+
+    public Page<UserDTO> getMedAgentsPage( UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, int page, int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+
+        return userRepository.findUsersByFilters(Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null,pageable).map(this::convertToDTO);
+    }
+
+    public Page<UserDTO> getMedAgentsFieldForcePage(List<Long> regionIds, UUID creatorId, Long regionId, Long districtId, Long workplaceId, String nameQuery, int page, int size) {
+        String[] filteredParts = prepareNameParts(nameQuery);
+
+        // Get name components (first, second, third name parts)
+        String name1 = filteredParts.length > 0 ? filteredParts[0].toLowerCase() : "";
+        String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
+        String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+
+        return userRepository.findUsersByFilters(regionIds,Role.MEDAGENT, creatorId != null ? String.valueOf(creatorId) : null, regionId, districtId, workplaceId, name1, name2, name3, null,pageable).map(this::convertToDTO);
+    }
 }

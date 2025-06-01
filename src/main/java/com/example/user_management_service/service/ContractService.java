@@ -444,6 +444,12 @@ public class ContractService {
         return contracts.map(this::convertToDTO);
     }
 
+    public Page<ContractDTO> getContractsByStatus(List<Long> regionIds,GoalStatus goalStatus, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Contract> contracts = contractRepository.findByStatus(regionIds, goalStatus, pageable);
+        return contracts.map(this::convertToDTO);
+    }
+
     public Page<ContractDTO> getAllContractsByAgent(UUID agentId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return contractRepository.findAllContractsByAgent(agentId, pageable)

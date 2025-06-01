@@ -1,6 +1,7 @@
 package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Field;
+import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.ContractService;
@@ -143,6 +144,31 @@ public class FieldForceController {
                 lastAnalysisFrom, lastAnalysisTo, doctorId, page, size
         );
         return ResponseEntity.ok(recipes);
+    }
+
+
+    @GetMapping("/medagents-page")
+    public ResponseEntity<Page<UserDTO>> getMedAgentsPage(
+            @RequestParam(required = false) UUID creatorId,
+            @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<UserDTO> users = userService.getMedAgentsFieldForcePage(regionIds,creatorId, regionId, districtId, workplaceId, nameQuery,page,size);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/doctor/contracts/status")
+    public ResponseEntity<Page<ContractDTO>> getContractsByStatus(
+            @RequestParam GoalStatus goalStatus,
+            @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ContractDTO> contracts = contractService.getContractsByStatus(regionIds,goalStatus, page, size);
+        return ResponseEntity.ok(contracts);
     }
 
 }

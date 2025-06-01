@@ -242,6 +242,36 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("field") Field field
     );
 
+    @Query("""
+                SELECT u FROM User u 
+                WHERE u.role = :role
+                AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                AND (:districtId IS NULL OR u.district.id = :districtId)
+                AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (:field IS NULL OR u.fieldName= :field)              
+                AND (
+                       (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                )
+                AND u.status = 'ENABLED'
+                ORDER BY u.firstName ASC 
+            """)
+    Page<User> findUsersByFilters(
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("field") Field field,
+            Pageable pageable
+    );
+
 
     @Query("""
                 SELECT u FROM User u 
@@ -272,6 +302,39 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             @Param("lastName") String lastName,
             @Param("middleName") String middleName,
             @Param("field") Field field
+    );
+
+
+    @Query("""
+                SELECT u FROM User u 
+                WHERE u.role = :role
+                AND (:creatorId IS NULL OR u.creatorId = :creatorId)
+                AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId)
+                    OR (:regionId IS NULL AND :regionIds IS NOT NULL AND u.district.region.id IN :regionIds))
+                AND (:districtId IS NULL OR u.district.id = :districtId)
+                AND (:workplaceId IS NULL OR u.workplace.id = :workplaceId)
+                AND (:field IS NULL OR u.fieldName= :field)              
+                AND (
+                       (LOWER(u.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(u.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(u.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
+            
+                )
+                AND u.status = 'ENABLED'
+                ORDER BY u.firstName ASC 
+            """)
+    Page<User> findUsersByFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("role") Role role,
+            @Param("creatorId") String creatorId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
+            @Param("field") Field field,
+            Pageable pageable
     );
 
     @Query("""

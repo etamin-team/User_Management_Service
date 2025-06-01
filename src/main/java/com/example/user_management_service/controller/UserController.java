@@ -144,6 +144,18 @@ public class UserController {
         Page<UserDTO> doctors = userService.getDoctorsPage(creatorId, regionId, districtId, workplaceId, nameQuery,field,medicineId,withContracts,startDate,endDate, page, size);
         return ResponseEntity.ok(doctors);
     }
+    @GetMapping("/medagents-page")
+    public ResponseEntity<Page<UserDTO>> getMedAgentsPage(
+            @RequestParam(required = false) UUID creatorId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workplaceId,
+            @RequestParam(required = false) String nameQuery,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<UserDTO> users = userService.getMedAgentsPage(creatorId, regionId, districtId, workplaceId, nameQuery,page,size);
+        return ResponseEntity.ok(users);
+    }
 
     @GetMapping("/doctor-data")
     public ResponseEntity<DoctorsInfoDTO> getDoctorData(
@@ -199,6 +211,7 @@ public class UserController {
         List<UserDTO> users = userService.getMedAgents(creatorId, regionId, districtId, workplaceId, nameQuery);
         return ResponseEntity.ok(users);
     }
+
 
 //    @PostMapping("/upload-doctors")
 //    public ResponseEntity<String> uploadDoctors(@RequestBody List<RegisterRequest> requests) {

@@ -42,6 +42,9 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     @Query("SELECT c FROM Contract c WHERE c.status = :status ")
     Page<Contract> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
 
+    @Query("SELECT c FROM Contract c WHERE c.status = :status AND :regionIds IS NOT NULL AND c.doctor.district.region.id IN :regionIds ")
+    Page<Contract> findByStatus(@Param("regionIds") List<Long> regionIds,@Param("status") GoalStatus status, Pageable pageable);
+
 
     @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
