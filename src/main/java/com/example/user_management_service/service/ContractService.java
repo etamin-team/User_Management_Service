@@ -746,4 +746,10 @@ public class ContractService {
         return chart;
     }
 
+    public void editStatusContract(Long id, GoalStatus goalStatus) {
+        Contract contract = contractRepository.findById(id)
+                .orElseThrow(() -> new ContractNotFoundException("Contract not found with id: " + id));
+        contract.setStatus(goalStatus);
+        contractRepository.save(contract);
+    }
 }

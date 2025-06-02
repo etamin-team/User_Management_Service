@@ -168,6 +168,11 @@ public class AdminController {
         contractService.enableContract(id);
         return ResponseEntity.ok("Contract has been enabled successfully.");
     }
+    @PatchMapping("/contract/{id}/edit-status")
+    public ResponseEntity<String> editStatusContract(@PathVariable Long id,@RequestParam GoalStatus goalStatus) {
+        contractService.editStatusContract(id,goalStatus);
+        return ResponseEntity.ok("Contract has been enabled successfully.");
+    }
 
     @PatchMapping("/contract/{id}/user-decline")
     public ResponseEntity<String> declineContract(@PathVariable Long id) {
