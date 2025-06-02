@@ -85,7 +85,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
             @Param("endDate") LocalDate endDate
     );
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'RECIPE' THEN 1 ELSE 0 END), 0) " +
+    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'RECIPE' THEN sr.sold ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
@@ -96,7 +96,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                                @Param("startDate") LocalDate startDate,
                                @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'SU' THEN 1 ELSE 0 END), 0) " +
+    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'SU' THEN sr.sold ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
@@ -107,7 +107,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                            @Param("startDate") LocalDate startDate,
                            @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'SB' THEN 1 ELSE 0 END), 0) " +
+    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'SB' THEN sr.sold ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
@@ -118,7 +118,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                            @Param("startDate") LocalDate startDate,
                            @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'GZ' THEN 1 ELSE 0 END), 0) " +
+    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'GZ' THEN sr.sold ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
@@ -129,7 +129,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                            @Param("startDate") LocalDate startDate,
                            @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'KZ' THEN 1 ELSE 0 END), 0) " +
+    @Query("SELECT COALESCE(SUM(CASE WHEN sr.contractType = 'KZ' THEN sr.sold ELSE 0 END), 0) " +
             "FROM SalesReport sr " +
             "WHERE sr.medicine.id = :medicineId " +
             "AND (:regionId IS NULL OR sr.region.id = :regionId) " +
@@ -141,7 +141,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                            @Param("endDate") LocalDate endDate);
 
 
-    @Query("SELECT COALESCE(SUM(s.written), 0) FROM SalesReport s " +
+    @Query("SELECT COALESCE(SUM(s.sold), 0) FROM SalesReport s " +
             "WHERE s.contractType = 'RECIPE' " +
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
@@ -179,7 +179,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                                @Param("startDate") LocalDate startDate,
                                @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(s.written), 0) FROM SalesReport s " +
+    @Query("SELECT COALESCE(SUM(s.sold), 0) FROM SalesReport s " +
             "WHERE s.contractType = 'SU' " +
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
@@ -192,7 +192,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                           @Param("startDate") LocalDate startDate,
                           @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(s.written), 0) FROM SalesReport s " +
+    @Query("SELECT COALESCE(SUM(s.sold), 0) FROM SalesReport s " +
             "WHERE s.contractType = 'SB' " +
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
@@ -205,7 +205,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                           @Param("startDate") LocalDate startDate,
                           @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(s.written), 0) FROM SalesReport s " +
+    @Query("SELECT COALESCE(SUM(s.sold), 0) FROM SalesReport s " +
             "WHERE s.contractType = 'GZ' " +
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
@@ -218,7 +218,7 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
                           @Param("startDate") LocalDate startDate,
                           @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COALESCE(SUM(s.written), 0) FROM SalesReport s " +
+    @Query("SELECT COALESCE(SUM(s.sold), 0) FROM SalesReport s " +
             "WHERE s.contractType = 'KZ' " +
             "AND (:medicineId IS NULL OR s.medicine.id = :medicineId) " +
             "AND ((:regionId IS NOT NULL AND s.region.id = :regionId) " +
