@@ -111,6 +111,9 @@ public class ReportService {
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         System.out.println("1111111111111111111111111111111111111");
+        System.out.println("salesReportListDTO:"+ salesReportListDTO.getSalesReportDTOS().size());
+        System.out.println("salesReportListDTO:"+ salesReportListDTO.getStartDate());
+        System.out.println("salesReportListDTO:"+ salesReportListDTO.getEndDate());
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
             SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(()->new ReportException("SalesReport not found"));
             System.out.println("22222222222222222222222222222222222222222222");
