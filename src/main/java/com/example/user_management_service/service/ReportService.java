@@ -120,6 +120,7 @@ public class ReportService {
 //        if (report == null) {
 //            report = new SalesReport();
 //        }
+            boolean isSaved=report.isSaved();
             report.setReportDate(salesReportListDTO.getDate());
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
@@ -127,18 +128,16 @@ public class ReportService {
             report.setStartDate(salesReportListDTO.getStartDate());
             report.setEndDate(salesReportListDTO.getEndDate());
             report.setContractType(dto.getContractType());
-
-            Medicine medicine = medicineRepository.findById(dto.getMedicineId())
-                    .orElseThrow(() -> new ReportException("Medicine not found"));
-
-            Region region=regionRepository.findById(salesReportListDTO.getRegionId()).orElseThrow(() -> new ReportException("Region not found"));
+            report.setSaved(true);
             salesReportRepository.save(report);
 
+
             System.out.println("Report saved successfully-----------------------------------------");
-            System.out.println("Report saved successfully-----------------------------------------");
-            salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,region,medicine);
+            if (!isSaved) {
+                salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,salesReportListDTO.getRegionId());
+            }
         }
-        System.out.println("Report saved successfully-----------------------------------------");
+        System.out.println("Report  save process finished successfully-----------------------------------------");
 
     }
 

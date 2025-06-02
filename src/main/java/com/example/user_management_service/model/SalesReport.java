@@ -35,6 +35,7 @@ public class SalesReport {
     private Long written ;
     private Long allowed ;
     private Long sold ;
+    private boolean saved = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

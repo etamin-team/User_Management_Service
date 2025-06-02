@@ -1,5 +1,6 @@
 package com.example.user_management_service.service;
 
+import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.exception.SalesLoadException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.SalesByRegionDTO;
@@ -59,16 +60,22 @@ public class SalesService {
         }
     }
 
-    public void saveSalesDTO(LocalDate startDate, LocalDate endDate, SalesReportDTO dto, Region region, Medicine medicine) {
-            Sales sales = new Sales();
-            sales.setMedicine(medicine);
-            sales.setRegion(region);
-            sales.setStartDate(startDate);
-            sales.setEndDate(endDate);
-            sales.setAllDirectSales(dto.getWritten());
-            sales.setQuote(dto.getAllowed());
-            sales.setTotal(dto.getSold());
-            salesRepository.save(sales);
+    public void saveSalesDTO(LocalDate startDate, LocalDate endDate, SalesReportDTO dto, Long regionId) {
+        System.out.println("Inside saveSalesDTO-----------------------");
+        Medicine medicine = medicineRepository.findById(dto.getMedicineId())
+                .orElseThrow(() -> new ReportException("Medicine not found"));
+        Region region = regionRepository.findById(regionId).orElseThrow(() -> new ReportException("Region not found"));
+
+        Sales sales = new Sales();
+        sales.setMedicine(medicine);
+        sales.setRegion(region);
+        sales.setStartDate(startDate);
+        sales.setEndDate(endDate);
+        sales.setAllDirectSales(dto.getWritten());
+        sales.setQuote(dto.getAllowed());
+        sales.setTotal(dto.getSold());
+        salesRepository.save(sales);
+        System.out.println("Inside saveSalesDTO----------------------- dto saved successfully");
     }
 
 
