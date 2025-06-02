@@ -73,7 +73,7 @@ public class SalesService {
 
 
     public void updateSales(Long salesId, SalesRegionDTO salesRegionDTO) {
-        Sales sales = salesRepository.findById(salesRegionDTO.getId())
+        Sales sales = salesRepository.findById(salesId)
                 .orElseThrow(() -> new SalesLoadException("Sales record not found"));
 
         sales.setAllDirectSales(salesRegionDTO.getAllDirectSales());

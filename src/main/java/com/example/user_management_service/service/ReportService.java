@@ -110,11 +110,13 @@ public class ReportService {
 
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
+        System.out.println("1111111111111111111111111111111111111");
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
-            SalesReport report = salesReportRepository.findById(dto.getId()).orElse(null);
-        if (report == null) {
-            report = new SalesReport();
-        }
+            SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(()->new ReportException("SalesReport not found"));
+            System.out.println("22222222222222222222222222222222222222222222");
+//        if (report == null) {
+//            report = new SalesReport();
+//        }
             report.setReportDate(salesReportListDTO.getDate());
             report.setWritten(dto.getWritten());
             report.setAllowed(dto.getAllowed());
@@ -125,8 +127,12 @@ public class ReportService {
 
             Medicine medicine = medicineRepository.findById(dto.getMedicineId())
                     .orElseThrow(() -> new ReportException("Medicine not found"));
+
             Region region=regionRepository.findById(salesReportListDTO.getRegionId()).orElseThrow(() -> new ReportException("Region not found"));
             salesReportRepository.save(report);
+
+            System.out.println("Report saved successfully-----------------------------------------");
+            System.out.println("Report saved successfully-----------------------------------------");
             salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,region,medicine);
         }
     }
@@ -174,12 +180,6 @@ public class ReportService {
                 Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId,startDate,endDate);
                 Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicine.getId(),contractType, regionId,startDate,endDate);
                 Long inFact = medicineWithQuantityDoctorRepository.findTotalWrittenInFact(medicine.getId(),contractType,regionId,startDate,endDate);
-                salesReportDTO.setAllowed(allowed);
-                salesReportDTO.setWritten(written);
-                salesReportDTO.setSold(inFact);
-                salesReportDTO.setMedicine(medicine);
-                salesReportDTO.setMedicineId(medicine.getId());
-                salesReportDTO.setContractType(contractType);
                 salesReport.setAllowed(allowed);
                 salesReport.setWritten(written);
                 salesReport.setSold(inFact);
@@ -190,6 +190,13 @@ public class ReportService {
                 salesReport.setEndDate(endDate);
                 salesReport.setRegion(regionRepository.findById(regionId) .orElseThrow(() -> new DataNotFoundException("Region with ID " + regionId + " not found")));
                 SalesReport save = salesReportRepository.save(salesReport);
+
+                salesReportDTO.setAllowed(allowed);
+                salesReportDTO.setWritten(written);
+                salesReportDTO.setSold(inFact);
+                salesReportDTO.setMedicine(medicine);
+                salesReportDTO.setMedicineId(medicine.getId());
+                salesReportDTO.setContractType(contractType);
                 salesReportDTO.setId(save.getId());
             }else {
                 Long allowed = medicineWithQuantityDoctorRepository.findTotalAllowed(medicine.getId(),contractType, regionId,startDate,endDate);
