@@ -138,6 +138,8 @@ public class ReportService {
             System.out.println("Report saved successfully-----------------------------------------");
             salesService.saveSalesDTO(salesReportListDTO.getStartDate(),salesReportListDTO.getEndDate(),dto,region,medicine);
         }
+        System.out.println("Report saved successfully-----------------------------------------");
+
     }
 
 
