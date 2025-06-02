@@ -89,6 +89,13 @@ public class DoctorController {
         return ResponseEntity.ok(contractAmountDTO);
     }
 
+
+    @GetMapping("/contract/doctor-id/{doctorId}/history")
+    public ResponseEntity<List<ContractAmountDTO>> getHistoryContractByDoctorId(@PathVariable UUID doctorId) {
+        List<ContractAmountDTO> history = contractService.getHistoryContractByDoctorId(doctorId);
+        return ResponseEntity.ok(history);
+    }
+
     @GetMapping("/out-contract/doctor-id/{doctorId}")
     public ResponseEntity<OutOfContractAmountDTO> getOutOfContractByDoctorId(@PathVariable UUID doctorId) {
         OutOfContractAmountDTO contractAmountDTO = contractService.getOutOfContractsByDoctorId(doctorId);

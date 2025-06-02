@@ -52,6 +52,10 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     Optional<Contract> findActiveContractByDoctorId(@Param("doctorId") UUID doctorId);
 
     @Query("SELECT c FROM Contract c " +
+            "WHERE c.doctor.userId = :doctorId order by c.id desc")
+    List<Contract> findHistoryContractByDoctorId(@Param("doctorId") UUID doctorId);
+
+    @Query("SELECT c FROM Contract c " +
             "WHERE c.doctor.userId = :doctorId " +
             "AND (c.status = 'APPROVED' OR c.status = 'PENDING_REVIEW') order by c.id asc limit 1")
     Optional<Contract> findActiveOrPendingContractByDoctorId(@Param("doctorId") UUID doctorId);
