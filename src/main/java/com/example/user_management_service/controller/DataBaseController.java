@@ -361,6 +361,17 @@ public class DataBaseController {
         Page<MNN> mnnPage = dataBaseService.getAllMnnPaginated(page, size);
         return ResponseEntity.ok(mnnPage);
     }
+    @GetMapping("/mnn/list-page-search")
+    public ResponseEntity<Page<MNN>> listMNNSearch(
+            @RequestParam(required = false) String  query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<MNN> mnnPage = dataBaseService.getAllMnnPaginatedSearch(query,page, size);
+        return ResponseEntity.ok(mnnPage);
+    }
+
+
     @GetMapping("/mnn/list-page-by-rdered-id")
     public ResponseEntity<Page<MNN>> listMNNByOrderedId(
             @RequestParam(defaultValue = "0") int page,

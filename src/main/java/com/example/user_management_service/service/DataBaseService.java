@@ -479,4 +479,9 @@ public class DataBaseService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public Page<MNN> getAllMnnPaginatedSearch(String query, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return mnnRepository.findMnnByNameAndSearch(query,pageable);
+    }
 }
