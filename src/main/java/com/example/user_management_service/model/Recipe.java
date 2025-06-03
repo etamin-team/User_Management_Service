@@ -45,10 +45,10 @@ public class Recipe {
     @Column(name = "phone_number_prefix")
     private String phoneNumberPrefix;
 
-    @Column(name = "diagnosis")
+    @Column(name = "diagnosis",length = 4000)
     private String diagnosis;
 
-    @Column(name = "comment")
+    @Column(name = "comment",length = 4000)
     private String comment;
 
     @Column(name = "date_creation")
