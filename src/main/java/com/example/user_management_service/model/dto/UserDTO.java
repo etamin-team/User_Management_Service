@@ -38,10 +38,10 @@ public class UserDTO {
     private Long workplaceId;
     private Long districtId;
     private Role role;
-
     private RegionDistrictDTO regionDistrictDTO;
     private WorkPlaceDTO workPlaceDTO;
 
     private boolean isContractAvailable;
+    private String groupName;
 
 }

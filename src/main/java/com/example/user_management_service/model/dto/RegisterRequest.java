@@ -39,4 +39,5 @@ public class RegisterRequest {
 
     private Field fieldName;
     private String position;
+    private String groupName;
 }

@@ -4,6 +4,7 @@ import com.example.user_management_service.exception.ChartException;
 import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Region;
+import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Date-2/22/2025
@@ -34,6 +36,7 @@ public class DashboardService {
     private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
     private UserRepository userRepository;
     private SalesRepository salesRepository;
+    private MedAgentGroupRepository medAgentGroupRepository;
 
     public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = new RecordDTO();
@@ -227,13 +230,13 @@ public class DashboardService {
     }
 
     public List<TopProductsOnSellDTO> getTop6Medicine(Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate) {
-        return medicineWithQuantityDoctorRepository.findTop6MostSoldMedicinesWithFilters(districtId, regionId, workplaceId,startDate,endDate);
+        return medicineWithQuantityDoctorRepository.findTop6MostSoldMedicinesWithFilters(districtId, regionId, workplaceId, startDate, endDate);
     }
 
     public SalesQuoteDTO getSalesQuote(Long regionId, LocalDate startDate, LocalDate endDate) {
-        SalesQuoteDTO salesQuoteDTO=new SalesQuoteDTO();
-        salesQuoteDTO.setQuote(salesRepository.getTotalQuotes(regionId,startDate,endDate));
-        salesQuoteDTO.setSales(salesRepository.getTotalAmounts(regionId,startDate,endDate));
+        SalesQuoteDTO salesQuoteDTO = new SalesQuoteDTO();
+        salesQuoteDTO.setQuote(salesRepository.getTotalQuotes(regionId, startDate, endDate));
+        salesQuoteDTO.setSales(salesRepository.getTotalAmounts(regionId, startDate, endDate));
         return salesQuoteDTO;
     }
 
@@ -247,5 +250,21 @@ public class DashboardService {
 
     public List<DashboardDoctorsCoverage> getDashboardDoctorsCoverages() {
         return contractRepository.getDoctorsCoverage();
+    }
+
+    public GroupDashboardDTO getGroupByRegion(Long regionId) {
+        GroupDashboardDTO groupDashboardDTO = new GroupDashboardDTO();
+        User user = userRepository.getManagerByRegionId(regionId).orElse(null);
+        groupDashboardDTO.setUser(userService.convertToDTO(user));
+        List<GroupDTO> groupDTOS = medAgentGroupRepository.findByRegionId(regionId).stream().map(entity -> {
+                    GroupDTO groupDTO = new GroupDTO();
+                    groupDTO.setUsers(userService.convertToDTO(entity.getUser()));
+                    groupDTO.setGroupName(entity.getGroupName());
+                    groupDTO.setGroupId(entity.getAgentGroupId());
+                    return groupDTO;
+                })
+                .collect(Collectors.toList());
+        groupDashboardDTO.setGroups(groupDTOS);
+        return groupDashboardDTO;
     }
 }

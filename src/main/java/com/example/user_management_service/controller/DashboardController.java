@@ -45,6 +45,13 @@ public class DashboardController {
         return ResponseEntity.ok(salesQuoteDTO);
     }
 
+    @GetMapping("/group-list")
+    public ResponseEntity<GroupDashboardDTO> getGroupByRegion(
+            @RequestParam Long regionId) {
+        GroupDashboardDTO groupDashboardDTO= dashboardService.getGroupByRegion(regionId);
+        return ResponseEntity.ok(groupDashboardDTO);
+    }
+
     @GetMapping("/top-6-medicine")
     public ResponseEntity<List<TopProductsOnSellDTO>> getTop6MedicineRecords(
             @RequestParam(required = false) Long regionId,

@@ -48,6 +48,7 @@ public class RegistrationService {
     private final TokenRepository tokenRepository;
     private final WorkPlaceRepository workPlaceRepository;
     private final SmsService smsService;
+    private final MedAgentGroupRepository medAgentGroupRepository;
 
     private final VerificationNumberRepository verificationNumberRepository;
     private final UserService userService;
@@ -123,6 +124,12 @@ public class RegistrationService {
                 workPlace.setChiefDoctor(save);
             }
             save.setWorkplace(workPlace);
+        }
+        if (role.equals(Role.MEDAGENT)) {
+            MedAgentGroup medAgentGroup=new MedAgentGroup();
+            medAgentGroup.setGroupName(request.getGroupName());
+            medAgentGroup.setUser(save);
+            medAgentGroupRepository.save(medAgentGroup);
         }
         userRepository.save(save);
         return userService.convertToDTO(save);

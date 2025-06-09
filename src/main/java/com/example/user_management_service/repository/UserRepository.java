@@ -440,6 +440,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
                 SELECT COUNT(w) FROM User w 
+                WHERE w.district.region.id = :regionId and w.role = 'MANGER' AND w.status = 'ENABLED' order by w.userId asc  limit 1
+            """)
+    Optional<User> getManagerByRegionId(@Param("regionId") Long regionId);
+
+    @Query("""
+                SELECT COUNT(w) FROM User w 
                 WHERE w.district.region.id = :regionId and w.role = 'DOCTOR' AND w.status = 'ENABLED'
             """)
     Long countByRegionIdInFact(@Param("regionId") Long regionId);

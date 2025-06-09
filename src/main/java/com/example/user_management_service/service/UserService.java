@@ -42,6 +42,7 @@ public class UserService {
     private final DistrictRegionService districtRegionService;
     private final FieldForceRegionsRepository fieldForceRegionsRepository;
     private final RegionRepository regionRepository;
+    private final MedAgentGroupRepository medAgentGroupRepository;
     private final ContractRepository contractRepository;
 
     public UserDTO getUserById(UUID userId) {
@@ -88,7 +89,8 @@ public class UserService {
                 user.getRole(),
                 user.getDistrict() == null ? null : districtRegionService.regionDistrictDTO(user.getDistrict()),
                 user.getWorkplace() == null ? null : convertToDTO(user.getWorkplace()),
-                false
+                false,
+                (user.getRole()!=null?(user.getRole().getRoleName().equals(Role.MEDAGENT)?medAgentGroupRepository.findByUserId(user.getUserId()).orElseThrow(()->new RuntimeException("Group Name and SOme shit")).getGroupName():null):null)
         );
     }
 
@@ -115,7 +117,8 @@ public class UserService {
                 user.getRole(),
                 districtRegionService.regionDistrictDTO(user.getDistrict()),
                 convertToDTO(user.getWorkplace()),
-                !isContractPresent
+                !isContractPresent,
+                (user.getRole()!=null?(user.getRole().getRoleName().equals(Role.MEDAGENT)?medAgentGroupRepository.findByUserId(user.getUserId()).orElseThrow(()->new RuntimeException("Group Name and SOme shit")).getGroupName():null):null)
         );
     }
 
@@ -391,6 +394,15 @@ public class UserService {
                     return userRepository.save(existingUser);
                 })
                 .orElse(null);
+        if (user.getRole().equals(Role.MEDAGENT)) {
+            MedAgentGroup byUserId = medAgentGroupRepository.findByUserId(user.getUserId()).orElse(null);
+            if (byUserId == null) {
+                byUserId=new MedAgentGroup();
+                byUserId.setUser(user);
+            }
+            byUserId.setGroupName(updatedUser.getGroupName());
+            medAgentGroupRepository.save(byUserId);
+        }
         return convertToDTO(user);
     }
 
