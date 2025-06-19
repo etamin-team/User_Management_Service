@@ -25,7 +25,7 @@ public interface MNNRepository  extends JpaRepository<MNN, Long> {
 
 
     @Query("SELECT m FROM MNN m " +
-            "WHERE :query IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT('%', :query, '%'))")
+            "WHERE :query IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT(:query, '%'))")
     Page<MNN> findMnnByNameAndSearch(@Param("query") String query,
                                  Pageable pageable);
 
