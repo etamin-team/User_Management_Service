@@ -440,7 +440,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
                 SELECT w FROM User w 
-                WHERE w.district.region.id = :regionId and w.role = 'MANGER' AND w.status = 'ENABLED' order by w.userId asc  limit 1
+                WHERE w.district.region.id = :regionId and w.role = 'MANAGER' AND w.status = 'ENABLED' order by w.createdDate asc  limit 1
             """)
     Optional<User> getManagerByRegionId(@Param("regionId") Long regionId);
 
