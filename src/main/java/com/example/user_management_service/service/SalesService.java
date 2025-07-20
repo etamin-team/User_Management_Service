@@ -115,6 +115,7 @@ public class SalesService {
                                 sale.getAllSecondarySales(),
                                 sale.getQuote(),
                                 sale.getTotal(),
+                                sale.getMedicine(),
                                 districtRegionService.mapRegionToDTO(sale.getRegion())
                         )
                 )

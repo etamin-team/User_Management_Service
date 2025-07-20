@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.Medicine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class SalesByRegionDTO {
     private Long allSecondarySales;
     private Long quote;
     private Long total;
+    private Medicine medicine;
 
     private RegionDTO regionDTO;
 }
