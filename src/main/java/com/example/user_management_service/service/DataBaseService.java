@@ -93,7 +93,7 @@ public class DataBaseService {
     }
 
     public Medicine convertToMedicineEntity(MedicineDTO dto) {
-        Medicine medicine = new Medicine();
+        Medicine medicine = medicineRepository.findById(dto.getId()).orElse(new Medicine());
         medicine.setId(dto.getId());
         medicine.setName(dto.getName());
         medicine.setNameUzCyrillic(dto.getNameUzCyrillic());
