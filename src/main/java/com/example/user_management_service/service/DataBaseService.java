@@ -77,30 +77,42 @@ public class DataBaseService {
         this.mnnRepository = mnnRepository;
     }
 
-    // Create or update a Medicine (save)
     public Medicine saveOrUpdateMedicine(Medicine medicine) {
         if (medicine.getId() == null || medicine.getId() == 0) {
             medicine.setCreatedDate(LocalDateTime.now());
+        } else {
+            // Ensure createdDate is preserved for updates
+            Medicine existing = medicineRepository.findById(medicine.getId()).orElse(null);
+            if (existing != null) {
+                medicine.setCreatedDate(existing.getCreatedDate());
+            }
         }
         return medicineRepository.save(medicine);
     }
 
     public void saveList(List<MedicineDTO> medicines) {
-        for (MedicineDTO medicine : medicines) {
-            Medicine m = convertToMedicineEntity(medicine);
-            saveOrUpdateMedicine(m);
+        for (MedicineDTO dto : medicines) {
+            Medicine medicine = convertToMedicineEntity(dto);
+            saveOrUpdateMedicine(medicine);
         }
     }
 
     public Medicine convertToMedicineEntity(MedicineDTO dto) {
-        Medicine medicine = medicineRepository.findById(dto.getId()).orElse(new Medicine());
-        medicine.setId(dto.getId());
+        Medicine medicine;
+        // Only fetch existing entity if ID is provided and not 0
+        if (dto.getId() != null && dto.getId() != 0) {
+            medicine = medicineRepository.findById(dto.getId()).orElse(new Medicine());
+        } else {
+            medicine = new Medicine();
+        }
+
+        // Do not set ID explicitly; let JPA handle it for new entities
         medicine.setName(dto.getName());
         medicine.setNameUzCyrillic(dto.getNameUzCyrillic());
         medicine.setNameUzLatin(dto.getNameUzLatin());
         medicine.setNameRussian(dto.getNameRussian());
         medicine.setStatus(dto.getStatus());
-        medicine.setCreatedDate(dto.getCreatedDate());
+        // Do not set createdDate here; handle in saveOrUpdateMedicine
         medicine.setImageUrl(dto.getImageUrl());
         medicine.setMnn(mnnRepository.findAllById(dto.getMnn()));
         medicine.setCip(dto.getCip());
@@ -124,9 +136,9 @@ public class DataBaseService {
         medicine.setKbPercentage(dto.getKbPercentage());
         medicine.setKbLimit(dto.getKbLimit());
         medicine.setKbBall(dto.getKbBall());
+
         return medicine;
     }
-
     // Delete a Medicine by ID
     @Transactional
     public void deleteMedicine(Long medicineId) {
