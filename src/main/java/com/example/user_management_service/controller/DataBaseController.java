@@ -91,6 +91,11 @@ public class DataBaseController {
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
+    @DeleteMapping("/medicines/delete-all")
+    public ResponseEntity<List<Long>> deleteAllMedicines() {
+        List<Long> list= dataBaseService.deleteAllMedicines();
+        return ResponseEntity.ok(list);
+    }
 
     // contracts
 //    @GetMapping("/contracts/{contractId}")

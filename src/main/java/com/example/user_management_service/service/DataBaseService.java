@@ -142,6 +142,20 @@ public class DataBaseService {
 
         return medicine;
     }
+
+    public List<Long> deleteAllMedicines() {
+        List<Medicine> medicinesList = medicineRepository.findAll();
+        List<Long> notDeletedIds = new ArrayList<>();
+        for (Medicine medicine : medicinesList) {
+            try {
+                deleteMedicine(medicine.getId());
+            } catch (Exception e) {
+                notDeletedIds.add(medicine.getId());
+            }
+        }
+        return notDeletedIds;
+    }
+
     // Delete a Medicine by ID
     @Transactional
     public void deleteMedicine(Long medicineId) {
