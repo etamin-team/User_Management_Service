@@ -79,9 +79,12 @@ public class DataBaseService {
 
     public Medicine saveOrUpdateMedicine(Medicine medicine) {
         if (medicine.getId() == null || medicine.getId() == 0) {
+            // Auto-generate ID by finding max ID and incrementing
+            Long maxId = medicineRepository.findMaxId().orElse(0L);
+            medicine.setId(maxId + 1);
             medicine.setCreatedDate(LocalDateTime.now());
         } else {
-            // Ensure createdDate is preserved for updates
+            // Preserve createdDate for existing entities
             Medicine existing = medicineRepository.findById(medicine.getId()).orElse(null);
             if (existing != null) {
                 medicine.setCreatedDate(existing.getCreatedDate());
@@ -99,20 +102,20 @@ public class DataBaseService {
 
     public Medicine convertToMedicineEntity(MedicineDTO dto) {
         Medicine medicine;
-        // Only fetch existing entity if ID is provided and not 0
         if (dto.getId() != null && dto.getId() != 0) {
+            // Use provided ID
             medicine = medicineRepository.findById(dto.getId()).orElse(new Medicine());
+            medicine.setId(dto.getId()); // Respect manual ID
         } else {
+            // New entity, ID will be set in saveOrUpdateMedicine
             medicine = new Medicine();
         }
 
-        // Do not set ID explicitly; let JPA handle it for new entities
         medicine.setName(dto.getName());
         medicine.setNameUzCyrillic(dto.getNameUzCyrillic());
         medicine.setNameUzLatin(dto.getNameUzLatin());
         medicine.setNameRussian(dto.getNameRussian());
         medicine.setStatus(dto.getStatus());
-        // Do not set createdDate here; handle in saveOrUpdateMedicine
         medicine.setImageUrl(dto.getImageUrl());
         medicine.setMnn(mnnRepository.findAllById(dto.getMnn()));
         medicine.setCip(dto.getCip());

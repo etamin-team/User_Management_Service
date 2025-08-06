@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Date-12/29/2024
@@ -22,7 +23,8 @@ import java.util.List;
 @Repository
 public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
 
-
+    @Query("SELECT MAX(id) FROM Medicine")
+    Optional<Long> findMaxId();
     @Query("SELECT m FROM Medicine m JOIN m.mnn n WHERE n.id = :mnnId")
     List<Medicine> findByMnnId(@Param("mnnId") Long mnnId);
 

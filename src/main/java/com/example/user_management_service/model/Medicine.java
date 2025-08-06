@@ -23,7 +23,6 @@ import java.util.List;
 @Setter
 public class Medicine {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
