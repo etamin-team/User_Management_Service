@@ -178,6 +178,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "FROM User u " +
             "JOIN u.district d " +
             "JOIN d.region r " +
+            "WHERE u.role = 'MEDAGENT' " +
             "GROUP BY r.id, r.name, r.nameUzCyrillic, r.nameUzLatin, r.nameRussian")
     List<StatsEmployeeDTO> getUserCountByRegion();
 
@@ -186,7 +187,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "FROM User u " +
             "JOIN u.district d " +
             "JOIN d.region r " +
-            "WHERE r.id = :regionId " +
+            "WHERE r.id = :regionId and u.role = 'MEDAGENT'" +
             "GROUP BY d.id, d.name, d.nameUzCyrillic, d.nameUzLatin, d.nameRussian")
     List<StatsEmployeeDTO> getUserCountByDistrictInRegion(@Param("regionId") Long regionId);
 
