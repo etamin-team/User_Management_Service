@@ -43,12 +43,24 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
     ORDER BY u.name ASC 
 """)
     List<Medicine> findAllSortByCreatedDate();
+
     @Query("""
-    SELECT u FROM Medicine u 
-    WHERE u.status = 'ACTIVE' and  ((LOWER(u.name) LIKE LOWER(CONCAT(:name, '%'))) or   (LOWER(u.nameRussian) LIKE LOWER(CONCAT(:name, '%'))) or  (LOWER(u.nameRussian) LIKE LOWER(CONCAT(:name, '%'))) or (LOWER(u.nameUzLatin) LIKE LOWER(CONCAT(:name, '%'))) )
-    ORDER BY u.name ASC 
+    SELECT u 
+    FROM Medicine u 
+    WHERE u.status = 'ACTIVE'
+      AND (
+        :name IS NULL 
+        OR :name = '' 
+        OR LOWER(u.name) LIKE LOWER(CONCAT(:name, '%')) 
+        OR LOWER(u.nameRussian) LIKE LOWER(CONCAT(:name, '%')) 
+        OR LOWER(u.nameUzLatin) LIKE LOWER(CONCAT(:name, '%'))
+      )
+    ORDER BY u.name ASC
 """)
     List<Medicine> findAllSortByCreatedDate(@Param("name") String name);
+
+
+
     @Query("""
     SELECT u FROM Medicine u 
     WHERE u.status = 'ACTIVE'
