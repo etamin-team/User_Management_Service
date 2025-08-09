@@ -1,19 +1,18 @@
 package com.example.user_management_service.service.v2;
 
+import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.dto.AdminPrescriptions;
-import com.example.user_management_service.model.dto.LastRecipeDTO;
+import com.example.user_management_service.model.dto.AdminPrescriptionsMedicine;
+import com.example.user_management_service.repository.ContractRepository;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.MedicineWithQuantityDoctorRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,31 +34,31 @@ public class AdminServiceV2 {
 
     public List<AdminPrescriptions> getAdminPrescriptions(String name, Long regionId, Long districtId, Long workPlaceId, Field field, LocalDate startDate, LocalDate endDate) {
         List<AdminPrescriptions> adminPrescriptions = new ArrayList<>();
-        List<Medicine> medicines=medicineRepository.findAllSortByCreatedDate(name);
-        for (Medicine medicine:medicines) {
+        List<Medicine> medicines = medicineRepository.findAllSortByCreatedDate(name);
+        for (Medicine medicine : medicines) {
             System.out.println("11111111111");
-            Long recipe = recipeRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId,districtId,workPlaceId, field,ContractType.RECIPE, startDate, endDate);
+            Long recipe = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.RECIPE, startDate, endDate);
             System.out.println("111111111112");
 
-            Long su = recipeRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId,districtId,workPlaceId, field,ContractType.SU, startDate, endDate);
+            Long su = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.SU, startDate, endDate);
             System.out.println("11111111113");
 
-            Long sb = recipeRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId,districtId,workPlaceId, field,ContractType.SB, startDate, endDate);
+            Long sb = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.SB, startDate, endDate);
             System.out.println("11111111114");
 
-            Long gz = recipeRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId,districtId,workPlaceId, field,ContractType.GZ, startDate, endDate);
+            Long gz = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.GZ, startDate, endDate);
             System.out.println("11111111115");
 
-            Long kb = recipeRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId,districtId,workPlaceId, field,ContractType.KZ, startDate, endDate);
+            Long kb = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.KZ, startDate, endDate);
             System.out.println("11111111116");
 
-            Long written = medicineWithQuantityDoctorRepository.findTotalWrittenPrescriptions(medicine.getId(), regionId,districtId,workPlaceId,field,startDate,endDate);
+            Long written = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field,null, startDate, endDate);
             System.out.println("11111111117");
 
-            Long quote=medicineWithQuantityDoctorRepository.findTotalQuotePrescriptions(medicine.getId(), regionId, districtId,workPlaceId,field,startDate, endDate);
+            Long quote = medicineWithQuantityDoctorRepository.findTotalQuotePrescriptions(medicine.getId(), regionId, districtId, workPlaceId, field, startDate, endDate);
             System.out.println("11111111118");
 
-            AdminPrescriptions adminPrescription=new AdminPrescriptions();
+            AdminPrescriptions adminPrescription = new AdminPrescriptions();
             adminPrescription.setQuote(quote);
             adminPrescription.setWritten(written);
             adminPrescription.setRecipe(recipe);
@@ -73,5 +72,15 @@ public class AdminServiceV2 {
         }
 
         return adminPrescriptions;
+    }
+
+    public List<AdminPrescriptionsMedicine> getAdminPrescriptionsByMedicineId(Long medicineId, Long regionId, Long districtId, Long workPlaceId, Field field, ContractType contractType, LocalDate startDate, LocalDate endDate) {
+        List<AdminPrescriptionsMedicine> adminPrescriptionsMedicineList = new ArrayList<>();
+//        Long written = medicineWithQuantityDoctorRepository.findTotalWritten(medicineId, contractType, regionId, districtId, workPlaceId, field, startDate, endDate);
+//
+//        AdminPrescriptionsMedicine adminPrescriptionsMedicine = new AdminPrescriptionsMedicine();
+//        doctorReportDTO.setWritten(written);
+
+        return adminPrescriptionsMedicineList;
     }
 }

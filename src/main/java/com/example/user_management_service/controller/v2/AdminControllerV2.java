@@ -1,7 +1,9 @@
 package com.example.user_management_service.controller.v2;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.dto.AdminPrescriptions;
+import com.example.user_management_service.model.dto.AdminPrescriptionsMedicine;
 import com.example.user_management_service.service.v2.AdminServiceV2;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,21 @@ public class AdminControllerV2 {
             @RequestParam(required = false) LocalDate endDate) {
 
         List<AdminPrescriptions> adminPrescriptions = adminServiceV2.getAdminPrescriptions(name, regionId, districtId,workPlaceId,  field,  startDate, endDate);
+        return ResponseEntity.ok(adminPrescriptions);
+    }
+
+    @GetMapping("/prescriptions/{medicineId}")
+    public ResponseEntity<List<AdminPrescriptionsMedicine>> getAdminPrescriptionsByMedicineId(
+            @PathVariable Long medicineId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long workPlaceId,
+            @RequestParam(required = false) Field field,
+            @RequestParam(required = false) ContractType contractType,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate) {
+
+        List<AdminPrescriptionsMedicine> adminPrescriptions = adminServiceV2.getAdminPrescriptionsByMedicineId(  medicineId, regionId, districtId,workPlaceId,  field,contractType,  startDate, endDate);
         return ResponseEntity.ok(adminPrescriptions);
     }
 }
