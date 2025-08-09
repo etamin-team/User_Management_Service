@@ -256,7 +256,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
       AND (:contractType IS NULL OR r.contractType = :contractType)
       AND (
             (:startDate IS NULL OR :endDate IS NULL) 
-            OR CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+            OR r.dateCreation BETWEEN :startDate AND :endDate
           )
 """)
     Long findTotalPrescriptionsByContractType(
@@ -268,6 +268,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("contractType") ContractType contractType,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
 
 
 }
