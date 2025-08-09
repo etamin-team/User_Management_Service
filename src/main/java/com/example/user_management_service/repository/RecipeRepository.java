@@ -248,13 +248,16 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     FROM Recipe r
     JOIN r.preparations p
     JOIN p.medicine m
-    WHERE (:medicineId IS NULL OR m.id = :medicineId) 
-    AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) 
-    AND (:districtId IS NULL OR m.id = :districtId) 
-    AND (:workplaceId IS NULL OR m.id = :workplaceId) 
-    AND (:field IS NULL OR m.id = :field) 
-    AND (:contractType IS NULL OR m.id = :contractType) 
-    AND CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+    WHERE (:medicineId IS NULL OR m.id = :medicineId)
+      AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId)
+      AND (:districtId IS NULL OR r.doctorId.district.id = :districtId)
+      AND (:workplaceId IS NULL OR r.doctorId.workplace.id = :workplaceId)
+      AND (:field IS NULL OR r.doctorId.fieldName = :field)
+      AND (:contractType IS NULL OR r.contractType = :contractType)
+      AND (
+            (:startDate IS NULL OR :endDate IS NULL) 
+            OR CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+          )
 """)
     Long findTotalPrescriptionsByContractType(
             @Param("medicineId") Long medicineId,
