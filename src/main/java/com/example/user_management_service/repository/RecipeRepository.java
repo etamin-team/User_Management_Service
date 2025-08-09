@@ -1,5 +1,6 @@
 package com.example.user_management_service.repository;
 
+import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.PreparationType;
 import com.example.user_management_service.model.Recipe;
@@ -240,6 +241,30 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
                                             @Param("endDate") LocalDate endDate);
 
 
+
+
+    @Query("""
+    SELECT COUNT(DISTINCT r)
+    FROM Recipe r
+    JOIN r.preparations p
+    JOIN p.medicine m
+    WHERE (:medicineId IS NULL OR m.id = :medicineId) 
+    AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) 
+    AND (:districtId IS NULL OR m.id = :districtId) 
+    AND (:workplaceId IS NULL OR m.id = :workplaceId) 
+    AND (:field IS NULL OR m.id = :field) 
+    AND (:contractType IS NULL OR m.id = :contractType) 
+    AND CAST(r.dateCreation AS date) BETWEEN CAST(:startDate AS date) AND CAST(:endDate AS date)
+""")
+    Long findTotalPrescriptionsByContractType(
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("field") Field field,
+            @Param("contractType") ContractType contractType,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
 
 }

@@ -157,6 +157,50 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+    @Query("""
+                SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0) 
+                FROM MedicineWithQuantityDoctor m 
+                WHERE 
+                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+                AND (:field IS NULL OR m.doctorContract.doctor.fieldName = :field) 
+                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+                AND (:workPlaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workPlaceId)
+                AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalWrittenPrescriptions(
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workPlaceId") Long workPlaceId,
+            @Param("field") Field field,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    @Query("""
+                SELECT COALESCE(SUM(m.quote), 0) 
+                FROM MedicineWithQuantityDoctor m 
+                WHERE 
+                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+                AND (:field IS NULL OR m.doctorContract.doctor.fieldName = :field) 
+                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+                AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+                AND (:workPlaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workPlaceId)
+                AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+                AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+            """)
+    Long findTotalQuotePrescriptions(
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workPlaceId") Long workPlaceId,
+            @Param("field") Field field,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
 
 
     @Query("""
