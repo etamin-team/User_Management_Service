@@ -67,6 +67,8 @@ public class AdminServiceV2 {
             adminPrescription.setSb(sb);
             adminPrescription.setGz(gz);
             adminPrescription.setKb(kb);
+            adminPrescription.setMedicine(medicine);
+            adminPrescription.setMedicineId(medicine.getId());
             adminPrescriptions.add(adminPrescription);
         }
 
