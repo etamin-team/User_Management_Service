@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdminPrescriptions {
     private Medicine medicine;
-    private long medicineId;
-    private long quote;
-    private long written;
-    private long kb;
-    private long su;
-    private long sb;
-    private long gz;
-    private long recipe;
+    private Long medicineId;
+    private Long quote;
+    private Long written;
+    private Long kb;
+    private Long su;
+    private Long sb;
+    private Long gz;
+    private Long recipe;
 }

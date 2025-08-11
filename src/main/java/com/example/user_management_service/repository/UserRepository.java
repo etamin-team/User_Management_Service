@@ -121,7 +121,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             )
             AND u.status = 'ENABLED'
             AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
-            AND (c.status IS NULL OR c.status = 'APPROVED')
+            AND  c.status = 'APPROVED'
             AND (:medicineId IS NULL OR m.id = :medicineId)
             """)
     Page<User> findUsersByFiltersPaginatedWithContracts(
@@ -157,7 +157,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         )
         AND u.status = 'ENABLED'
         AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
-        AND (c.status IS NULL OR c.status = 'APPROVED')
+        AND c.status = 'APPROVED'
         AND (:medicineId IS NULL OR m.id = :medicineId)
         """)
     Page<User> findUsersByFiltersPaginatedWithContracts(
@@ -355,7 +355,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                     )
                     AND u.status = 'ENABLED'
                     AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
-                    AND (c.status IS NULL OR c.status = 'APPROVED')
+                    AND ( c.status = 'APPROVED')
                     ORDER BY u.firstName ASC 
             """)
     List<User> findUsersByFiltersWitContracts(
@@ -388,7 +388,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
                     )
                     AND u.status = 'ENABLED'
                     AND (c.doctor.userId IS NULL OR c.doctor.userId = u.userId)
-                    AND (c.status IS NULL OR c.status = 'APPROVED')
+                    AND (c.status = 'APPROVED')
                     ORDER BY u.firstName ASC 
             """)
     List<User> findUsersByFiltersWitContracts(

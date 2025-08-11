@@ -36,27 +36,19 @@ public class AdminServiceV2 {
         List<AdminPrescriptions> adminPrescriptions = new ArrayList<>();
         List<Medicine> medicines = medicineRepository.findAllSortByCreatedDate(name);
         for (Medicine medicine : medicines) {
-            System.out.println("11111111111");
             Long recipe = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.RECIPE, startDate, endDate);
-            System.out.println("111111111112");
 
             Long su = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.SU, startDate, endDate);
-            System.out.println("11111111113");
 
             Long sb = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.SB, startDate, endDate);
-            System.out.println("11111111114");
 
             Long gz = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.GZ, startDate, endDate);
-            System.out.println("11111111115");
 
             Long kb = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field, ContractType.KZ, startDate, endDate);
-            System.out.println("11111111116");
 
             Long written = medicineWithQuantityDoctorRepository.findTotalPrescriptionsByContractType(medicine.getId(), regionId, districtId, workPlaceId, field,null, startDate, endDate);
-            System.out.println("11111111117");
 
             Long quote = medicineWithQuantityDoctorRepository.findTotalQuotePrescriptions(medicine.getId(), regionId, districtId, workPlaceId, field, startDate, endDate);
-            System.out.println("11111111118");
 
             AdminPrescriptions adminPrescription = new AdminPrescriptions();
             adminPrescription.setQuote(quote);

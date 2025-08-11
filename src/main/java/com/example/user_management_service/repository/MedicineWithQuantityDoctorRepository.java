@@ -280,10 +280,10 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
 
 
     @Query("""
-                SELECT COALESCE(SUM(m.contractMedicineDoctorAmount.amount), 0)
+                SELECT SUM(m.contractMedicineDoctorAmount.amount)
                 FROM MedicineWithQuantityDoctor m
                 WHERE 
-                    (:medicineId IS NULL OR m.medicine.id = :medicineId)
+                    (:medicineId IS NULL OR m.medicine.id= :medicineId)
                     AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType)
                     AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
                     AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
