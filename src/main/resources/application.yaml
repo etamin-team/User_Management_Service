@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/world_medicine
     username: postgres
-    password: postgres
+    password: fuck_you_hacker_suck_my_dick
     hikari:
       maximum-pool-size: 20  # Max connections (adjust based on load)
       connection-timeout: 120000  # 120s timeout
