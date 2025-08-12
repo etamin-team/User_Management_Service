@@ -4,8 +4,12 @@ import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.dto.AdminPrescriptions;
 import com.example.user_management_service.model.dto.AdminPrescriptionsMedicine;
+import com.example.user_management_service.model.dto.SimpleDoctorPrescriptionDTO;
 import com.example.user_management_service.service.v2.AdminServiceV2;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,7 +44,7 @@ public class AdminControllerV2 {
     }
 
     @GetMapping("/prescriptions/{medicineId}")
-    public ResponseEntity<List<AdminPrescriptionsMedicine>> getAdminPrescriptionsByMedicineId(
+    public ResponseEntity<Page<AdminPrescriptionsMedicine>> getAdminPrescriptionsByMedicineId(
             @PathVariable Long medicineId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long regionId,
@@ -48,9 +52,13 @@ public class AdminControllerV2 {
             @RequestParam(required = false) Field field,
             @RequestParam(required = false) ContractType contractType,
             @RequestParam(required = false) LocalDate startDate,
-            @RequestParam(required = false) LocalDate endDate) {
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<AdminPrescriptionsMedicine> adminPrescriptions = adminServiceV2.getAdminPrescriptionsByMedicineId(  medicineId, regionId, districtId,workPlaceId,  field,contractType,  startDate, endDate);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AdminPrescriptionsMedicine> adminPrescriptions = adminServiceV2.getAdminPrescriptionsByMedicineId(
+                medicineId, regionId, districtId, workPlaceId, field, contractType, startDate, endDate, pageable);
         return ResponseEntity.ok(adminPrescriptions);
     }
 }

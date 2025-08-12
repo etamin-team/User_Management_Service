@@ -4,8 +4,12 @@ import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MedicineWithQuantityDoctor;
 import com.example.user_management_service.model.SalesReport;
+import com.example.user_management_service.model.dto.AdminPrescriptionsMedicine;
+import com.example.user_management_service.model.dto.SimpleDoctorPrescriptionDTO;
 import com.example.user_management_service.model.dto.TopProductsOnSellDTO;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -304,5 +308,38 @@ public interface MedicineWithQuantityDoctorRepository extends JpaRepository<Medi
             @Param("endDate") LocalDate endDate
     );
 
-
+    @Query("""
+    SELECT new com.example.user_management_service.model.dto.SimpleDoctorPrescriptionDTO(
+        m.medicine,
+        m.doctorContract.doctor.userId,
+        SUM(m.contractMedicineDoctorAmount.amount)
+    )
+    FROM MedicineWithQuantityDoctor m
+    WHERE 
+        (:medicineId IS NULL OR m.medicine.id = :medicineId)
+        AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType)
+        AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+        AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+        AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
+        AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
+        AND m.doctorContract.status = 'APPROVED'
+        AND (CAST(:startDate AS date) IS NULL OR m.doctorContract.startDate >= :startDate)
+        AND (CAST(:endDate AS date) IS NULL OR m.doctorContract.endDate <= :endDate)
+    GROUP BY 
+        m.medicine,
+        m.doctorContract.doctor.userId
+    HAVING 
+        SUM(m.contractMedicineDoctorAmount.amount) > 0
+""")
+    Page<SimpleDoctorPrescriptionDTO> findTotalPrescriptionsByDoctor(
+            @Param("medicineId") Long medicineId,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("contractType") ContractType contractType,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            Pageable pageable
+    );
 }
