@@ -135,8 +135,8 @@ public class AuthController {
 
 
     @GetMapping("/workplaces")
-    public  ResponseEntity<List<WorkPlaceDTO>> getAllWorkPlaces(){
-      List<WorkPlaceDTO>  workPlaceList= authService.getAllWorkPlaces();
+    public  ResponseEntity<List<WorkPlaceDTO>> getAllWorkPlaces(@RequestParam("regionId") Long regionId,@RequestParam("districtId") Long districtId ){
+      List<WorkPlaceDTO>  workPlaceList= authService.getAllWorkPlaces(regionId,districtId);
         return ResponseEntity.ok(workPlaceList);
     }
 

@@ -37,7 +37,7 @@ public interface WorkPlaceRepository extends JpaRepository<WorkPlace, Long> {
     @Query("""
                 SELECT w FROM WorkPlace w 
                 WHERE (:districtId IS NULL OR w.district.id = :districtId)
-                AND (:regionId IS NULL OR w.district.region.id = :regionId)
+                 (:regionId IS NULL OR w.district.region.id = :regionId)
                 AND (:medicalInstitutionType IS NULL OR w.medicalInstitutionType = :medicalInstitutionType)
                             AND w.status='ACTIVE'
                             ORDER BY w.district.id  DESC 
@@ -49,9 +49,12 @@ public interface WorkPlaceRepository extends JpaRepository<WorkPlace, Long> {
     @Query("""
                 SELECT w FROM WorkPlace w 
                          where    w.status='ACTIVE'
+                            AND (:districtId IS NULL OR w.district.id = :districtId)
+                            AND (:regionId IS NULL OR w.district.region.id = :regionId)
                             ORDER BY w.district.id  DESC 
             """)
-    List<WorkPlace> findAllActive();
+    List<WorkPlace> findAllActive(@Param("districtId") Long districtId,
+                                  @Param("regionId") Long regionId);
 
     @Query("""
                 SELECT COUNT(w) FROM WorkPlace w 
