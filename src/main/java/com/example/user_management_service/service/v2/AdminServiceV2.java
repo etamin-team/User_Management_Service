@@ -116,7 +116,7 @@ public class AdminServiceV2 {
                             district.getNameUzLatin(),
                             district.getNameRussian()
                     ) : null,
-                    null, true, null
+                    convertToDTO(user.getWorkplace())   , true, null
             ) : null;
             return new AdminPrescriptionsMedicine(
                     dto.getMedicine(),
@@ -124,5 +124,20 @@ public class AdminServiceV2 {
                     dto.getWritten()
             );
         });
+    }
+    private WorkPlaceDTO convertToDTO(WorkPlace workPlace) {
+        return new WorkPlaceDTO(
+                workPlace.getId(),
+                workPlace.getName(),
+                workPlace.getAddress(),
+                workPlace.getDescription(),
+                workPlace.getPhone(),
+                workPlace.getEmail(),
+                workPlace.getMedicalInstitutionType(), // Include MedicalInstitutionType here
+                workPlace.getChiefDoctor() != null ? workPlace.getChiefDoctor().getUserId() : null,
+                workPlace.getDistrict() != null ? workPlace.getDistrict().getId() : null
+        );
+
+
     }
 }
