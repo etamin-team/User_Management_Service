@@ -58,6 +58,9 @@ public class DataBaseServiceV2 {
             medicine.setMnn(mnns);
             medicineRepository.save(medicine);
         }
+        if (medicines.isEmpty()) {
+            mnnRepository.save(mnn);
+        }
         return mnn;
     }
     private MNN mnnDtoConverter(MNNDto mnn) {
