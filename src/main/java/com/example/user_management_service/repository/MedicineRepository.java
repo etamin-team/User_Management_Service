@@ -100,4 +100,6 @@ public interface MedicineRepository  extends JpaRepository<Medicine, Long> {
     @Query(value = "DELETE FROM medicine_mnn WHERE medicine_id = :medicineId", nativeQuery = true)
     void deleteMedicineMnnReferences(@Param("medicineId") Long medicineId);
 
+    @Query("SELECT m FROM Medicine m WHERE m.id IN :medicineIds")
+    List<Medicine> findByIds(@Param("medicineIds") List<Long> medicineIds);
 }
