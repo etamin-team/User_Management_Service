@@ -1,5 +1,7 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.GoalStatus;
+import com.example.user_management_service.model.v2.dto.ManagerProfileKPIDTOV2;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

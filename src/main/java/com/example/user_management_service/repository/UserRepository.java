@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +29,8 @@ import java.util.UUID;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.district.id = :districtId AND YEAR(u.createdDate) = :#{#yearMonth.year} AND MONTH(u.createdDate) = :#{#yearMonth.month}")
+    List<User> findMedicalAgentsByDistrictAndMonth(Long districtId, YearMonth yearMonth);
 
     @Query("""
                 SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(

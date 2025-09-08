@@ -6,8 +6,10 @@ logging:
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/world_medicine
+#    url: jdbc:postgresql://209.38.109.22:5432/world_medicine
     username: postgres
     password: X7#kP9mW2qL8vR3tJ5nY
+#    password: postgres
     hikari:
       maximum-pool-size: 20  # Max connections (adjust based on load)
       connection-timeout: 120000  # 120s timeout

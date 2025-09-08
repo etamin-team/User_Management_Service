@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
@@ -268,6 +269,19 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("contractType") ContractType contractType,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.doctorId.userId IN :doctorIds")
+    long countByDoctorIds(List<UUID> doctorIds);
+
+    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.doctorId.userId IN :doctorIds AND YEAR(r.dateCreation) = :#{#yearMonth.year} AND MONTH(r.dateCreation) = :#{#yearMonth.month}")
+    long countByDoctorIdsAndMonth(List<UUID> doctorIds, YearMonth yearMonth);
+
+    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE r.doctorId.userId IN :doctorIds")
+    long countMedicationsByDoctorIds(List<UUID> doctorIds);
+
+    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE r.doctorId.userId IN :doctorIds AND YEAR(r.dateCreation) = :#{#yearMonth.year} AND MONTH(r.dateCreation) = :#{#yearMonth.month}")
+    long countMedicationsByDoctorIdsAndMonth(List<UUID> doctorIds, YearMonth yearMonth);
+
 
 
 
