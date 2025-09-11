@@ -40,24 +40,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 
 
 
-//    @Query("SELECT COUNT(r) FROM Recipe r " +
-//            "WHERE (:query IS NULL OR " +
-//            "      LOWER(r.doctorId.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-//            "      LOWER(r.doctorId.lastName) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-//            "AND (:medicineId IS NULL OR EXISTS (SELECT 1 FROM r.preparations p WHERE p.medicine.id = :medicineId)) " +
-//            "AND (:districtId IS NULL OR r.doctorId.district.id = :districtId) " +
-//            "AND (:regionId IS NULL OR r.doctorId.district.region.id = :regionId) " +
-//            "AND (:fieldName IS NULL OR r.doctorId.fieldName = :fieldName)")
-//    Long countRecipesByFilters(@Param("medicineId") Long medicineId,
-//                               @Param("query") String query,
-//                               @Param("regionId") Long regionId,
-//                               @Param("districtId") Long districtId,
-//                               @Param("fieldName") Field fieldName);
-
-//    @Query("SELECT COUNT(DISTINCT r) FROM Recipe r JOIN r.preparations p WHERE p.medicine.id = :medicineId")
-//    long countByMedicineId(@Param("medicineId") Long medicineId);
-
-
     @Query("SELECT COUNT(r) FROM Recipe r JOIN r.preparations p " +
             "WHERE p.medicine.id = :medicineId " +
             "AND (:districtId IS NULL OR r.doctorId.district.id = :districtId) " +
@@ -270,17 +252,21 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.doctorId.userId IN :doctorIds")
-    long countByDoctorIds(List<UUID> doctorIds);
 
-    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.doctorId.userId IN :doctorIds AND YEAR(r.dateCreation) = :#{#yearMonth.year} AND MONTH(r.dateCreation) = :#{#yearMonth.month}")
-    long countByDoctorIdsAndMonth(List<UUID> doctorIds, YearMonth yearMonth);
 
-    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE r.doctorId.userId IN :doctorIds")
-    long countMedicationsByDoctorIds(List<UUID> doctorIds);
+    @Query("SELECT COUNT(r) FROM Recipe r WHERE r.doctorId.district.region.id = :regionId")
+    long countByRegionId( @Param("regionId") Long regionId );
 
-    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE r.doctorId.userId IN :doctorIds AND YEAR(r.dateCreation) = :#{#yearMonth.year} AND MONTH(r.dateCreation) = :#{#yearMonth.month}")
-    long countMedicationsByDoctorIdsAndMonth(List<UUID> doctorIds, YearMonth yearMonth);
+    @Query("SELECT COUNT(r) FROM Recipe r WHERE  r.doctorId.district.region.id = :regionId AND r.doctorId.createdDate BETWEEN :startDate AND :endDate")
+    long countByRegionIdAndDoctorIdsAndMonth(@Param("regionId") Long regionId, @Param("startDate") LocalDateTime startDate,
+                                  @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE  r.doctorId.district.region.id = :regionId")
+    long countMedicationsByDoctorIds( @Param("regionId") Long regionId);
+
+    @Query("SELECT COUNT(p) FROM Recipe r JOIN r.preparations p WHERE r.doctorId.district.region.id = :regionId AND r.doctorId.createdDate BETWEEN :startDate AND :endDate")
+    long countMedicationsByDoctorIdsAndMonth(@Param("regionId") Long regionId, @Param("startDate") LocalDateTime startDate,
+                                             @Param("endDate") LocalDateTime endDate);
 
 
 

@@ -21,6 +21,7 @@ import java.util.UUID;
 public class ContractDTOV2 {
     private Long id;
     private UUID creatorId;
+    private UUID doctorId;
     private LocalDate createdAt;
     private LocalDate startDate;
     private LocalDate endDate;

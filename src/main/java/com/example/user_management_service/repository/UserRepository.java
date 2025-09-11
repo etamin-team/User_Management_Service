@@ -29,8 +29,35 @@ import java.util.UUID;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    @Query("SELECT u FROM User u WHERE u.role = :role AND u.district.id = :districtId AND YEAR(u.createdDate) = :#{#yearMonth.year} AND MONTH(u.createdDate) = :#{#yearMonth.month}")
-    List<User> findMedicalAgentsByDistrictAndMonth(Long districtId, YearMonth yearMonth);
+    @Query("SELECT u FROM User u WHERE u.role = 'MEDAGENT' " +
+            "AND u.district.id = :districtId " +
+            "AND u.createdDate BETWEEN :startDate AND :endDate")
+    List<User> findMedicalAgentsByDistrictAndMonth(@Param("districtId") Long districtId,
+                                                   @Param("startDate") LocalDateTime startDate,
+                                                   @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT u FROM User u WHERE u.role = 'DOCTOR' " +
+            "AND u.district.region.id = :regionId " +
+            "AND (:fieldName IS NULL OR u.fieldName = :fieldName )" +
+            "AND u.createdDate BETWEEN :startDate AND :endDate")
+    List<User> findCreatedDoctorsThisMonthByRegionAndMonth(@Param("regionId") Long regionId,
+                                                           @Param("fieldName") Field fieldName,
+                                                           @Param("startDate") LocalDateTime startDate,
+                                                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT u FROM User u WHERE u.role = 'DOCTOR' " +
+            "AND u.district.id = :districtId " +
+            "AND (:fieldName IS NULL OR u.fieldName = :fieldName )" +
+            "AND u.createdDate BETWEEN :startDate AND :endDate")
+    List<User> findCreatedDoctorsThisMonthByDistrictAndMonth(@Param("districtId") Long districtId,
+                                                             @Param("fieldName") Field fieldName,
+                                                             @Param("startDate") LocalDateTime startDate,
+                                                             @Param("endDate") LocalDateTime endDate);
+
+
+
+
+
 
     @Query("""
                 SELECT new com.example.user_management_service.model.dto.ContractTypeSalesData(
@@ -197,6 +224,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     // Get users by role
     List<User> findByRole(Role role);
+
+    @Query("""
+                SELECT count (u) FROM User u 
+                WHERE u.role = :role
+                AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                AND u.status = 'ENABLED'
+            """)
+    Long findByRoleAndRegionId(@Param("regionId") Long regionId,Role role);
 
 
     // Get all doctors

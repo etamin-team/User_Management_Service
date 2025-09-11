@@ -25,6 +25,8 @@ public class DoctorContractCreateUpdatePayloadV2 {
 
     private UUID creatorId;
 
+    private UUID doctorId;
+
     List<MedicineQuotePayloadV2> medicineQuotes;
 
     private ContractType contractType;

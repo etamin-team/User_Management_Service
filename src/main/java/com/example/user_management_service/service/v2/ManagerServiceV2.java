@@ -22,11 +22,13 @@ import com.example.user_management_service.repository.v2.ManagerGoalV2Repository
 import com.example.user_management_service.repository.v2.MedAgentEnvV2Repository;
 import com.example.user_management_service.repository.v2.MedAgentGoalV2Repository;
 import com.example.user_management_service.repository.v2.MedicineQuoteV2Repository;
+import com.example.user_management_service.role.Role;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +36,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Date-9/8/2025
+ * Date-9/11/2025
  * By Sardor Tokhirov
- * Time-6:39 AM (EEST)
+ * Time-4:01 AM (GMT+5)
  */
 @Service
 @RequiredArgsConstructor
@@ -208,9 +210,13 @@ public class ManagerServiceV2 {
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
         Long regionId = manager.getDistrict().getRegion().getId();
+        if (regionId == null) {
+            throw new IllegalStateException("Region ID is null for manager ID: " + managerId);
+        }
 
         // Aggregate amounts from DoctorContractV2 in the region
-        long totalSales = doctorContractV2Repository.findByRegion(regionId).stream()
+        long totalSales = doctorContractV2Repository.
+                findByRegion(regionId).stream()
                 .flatMap(contract -> contract.getMedicineWithQuantityDoctorV2s().stream())
                 .flatMap(medicine -> medicine.getContractMedicineDoctorAmountV2s().stream())
                 .filter(amount -> amount.getYearMonth().equals(currentMonth))
@@ -226,60 +232,39 @@ public class ManagerServiceV2 {
     }
 
     private ManagerProfileKPIDTOV2 getManagerProfileKPIDTOV2(UUID managerId) {
-        ManagerGoalV2 activeGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
-                .orElse(null);
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
         Long regionId = manager.getDistrict().getRegion().getId();
 
-        // Get doctor IDs from DoctorContractV2 in the region
-        List<UUID> doctorIds = doctorContractV2Repository.findByRegion(regionId).stream()
-                .map(contract -> contract.getDoctor().getUserId())
-                .distinct()
-                .collect(Collectors.toList());
-
         // Get medical agent IDs from MedAgentGoalV2 in the region
-        List<UUID> medAgentIds = medAgentGoalV2Repository.findByRegion(regionId).stream()
-                .map(goal -> goal.getMedAgent().getUserId())
-                .distinct()
-                .collect(Collectors.toList());
 
         YearMonth currentMonth = YearMonth.now();
-
+        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         // KPI Calculations
-        long doctorsInDatabase = doctorIds.size();
-        long totalPrescriptions = doctorIds.isEmpty() ? 0 : recipeRepository.countByDoctorIds(doctorIds);
-        long prescriptionsNewDoctors = doctorIds.isEmpty() ? 0 : recipeRepository.countByDoctorIdsAndMonth(
-                doctorContractV2Repository.findByCreatedThisMonth(currentMonth).stream()
-                        .filter(contract -> contract.getDoctor().getDistrict().getRegion().getId().equals(regionId))
-                        .map(contract -> contract.getDoctor().getUserId())
-                        .filter(doctorIds::contains)
-                        .collect(Collectors.toList()),
-                currentMonth
-        );
-        long totalWorking = medAgentIds.size();
-        long totalMedicines = doctorIds.isEmpty() ? 0 : recipeRepository.countMedicationsByDoctorIds(doctorIds);
-        long medicineNewDoctors = doctorIds.isEmpty() ? 0 : recipeRepository.countMedicationsByDoctorIdsAndMonth(
-                doctorContractV2Repository.findByCreatedThisMonth(currentMonth).stream()
-                        .filter(contract -> contract.getDoctor().getDistrict().getRegion().getId().equals(regionId))
-                        .map(contract -> contract.getDoctor().getUserId())
-                        .filter(doctorIds::contains)
-                        .collect(Collectors.toList()),
-                currentMonth
-        );
-        long newDoctorsThisMonth = doctorIds.isEmpty() ? 0 : doctorContractV2Repository.findByCreatedThisMonth(currentMonth).stream()
-                .filter(contract -> contract.getDoctor().getDistrict().getRegion().getId().equals(regionId))
-                .map(contract -> contract.getDoctor().getUserId())
-                .distinct()
-                .count();
-        long coveredDistricts = activeGoal != null ? activeGoal.getMedAgentEnvs().stream()
-                .map(env -> env.getDistrict().getId())
-                .distinct()
-                .count() : 0;
-        long coveredWorkPlaces = activeGoal != null ? activeGoal.getFieldEnvQuoteV2s().stream()
-                .map(FieldEnvQuoteV2::getField)
-                .distinct()
-                .count() : 0;
+        //
+        long doctorsInDatabase = userRepository.findByRoleAndRegionId(regionId,Role.DOCTOR);
+
+        //
+        long totalPrescriptions = recipeRepository.countByRegionId(regionId);
+
+        //
+        long prescriptionsNewDoctors =  recipeRepository.countByRegionIdAndDoctorIdsAndMonth(regionId,startDate,endDate);
+
+        //
+        long totalWorking = userRepository.findByRoleAndRegionId(regionId,Role.MEDAGENT);
+
+        //
+        long totalMedicines =  recipeRepository.countMedicationsByDoctorIds(regionId);
+
+        //
+        long medicineNewDoctors =recipeRepository.countMedicationsByDoctorIdsAndMonth(  regionId ,startDate,endDate );
+
+        //
+        long newDoctorsThisMonth =  userRepository.findCreatedDoctorsThisMonthByRegionAndMonth(regionId,null,startDate,endDate).size();
+
+        long coveredDistricts = 0;
+        long coveredWorkPlaces = 0;
 
         return new ManagerProfileKPIDTOV2(
                 managerId,
@@ -305,10 +290,15 @@ public class ManagerServiceV2 {
         dto.setStatus(managerGoal.getStatus());
 
         YearMonth currentMonth = YearMonth.now();
+        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
         UUID managerId = managerGoal.getManagerId().getUserId();
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
         Long regionId = manager.getDistrict().getRegion().getId();
+        if (regionId == null) {
+            throw new IllegalStateException("Region ID is null for manager ID: " + managerId);
+        }
 
         // Convert Medicine Quotes (aggregate amounts from DoctorContractV2 in the region)
         if (managerGoal.getMedicineQuoteV2s() != null) {
@@ -339,11 +329,12 @@ public class ManagerServiceV2 {
                 fieldDTO.setId(fieldEnv.getId());
                 fieldDTO.setField(fieldEnv.getField());
                 fieldDTO.setQuote(fieldEnv.getQuote());
-                // Count doctors created this month in the region for this field
-                Long amount = doctorContractV2Repository.findByCreatedThisMonth(currentMonth).stream()
-                        .filter(contract -> contract.getDoctor().getDistrict().getRegion().getId().equals(regionId))
-                        .filter(contract -> contract.getDoctor().getFieldName() == fieldEnv.getField())
-                        .count();
+                Long amount = (long) userRepository.findCreatedDoctorsThisMonthByRegionAndMonth(
+                        regionId,
+                        fieldDTO.getField(),
+                        startDate,
+                        endDate
+                ).size();
                 fieldDTO.setAmount(amount);
                 fieldDTO.setYearMonth(currentMonth);
                 return fieldDTO;
@@ -365,11 +356,11 @@ public class ManagerServiceV2 {
                         agentEnv.getDistrict().getNameRussian(),
                         agentEnv.getDistrict().getRegion().getId()
                 ));
-                // Count medical agents created this month in the district
-                Long amount = userRepository.findMedicalAgentsByDistrictAndMonth(agentEnv.getDistrict().getId(), currentMonth)
-                        .stream()
-                        .filter(user -> user.getDistrict().getRegion().getId().equals(regionId))
-                        .count();
+                Long amount = (long) userRepository.findMedicalAgentsByDistrictAndMonth(
+                        agentEnv.getDistrict().getId(),
+                        startDate,
+                        endDate
+                ).size();
                 agentDTO.setAmount(amount);
                 agentDTO.setYearMonth(currentMonth);
                 return agentDTO;

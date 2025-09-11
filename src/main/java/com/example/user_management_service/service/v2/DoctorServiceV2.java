@@ -19,6 +19,7 @@ import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import com.example.user_management_service.repository.v2.OutOfContractMedicineAmountV2Repository;
+import com.example.user_management_service.role.Role;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Date-9/8/2025
+ * Date-9/11/2025
  * By Sardor Tokhirov
- * Time-4:28 AM (EEST)
+ * Time-7:47 AM (GMT+5)
  */
 @Service
 @AllArgsConstructor
@@ -45,13 +46,15 @@ public class DoctorServiceV2 {
     private final OutOfContractMedicineAmountV2Repository outOfContractMedicineAmountV2Repository;
 
     public void createContractByManager(DoctorContractCreateUpdatePayloadV2 payload) {
-        if (doctorContractV2Repository.findByDoctorUserId(payload.getCreatorId()).isPresent()) {
+        if (doctorContractV2Repository.findByDoctorUserId(payload.getDoctorId()).isPresent()) {
             throw new DoctorContractExistsException("Doctor already has an active contract");
         }
 
         DoctorContractV2 contract = new DoctorContractV2();
-        contract.setDoctor(userRepository.findById(payload.getCreatorId())
-                .orElseThrow(() -> new NotFoundException("Doctor not found with ID: " + payload.getCreatorId())));
+        contract.setDoctor(userRepository.findById(payload.getDoctorId())
+                .orElseThrow(() -> new NotFoundException("Doctor not found with ID: " + payload.getDoctorId())));
+        contract.setCreatedBy(userRepository.findById(payload.getCreatorId())
+                .orElseThrow(() -> new NotFoundException("Creator not found with ID: " + payload.getCreatorId())));
         contract.setCreatedAt(LocalDate.now());
         contract.setStartDate(payload.getStartDate());
         contract.setEndDate(payload.getEndDate());
@@ -74,13 +77,15 @@ public class DoctorServiceV2 {
     }
 
     public void createContractByMedAgent(DoctorContractCreateUpdatePayloadV2 payload) {
-        if (doctorContractV2Repository.findByDoctorUserId(payload.getCreatorId()).isPresent()) {
+        if (doctorContractV2Repository.findByDoctorUserId(payload.getDoctorId()).isPresent()) {
             throw new DoctorContractExistsException("Doctor already has an active contract");
         }
 
         DoctorContractV2 contract = new DoctorContractV2();
-        contract.setDoctor(userRepository.findById(payload.getCreatorId())
-                .orElseThrow(() -> new NotFoundException("Doctor not found with ID: " + payload.getCreatorId())));
+        contract.setDoctor(userRepository.findById(payload.getDoctorId())
+                .orElseThrow(() -> new NotFoundException("Doctor not found with ID: " + payload.getDoctorId())));
+        contract.setCreatedBy(userRepository.findById(payload.getCreatorId())
+                .orElseThrow(() -> new NotFoundException("Creator not found with ID: " + payload.getCreatorId())));
         contract.setCreatedAt(LocalDate.now());
         contract.setStartDate(payload.getStartDate());
         contract.setEndDate(payload.getEndDate());
@@ -102,15 +107,23 @@ public class DoctorServiceV2 {
         doctorContractV2Repository.save(contract);
     }
 
+    public boolean deleteContract(Long contractId) {
+        if (doctorContractV2Repository.existsById(contractId)) {
+            doctorContractV2Repository.deleteById(contractId);
+            return true;
+        }
+        return false;
+    }
+
     public void updateContract(Long contractId, DoctorContractCreateUpdatePayloadV2 payload) {
         DoctorContractV2 contract = doctorContractV2Repository.findById(contractId)
                 .orElseThrow(() -> new NotFoundException("Contract not found with ID: " + contractId));
 
+
         contract.setStartDate(payload.getStartDate());
         contract.setEndDate(payload.getEndDate());
-        contract.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : contract.getStatus());
-        contract.setContractType(payload.getContractType());
 
+        contract.setContractType(payload.getContractType());
         if (payload.getMedicineQuotes() != null && !payload.getMedicineQuotes().isEmpty()) {
             for (MedicineQuotePayloadV2 quotePayload : payload.getMedicineQuotes()) {
                 Optional<MedicineWithQuantityDoctorV2> existingQuote = contract.getMedicineWithQuantityDoctorV2s().stream()
@@ -312,6 +325,7 @@ public class DoctorServiceV2 {
 
         return new ContractDTOV2(
                 contract.getId(),
+                contract.getCreatedBy() != null ? contract.getCreatedBy().getUserId() : null,
                 contract.getDoctor().getUserId(),
                 contract.getCreatedAt(),
                 contract.getStartDate(),

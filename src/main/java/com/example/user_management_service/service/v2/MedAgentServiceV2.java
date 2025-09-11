@@ -6,11 +6,7 @@ import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.SalesQuoteDTO;
 import com.example.user_management_service.model.v2.*;
-import com.example.user_management_service.model.v2.dto.FieldEnvQuoteDTOV2;
-import com.example.user_management_service.model.v2.dto.MedAgentGoalDTOV2;
-import com.example.user_management_service.model.v2.dto.MedAgentProfileDTOV2;
-import com.example.user_management_service.model.v2.dto.MedAgentProfileKPIDTOV2;
-import com.example.user_management_service.model.v2.dto.MedicineQuoteDTOV2;
+import com.example.user_management_service.model.v2.dto.*;
 import com.example.user_management_service.model.v2.payload.FieldEnvQuotePayloadV2;
 import com.example.user_management_service.model.v2.payload.MedAgentGoalCreateUpdatePayloadV2;
 import com.example.user_management_service.model.v2.payload.MedicineQuotePayloadV2;
@@ -24,6 +20,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +29,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Date-9/8/2025
+ * Date-9/11/2025
  * By Sardor Tokhirov
- * Time-5:59 AM (EEST)
+ * Time-12:40 AM (GMT+5)
  */
 @Service
 @AllArgsConstructor
@@ -57,26 +54,17 @@ public class MedAgentServiceV2 {
         goal.setEndDate(payload.getEndDate());
         goal.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : GoalStatus.PENDING_REVIEW);
 
-        // Handle Medicine Quotes via DoctorContractV2
+        // Handle Medicine Quotes
         if (payload.getMedicineQuotes() != null && !payload.getMedicineQuotes().isEmpty()) {
-            DoctorContractV2 contract = new DoctorContractV2();
-            contract.setCreatedBy(agent);
-            contract.setCreatedAt(LocalDate.now());
-            contract.setStartDate(payload.getStartDate());
-            contract.setEndDate(payload.getEndDate());
-            contract.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : GoalStatus.PENDING_REVIEW);
-            contract.setDoctor(agent); // Agent acts as doctor for simplicity, adjust if needed
-
-            List<MedicineWithQuantityDoctorV2> medicineQuotes = payload.getMedicineQuotes().stream().map(quotePayload -> {
-                MedicineWithQuantityDoctorV2 medicineQuote = new MedicineWithQuantityDoctorV2();
+            List<MedAgentMedicineQuoteV2> medicineQuotes = payload.getMedicineQuotes().stream().map(quotePayload -> {
+                MedAgentMedicineQuoteV2 medicineQuote = new MedAgentMedicineQuoteV2();
                 medicineQuote.setMedicine(medicineRepository.findById(quotePayload.getMedicineId())
                         .orElseThrow(() -> new NotFoundException("Medicine not found with ID: " + quotePayload.getMedicineId())));
                 medicineQuote.setQuote(quotePayload.getQuote());
-                medicineQuote.setDoctorContract(contract);
+                medicineQuote.setMedAgentGoalV2(goal);
                 return medicineQuote;
             }).collect(Collectors.toList());
-            contract.setMedicineWithQuantityDoctorV2s(medicineQuotes);
-            goal.setDoctorContractV2s(List.of(contract));
+            goal.setMedicineQuoteV2s(medicineQuotes);
         }
 
         // Handle Field Environment Quotes
@@ -102,36 +90,21 @@ public class MedAgentServiceV2 {
         goal.setEndDate(payload.getEndDate());
         goal.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : goal.getStatus());
 
-        // Update or Append Medicine Quotes via DoctorContractV2
+        // Update or Append Medicine Quotes
         if (payload.getMedicineQuotes() != null && !payload.getMedicineQuotes().isEmpty()) {
-            DoctorContractV2 contract = goal.getDoctorContractV2s().stream()
-                    .filter(c -> c.getCreatedBy().getUserId().equals(payload.getAgentId()))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        DoctorContractV2 newContract = new DoctorContractV2();
-                        newContract.setCreatedBy(goal.getMedAgent());
-                        newContract.setDoctor(goal.getMedAgent()); // Adjust if needed
-                        newContract.setCreatedAt(LocalDate.now());
-                        newContract.setStartDate(payload.getStartDate());
-                        newContract.setEndDate(payload.getEndDate());
-                        newContract.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : GoalStatus.PENDING_REVIEW);
-                        goal.getDoctorContractV2s().add(newContract);
-                        return newContract;
-                    });
-
             for (MedicineQuotePayloadV2 quotePayload : payload.getMedicineQuotes()) {
-                Optional<MedicineWithQuantityDoctorV2> existingQuote = contract.getMedicineWithQuantityDoctorV2s().stream()
+                Optional<MedAgentMedicineQuoteV2> existingQuote = goal.getMedicineQuoteV2s().stream()
                         .filter(q -> q.getMedicine().getId().equals(quotePayload.getMedicineId()))
                         .findFirst();
                 if (existingQuote.isPresent()) {
                     existingQuote.get().setQuote(quotePayload.getQuote());
                 } else {
-                    MedicineWithQuantityDoctorV2 newQuote = new MedicineWithQuantityDoctorV2();
+                    MedAgentMedicineQuoteV2 newQuote = new MedAgentMedicineQuoteV2();
                     newQuote.setMedicine(medicineRepository.findById(quotePayload.getMedicineId())
                             .orElseThrow(() -> new NotFoundException("Medicine not found with ID: " + quotePayload.getMedicineId())));
                     newQuote.setQuote(quotePayload.getQuote());
-                    newQuote.setDoctorContract(contract);
-                    contract.getMedicineWithQuantityDoctorV2s().add(newQuote);
+                    newQuote.setMedAgentGoalV2(goal);
+                    goal.getMedicineQuoteV2s().add(newQuote);
                 }
             }
         }
@@ -172,18 +145,9 @@ public class MedAgentServiceV2 {
                 .orElse(null);
 
         // Calculate Sales Quote
-        long totalSales = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId))
-                .flatMap(c -> c.getMedicineWithQuantityDoctorV2s().stream())
-                .flatMap(m -> m.getContractMedicineDoctorAmountV2s().stream())
-                .filter(a -> a.getYearMonth().equals(YearMonth.now()))
-                .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
-                .sum() : 0;
-        long targetSales = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId))
-                .flatMap(c -> c.getMedicineWithQuantityDoctorV2s().stream())
-                .mapToLong(MedicineWithQuantityDoctorV2::getQuote)
-                .sum() : 0;
+        Long districtId = agent.getDistrict().getId();
+        long totalSales =0;
+        long targetSales = 0;
         SalesQuoteDTO salesQuoteDTO = new SalesQuoteDTO(totalSales, targetSales);
 
         MedAgentProfileKPIDTOV2 kpiDTO = calculateKPI(agentId);
@@ -195,26 +159,30 @@ public class MedAgentServiceV2 {
 
     private MedAgentGoalDTOV2 mapToGoalDTOV2(MedAgentGoalV2 goal) {
         YearMonth currentMonth = YearMonth.now();
-        List<MedicineQuoteDTOV2> medicineQuotes = goal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(goal.getMedAgent().getUserId()))
-                .flatMap(c -> c.getMedicineWithQuantityDoctorV2s().stream())
+        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+        UUID agentId = goal.getMedAgent().getUserId();
+        Long districtId = goal.getMedAgent().getDistrict().getId();
+
+        // Medicine Quotes
+        List<MedicineQuoteDTOV2> medicineQuotes = goal.getMedicineQuoteV2s().stream()
                 .map(m -> {
-                    Long amount = m.getContractMedicineDoctorAmountV2s().stream()
+                    Long amount = doctorContractV2Repository.findByCreatedByAndDistrict(agentId, districtId).stream()
+                            .flatMap(c -> c.getMedicineWithQuantityDoctorV2s().stream())
+                            .filter(med -> med.getMedicine().getId().equals(m.getMedicine().getId()))
+                            .flatMap(med -> med.getContractMedicineDoctorAmountV2s().stream())
                             .filter(a -> a.getYearMonth().equals(currentMonth))
-                            .map(ContractMedicineDoctorAmountV2::getAmount)
-                            .findFirst()
-                            .orElse(0L);
+                            .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
+                            .sum();
                     return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, currentMonth);
                 })
                 .collect(Collectors.toList());
 
+        // Field Environment Quotes
         List<FieldEnvQuoteDTOV2> fieldEnvQuotes = goal.getFieldEnvV2s().stream()
                 .map(f -> {
-                    Long amount = f.getFieldEnvAmountV2().stream()
-                            .filter(a -> a.getYearMonth().equals(currentMonth))
-                            .map(FieldEnvAmountV2::getAmount)
-                            .findFirst()
-                            .orElse(0L);
+                    Long amount = (long) userRepository.findCreatedDoctorsThisMonthByDistrictAndMonth(districtId, f.getField(),   startDate,
+                            endDate).size();
                     return new FieldEnvQuoteDTOV2(f.getId(), f.getField(), f.getQuote(), amount, currentMonth);
                 })
                 .collect(Collectors.toList());
@@ -232,45 +200,37 @@ public class MedAgentServiceV2 {
     }
 
     private MedAgentProfileKPIDTOV2 calculateKPI(UUID agentId) {
-        MedAgentGoalV2 activeGoal = medAgentGoalV2Repository.findActiveByAgentId(agentId, LocalDate.now())
-                .orElse(null);
-
-        long totalConnectedDoctors = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId))
-                .map(c -> c.getDoctor().getUserId())
-                .distinct()
-                .count() : 0;
-
-        long totalConnectedContracts = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId))
-                .count() : 0;
+        User agent = userRepository.findById(agentId)
+                .orElseThrow(() -> new NotFoundException("Agent not found with ID: " + agentId));
+        Long districtId = agent.getDistrict().getId();
+        if (districtId == null) {
+            throw new IllegalStateException("District ID is null for agent ID: " + agentId);
+        }
 
         YearMonth currentMonth = YearMonth.now();
-        long connectedDoctorsCurrentMonth = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId)
-                        && c.getStartDate().atStartOfDay().isBefore(currentMonth.atEndOfMonth().atTime(23, 59, 59))
-                        && c.getEndDate().atStartOfDay().isAfter(currentMonth.atDay(1).atStartOfDay()))
-                .map(c -> c.getDoctor().getUserId())
-                .distinct()
-                .count() : 0;
+        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+        LocalDate start = currentMonth.atDay(1);
+        LocalDate end = currentMonth.atEndOfMonth();
+        // Total connected doctors (all time)
+        long totalConnectedDoctors = doctorContractV2Repository.countByCreatedByAndDistrict(agentId, districtId);
 
-        long connectedContractsCurrentMonth = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId)
-                        && c.getStartDate().atStartOfDay().isBefore(currentMonth.atEndOfMonth().atTime(23, 59, 59))
-                        && c.getEndDate().atStartOfDay().isAfter(currentMonth.atDay(1).atStartOfDay()))
-                .count() : 0;
+        // Total connected contracts (all time)
+        long totalConnectedContracts = doctorContractV2Repository.countByCreatedByAndDistrict(agentId, districtId);
 
-        List<UUID> doctorIds = activeGoal != null ? activeGoal.getDoctorContractV2s().stream()
-                .filter(c -> c.getCreatedBy().getUserId().equals(agentId))
-                .map(c -> c.getDoctor().getUserId())
-                .distinct()
-                .collect(Collectors.toList()) : new ArrayList<>();
+        // Connected doctors this month
+        long connectedDoctorsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
+                agentId, districtId, start, end);
 
-        long prescriptionsIssuedCurrentMonth = doctorIds.isEmpty() ? 0 : recipeRepository
-                .countByDoctorIdsAndMonth(doctorIds, currentMonth);
+        // Connected contracts this month
+        long connectedContractsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
+                agentId, districtId, start, end);
 
-        long medicationsPrescribedCurrentMonth = doctorIds.isEmpty() ? 0 : recipeRepository
-                .countMedicationsByDoctorIdsAndMonth(doctorIds, currentMonth);
+        // Prescriptions issued this month
+        long prescriptionsIssuedCurrentMonth = recipeRepository.countRecipesByDoctorsAssignedByMedAgentThisMonth(agentId);
+
+        // Medications prescribed this month
+        long medicationsPrescribedCurrentMonth = recipeRepository.totalMedicineAmountByMedAgentThisMonth(agentId);
 
         return new MedAgentProfileKPIDTOV2(
                 agentId,

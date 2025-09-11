@@ -61,7 +61,12 @@ public class DoctorControllerV2 {
         DoctorProfileDTOV2 doctorProfileDTO = doctorService2.getDoctorProfileByDoctorId(doctorId);
         return ResponseEntity.ok(doctorProfileDTO);
     }
-
+    @DeleteMapping("/contract/{contractId}")
+    public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
+        boolean deleted = doctorService2.deleteContract(contractId);
+        return deleted ? ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
     @PostMapping("/save-recipe")
     public ResponseEntity<Boolean> saveRecipe(@RequestBody RecipeDto recipe) {
         doctorService2.saveRecipe(recipe);

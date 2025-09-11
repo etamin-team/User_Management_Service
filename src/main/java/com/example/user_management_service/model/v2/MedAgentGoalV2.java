@@ -37,10 +37,8 @@ public class MedAgentGoalV2 {
     private GoalStatus status = GoalStatus.APPROVED;
 
 
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "goal_id", referencedColumnName = "goal_id")
-    private List<DoctorContractV2> doctorContractV2s = new ArrayList<>();
+    @OneToMany(mappedBy = "medAgentGoalV2", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedAgentMedicineQuoteV2> medicineQuoteV2s;
 
     @OneToMany(mappedBy = "medAgentGoalV2", cascade = CascadeType.ALL)
     private List<FieldEnvV2> fieldEnvV2s;
@@ -58,6 +56,5 @@ public class MedAgentGoalV2 {
     @ManyToOne
     @JoinColumn(name = "agent_id", referencedColumnName = "user_id")
     private User medAgent;
-
 
 }
