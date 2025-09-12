@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Entity
@@ -25,11 +26,8 @@ public class Sales {
     @Column(name = "groups")
     private   String groups;
 
-    @Column(name = "start_date")
-    private LocalDate startDate;
-
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    @Column(name = "year_month")
+    private YearMonth yearMonth;
 
     @Column(name = "all_direct_sales")
     private Long allDirectSales;

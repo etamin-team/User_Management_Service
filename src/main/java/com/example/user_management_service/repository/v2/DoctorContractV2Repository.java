@@ -1,5 +1,8 @@
 package com.example.user_management_service.repository.v2;
 
+import com.example.user_management_service.model.ContractType;
+import com.example.user_management_service.model.Field;
+import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.v2.DoctorContractV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,4 +54,135 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
 
     @Query("SELECT dcv FROM DoctorContractV2 dcv WHERE dcv.createdAt BETWEEN :startDate AND :endDate")
     List<DoctorContractV2> findByCreatedThisMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    
+    @Query("""
+            SELECT c FROM DoctorContractV2 c 
+            JOIN c.medicineWithQuantityDoctorV2s m
+            WHERE 
+            (:medicineId IS NULL OR m.medicine.id = :medicineId)
+            AND (:contractType IS NULL OR c.contractType = :contractType)
+            AND (CAST(:query AS string) IS NULL OR 
+                 LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+                 LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))
+            AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+            AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+            AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
+            AND (CAST(:yearMonth AS date) IS NULL OR (
+                    EXTRACT(YEAR FROM c.startDate) * 100 + EXTRACT(MONTH FROM c.startDate) <= 
+                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date)) AND 
+                    (c.endDate IS NULL OR 
+                    EXTRACT(YEAR FROM c.endDate) * 100 + EXTRACT(MONTH FROM c.endDate) >= 
+                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date))
+                )))
+            GROUP BY c
+    """)
+    List<DoctorContractV2> findContractsByFilters(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("query") String query,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("yearMonth") YearMonth yearMonth
+    );
+    
+    @Query("""
+            SELECT c FROM DoctorContractV2 c 
+            JOIN c.medicineWithQuantityDoctorV2s m
+            WHERE 
+            (:medicineId IS NULL OR m.medicine.id = :medicineId)
+            AND (:contractType IS NULL OR c.contractType = :contractType)
+            AND (CAST(:query AS string) IS NULL OR 
+                 LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+                 LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))
+            AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+            AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+            AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
+            AND (CAST(:startDate AS date) IS NULL OR c.startDate >= :startDate)
+            AND (CAST(:endDate AS date) IS NULL OR c.endDate <= :endDate)
+            GROUP BY c
+    """)
+    List<DoctorContractV2> findContractsByDateRangeFilters(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("query") String query,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+    
+    @Query("""
+            SELECT c FROM DoctorContractV2 c 
+            JOIN c.medicineWithQuantityDoctorV2s m
+            WHERE 
+            (:medicineId IS NULL OR m.medicine.id = :medicineId)
+            AND (:contractType IS NULL OR c.contractType = :contractType)
+            AND (CAST(:query AS string) IS NULL OR 
+                 LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+                 LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))
+            AND c.doctor.district.region.id IN :regionIds
+            AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+            AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+            AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
+            AND (CAST(:yearMonth AS date) IS NULL OR (
+                    EXTRACT(YEAR FROM c.startDate) * 100 + EXTRACT(MONTH FROM c.startDate) <= 
+                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date)) AND 
+                    (c.endDate IS NULL OR 
+                    EXTRACT(YEAR FROM c.endDate) * 100 + EXTRACT(MONTH FROM c.endDate) >= 
+                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date))
+                )))
+            GROUP BY c
+    """)
+    List<DoctorContractV2> findContractsByFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("contractType") ContractType contractType,
+            @Param("medicineId") Long medicineId,
+            @Param("query") String query,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("yearMonth") YearMonth yearMonth
+    );
+    
+    @Query("""
+            SELECT c FROM DoctorContractV2 c 
+            JOIN c.medicineWithQuantityDoctorV2s m
+            WHERE 
+            (:medicineId IS NULL OR m.medicine.id = :medicineId)
+            AND (:contractType IS NULL OR c.contractType = :contractType)
+            AND (CAST(:query AS string) IS NULL OR 
+                 LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR 
+                 LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :query, '%')))
+            AND c.doctor.district.region.id IN :regionIds
+            AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
+            AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
+            AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
+            AND (CAST(:startDate AS date) IS NULL OR c.startDate >= :startDate)
+            AND (CAST(:endDate AS date) IS NULL OR c.endDate <= :endDate)
+            GROUP BY c
+    """)
+    List<DoctorContractV2> findContractsByDateRangeFilters(
+            @Param("regionIds") List<Long> regionIds,
+            @Param("contractType") ContractType contractType,
+            @Param("medicineId") Long medicineId,
+            @Param("query") String query,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+    
+    @Query("SELECT COUNT(c) FROM DoctorContractV2 c WHERE c.status = :status")
+    Long countByStatus(@Param("status") GoalStatus status);
 }

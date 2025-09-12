@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 /**
  * Date-2/25/2025
@@ -26,17 +27,13 @@ public class SalesReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate reportDate;
-    @Column(name = "start_date")
-    private LocalDate startDate;
 
-    @Column(name = "end_date")
-    private LocalDate endDate;
+    @Column(name = "year_month")
+    private YearMonth yearMonth;
 
     private Long written ;
     private Long allowed ;
     private Long sold ;
-    private boolean saved = false;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ContractType contractType;

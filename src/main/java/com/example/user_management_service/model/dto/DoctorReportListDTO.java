@@ -1,5 +1,6 @@
 package com.example.user_management_service.model.dto;
 
+import com.example.user_management_service.model.v2.dto.ContractDTOV2;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,5 @@ import lombok.Setter;
 @Setter
 public class DoctorReportListDTO {
     private UserDTO doctor;
-    private ContractDTO contractDTO;
+    private ContractDTOV2 contractDTO;
 }

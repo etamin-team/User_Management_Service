@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Repository
@@ -18,8 +19,17 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
 
     @Query("""
             SELECT s FROM Sales s 
-            WHERE   (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
-                     AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
+            WHERE (:yearMonth IS NULL OR s.yearMonth = :yearMonth)
+            ORDER BY s.id ASC
+            """)
+    List<Sales> findAllByYearMonth(
+            @Param("yearMonth") YearMonth yearMonth
+    );
+
+    @Query("""
+            SELECT s FROM Sales s 
+            WHERE (:startDate IS NULL OR s.yearMonth >= FUNCTION('YEAR_MONTH', :startDate))
+            AND (:endDate IS NULL OR s.yearMonth <= FUNCTION('YEAR_MONTH', :endDate))
             ORDER BY s.id ASC
             """)
     List<Sales> findAllByStartAndEndDate(
@@ -30,27 +40,44 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     @Query("""
             SELECT COALESCE(SUM(s.quote), 0) FROM Sales s 
              WHERE (:regionId IS NULL OR s.region.id = :regionId)
-             AND (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
-             AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
-            
+             AND (:yearMonth IS NULL OR s.yearMonth = :yearMonth)
+            """)
+    Long getTotalQuotes(
+            @Param("regionId") Long regionId,
+            @Param("yearMonth") YearMonth yearMonth
+    );
+    
+    @Query("""
+            SELECT COALESCE(SUM(s.quote), 0) FROM Sales s 
+             WHERE (:regionId IS NULL OR s.region.id = :regionId)
+             AND (:startDate IS NULL OR s.yearMonth >= FUNCTION('YEAR_MONTH', :startDate))
+             AND (:endDate IS NULL OR s.yearMonth <= FUNCTION('YEAR_MONTH', :endDate))
             """)
     Long getTotalQuotes(
             @Param("regionId") Long regionId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
-
     );
 
     @Query("""
             SELECT COALESCE(SUM(s.total), 0) FROM Sales s 
              WHERE (:regionId IS NULL OR s.region.id = :regionId)
-             AND (CAST(:startDate AS date) IS NULL OR s.startDate >= :startDate)
-             AND (CAST(:endDate AS date) IS NULL OR s.endDate <= :endDate)
+             AND (:yearMonth IS NULL OR s.yearMonth = :yearMonth)
+            """)
+    Long getTotalAmounts(
+            @Param("regionId") Long regionId,
+            @Param("yearMonth") YearMonth yearMonth
+    );
+    
+    @Query("""
+            SELECT COALESCE(SUM(s.total), 0) FROM Sales s 
+             WHERE (:regionId IS NULL OR s.region.id = :regionId)
+             AND (:startDate IS NULL OR s.yearMonth >= FUNCTION('YEAR_MONTH', :startDate))
+             AND (:endDate IS NULL OR s.yearMonth <= FUNCTION('YEAR_MONTH', :endDate))
             """)
     Long getTotalAmounts(
             @Param("regionId") Long regionId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
-
 }

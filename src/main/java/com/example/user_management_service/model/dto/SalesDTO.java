@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Data
@@ -16,8 +17,7 @@ public class SalesDTO {
     private Long medicineId;
     private Long cip;
     private String group;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private YearMonth yearMonth;
     private Long allDirectSales;
     private Long allSecondarySales;
     private List<SalesRegionDTO> sales;

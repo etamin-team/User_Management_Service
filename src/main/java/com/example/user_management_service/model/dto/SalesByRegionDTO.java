@@ -14,8 +14,6 @@ public class SalesByRegionDTO {
     private Long id;
     private Long medicineId;
     private String group;
-    private LocalDate startDate;
-    private LocalDate endDate;
     private Long allDirectSales;
     private Long allSecondarySales;
     private Long quote;

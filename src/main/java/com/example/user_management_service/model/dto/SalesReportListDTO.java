@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 /**
@@ -18,8 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SalesReportListDTO {
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private YearMonth yearMonth;
     private LocalDate date;
     private Long regionId;
     private List<SalesReportDTO> salesReportDTOS;

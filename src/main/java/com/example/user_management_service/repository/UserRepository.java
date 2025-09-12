@@ -134,8 +134,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
             SELECT u FROM User u 
-            LEFT JOIN Contract c ON c.doctor.userId = u.userId
-            LEFT JOIN c.medicineWithQuantityDoctors mwqd
+            LEFT JOIN DoctorContractV2 c ON c.doctor.userId = u.userId
+            LEFT JOIN c.medicineWithQuantityDoctorV2s mwqd
             LEFT JOIN mwqd.medicine m
             WHERE u.role = :role
             AND (:creatorId IS NULL OR u.creatorId = :creatorId)
@@ -171,8 +171,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
         SELECT u FROM User u 
-        LEFT JOIN Contract c ON c.doctor.userId = u.userId
-        LEFT JOIN c.medicineWithQuantityDoctors mwqd
+        LEFT JOIN DoctorContractV2 c ON c.doctor.userId = u.userId
+        LEFT JOIN c.medicineWithQuantityDoctorV2s mwqd
         LEFT JOIN mwqd.medicine m
         WHERE u.role = :role
         AND (:creatorId IS NULL OR u.creatorId = :creatorId)
@@ -378,7 +378,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
                     SELECT u FROM User u 
-                    LEFT JOIN Contract c ON c.doctor.userId = u.userId
+                    LEFT JOIN DoctorContractV2 c ON c.doctor.userId = u.userId
                     WHERE u.role = :role
                     AND (:creatorId IS NULL OR u.creatorId = :creatorId)
                     AND (:regionId IS NULL OR u.district.region.id = :regionId)
@@ -410,7 +410,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("""
                     SELECT u FROM User u 
-                    LEFT JOIN Contract c ON c.doctor.userId = u.userId
+                    LEFT JOIN DoctorContractV2 c ON c.doctor.userId = u.userId
                     WHERE u.role = :role
                     AND (:creatorId IS NULL OR u.creatorId = :creatorId)
                     AND ((:regionId IS NOT NULL AND u.district.region.id = :regionId) 

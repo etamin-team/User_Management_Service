@@ -6,10 +6,13 @@ import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.service.ReportService;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -33,10 +36,9 @@ public class ReportController {
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,
             @RequestParam(required = false) Field fieldName) {
-        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId,contractType,query,regionId, districtId, workplaceId,startDate,endDate, fieldName);
+        DoctorReportDTO doctorReportDTO = reportService.getDoctorReports(medicineId, contractType, query, regionId, districtId, workplaceId, yearMonth, fieldName);
         return ResponseEntity.ok(doctorReportDTO);
     }
 
@@ -44,13 +46,10 @@ public class ReportController {
     public ResponseEntity<List<SalesReportDTO>> getDoctorReportsList(
             @RequestParam ContractType contractType,
             @RequestParam Long regionId,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate) {
-        List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType,regionId,startDate,endDate);
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+        List<SalesReportDTO> salesReportDTOS = reportService.getSalesReportDTOList(contractType, regionId, yearMonth);
         return ResponseEntity.ok(salesReportDTOS);
     }
-
-
 
     @GetMapping("/admin/{medicineId}")
     public ResponseEntity<SalesReportDTO> getSalesReports(
@@ -67,7 +66,6 @@ public class ReportController {
         SalesReportDTO salesReport= reportService.getSalesReportsByFilters(medicineId,contractType, query,regionId, districtId, workplaceId, fieldName,startDate,endDate);
         return ResponseEntity.ok(salesReport);
     }
-
 
     @GetMapping("/admin/reports")
     public ResponseEntity<List<AdminReportDTO>> getAdminReports(
@@ -107,7 +105,6 @@ public class ReportController {
         return ResponseEntity.ok(salesReport);
     }
 
-
     @PostMapping("/manager/save")
     public ResponseEntity<String> saveSalesReports(@RequestBody SalesReportListDTO salesReportListDTO) {
         reportService.saveSalesReports(salesReportListDTO);
@@ -121,9 +118,8 @@ public class ReportController {
     }
 
     @PutMapping("/correction/{quantityId}")
-    public ResponseEntity<String> editMedicineQuantity(@PathVariable Long quantityId,    @RequestParam Long correction) {
+    public ResponseEntity<String> editMedicineQuantity(@PathVariable Long quantityId, @RequestParam Long correction) {
         reportService.editMedicineQuantity(quantityId, correction);
-        return ResponseEntity.ok("MedicineQuantity correction  updated successfully");
+        return ResponseEntity.ok("MedicineQuantity correction updated successfully");
     }
-
 }
