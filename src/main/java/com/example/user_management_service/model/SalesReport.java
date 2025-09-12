@@ -15,7 +15,7 @@ import java.time.YearMonth;
  * Time-6:16 AM (GMT+5)
  */
 @Entity
-@Table(name = "sales_report")
+@Table(name = "sales_reports")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
