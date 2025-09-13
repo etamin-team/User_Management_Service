@@ -5,6 +5,7 @@ import com.example.user_management_service.exception.DoctorContractException;
 import com.example.user_management_service.exception.DoctorContractExistsException;
 import com.example.user_management_service.exception.NotFoundException;
 import com.example.user_management_service.model.*;
+import com.example.user_management_service.model.dto.ContractDTO;
 import com.example.user_management_service.model.dto.OutOfContractMedicineAmountDTO;
 import com.example.user_management_service.model.dto.PreparationDto;
 import com.example.user_management_service.model.dto.RecipeDto;
@@ -20,8 +21,13 @@ import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import com.example.user_management_service.repository.v2.OutOfContractMedicineAmountV2Repository;
 import com.example.user_management_service.role.Role;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -334,5 +340,42 @@ public class DoctorServiceV2 {
                 contract.getContractType(),
                 medicineQuotes
         );
+    }
+
+    public void enableContract(Long id) {
+        DoctorContractV2 contract = doctorContractV2Repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));
+
+        if (contract.getStatus() == GoalStatus.APPROVED) {
+            throw new IllegalStateException("Contract is already approved.");
+        }
+
+        contract.setStatus(GoalStatus.APPROVED);
+        doctorContractV2Repository.save(contract);
+    }
+
+    public Page<ContractDTOV2> getContractsByStatus(GoalStatus goalStatus, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<DoctorContractV2> contracts = doctorContractV2Repository.findByStatus(goalStatus, pageable);
+        return contracts.map(this::mapToContractDTOV2);
+    }
+
+    public void editStatusContract(Long id, GoalStatus goalStatus) {
+        DoctorContractV2 contract = doctorContractV2Repository.findById(id)
+                .orElseThrow(() -> new ContractNotFoundException("Contract not found with id: " + id));
+        contract.setStatus(goalStatus);
+        doctorContractV2Repository.save(contract);
+    }
+
+    public void declineContract(Long id) {
+        DoctorContractV2 contract = doctorContractV2Repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));
+
+        if (contract.getStatus() == GoalStatus.DECLINED) {
+            throw new DoctorContractException("Contract is already declined.");
+        }
+
+        contract.setStatus(GoalStatus.DECLINED);
+        doctorContractV2Repository.save(contract);
     }
 }

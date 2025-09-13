@@ -135,13 +135,15 @@ public class ReportService {
 
     public DoctorReportDTO getDoctorReports(Long medicineId, ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, YearMonth yearMonth, Field fieldName) {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
-        Long allowed = medicineWithQuantityDoctorV2Repository.findTotalAllowed(medicineId, contractType, regionId, districtId, workplaceId, fieldName, yearMonth);
-        Long written = medicineWithQuantityDoctorV2Repository.findTotalWritten(medicineId, contractType, regionId, districtId, workplaceId, fieldName, yearMonth);
+        SalesReport salesReport = salesReportRepository.findSalesReportByMedicineIdAndRegionIdAndYearMonth(medicineId, regionId, yearMonth);
+        if (salesReport == null) {
+            salesReport=new SalesReport();
+        }
         Long inFact = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(medicineId, contractType, regionId, districtId, workplaceId, fieldName, yearMonth);
 
         doctorReportDTO.setMedicine(medicineRepository.findById(medicineId).orElseThrow(() -> new ReportException("Medicine not found")));
-        doctorReportDTO.setAllowed(allowed);
-        doctorReportDTO.setWritten(written);
+        doctorReportDTO.setAllowed(salesReport.getAllowed());
+        doctorReportDTO.setWritten(salesReport.getWritten());
         doctorReportDTO.setWrittenInFact(inFact);
         doctorReportDTO.setDoctorReportListDTOList(getDoctorReportListDTOList(medicineId, contractType, query, regionId, districtId, workplaceId, fieldName, yearMonth));
 

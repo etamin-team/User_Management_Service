@@ -29,6 +29,9 @@ public interface SalesReportRepository extends JpaRepository<SalesReport, Long> 
     @Query("SELECT sr FROM SalesReport sr WHERE sr.medicine.id = :medicineId AND sr.region.id = :regionId AND sr.yearMonth = :yearMonth")
     List<SalesReport> findByMedicineIdAndRegionIdAndYearMonth(@Param("medicineId") Long medicineId, @Param("regionId") Long regionId, @Param("yearMonth") YearMonth yearMonth);
 
+    @Query("SELECT sr FROM SalesReport sr WHERE sr.medicine.id = :medicineId AND sr.region.id = :regionId AND sr.yearMonth = :yearMonth order by sr.id limit 1")
+    SalesReport findSalesReportByMedicineIdAndRegionIdAndYearMonth(@Param("medicineId") Long medicineId, @Param("regionId") Long regionId, @Param("yearMonth") YearMonth yearMonth);
+
     @Query("SELECT sr FROM SalesReport sr WHERE  sr.region.id = :regionId AND sr.yearMonth = :yearMonth")
     List<SalesReport> findByRegionIdAndYearMonth( @Param("regionId") Long regionId, @Param("yearMonth") YearMonth yearMonth);
 

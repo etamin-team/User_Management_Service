@@ -2,7 +2,9 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.model.v2.dto.ContractDTOV2;
 import com.example.user_management_service.service.*;
+import com.example.user_management_service.service.v2.DoctorServiceV2;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ public class AdminController {
     private final PasswordResetService passwordResetService;
     private final RecipeService recipeService;
     private final ContractService contractService;
+    private final DoctorServiceV2 doctorServiceV2;
 
     @GetMapping("/doctors/not-declined-not-enabled")
     public Page<UserDTO> getDoctorsNotDeclinedAndNotEnabled(
@@ -154,39 +157,32 @@ public class AdminController {
 
     // Doctor Contract
     @GetMapping("/doctor/contracts/status")
-    public ResponseEntity<Page<ContractDTO>> getContractsByStatus(
+    public ResponseEntity<Page<ContractDTOV2>> getContractsByStatus(
             @RequestParam GoalStatus goalStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTO> contracts = contractService.getContractsByStatus(goalStatus, page, size);
+        Page<ContractDTOV2> contracts = doctorServiceV2.getContractsByStatus(goalStatus, page, size);
         return ResponseEntity.ok(contracts);
     }
 
 
     @PatchMapping("/contract/{id}/user-enable")
     public ResponseEntity<String> enableContract(@PathVariable Long id) {
-        contractService.enableContract(id);
+        doctorServiceV2.enableContract(id);
         return ResponseEntity.ok("Contract has been enabled successfully.");
     }
     @PatchMapping("/contract/{id}/edit-status")
     public ResponseEntity<String> editStatusContract(@PathVariable Long id,@RequestParam GoalStatus goalStatus) {
-        contractService.editStatusContract(id,goalStatus);
+        doctorServiceV2.editStatusContract(id,goalStatus);
         return ResponseEntity.ok("Contract has been enabled successfully.");
     }
 
     @PatchMapping("/contract/{id}/user-decline")
     public ResponseEntity<String> declineContract(@PathVariable Long id) {
-        contractService.declineContract(id);
+        doctorServiceV2.declineContract(id);
         return ResponseEntity.ok("Contract  has been declined successfully.");
     }
 
-
-//    @GetMapping("/manager/kpi/{id}")
-//    public ResponseEntity<ManagerKpiDTO> getManagerKpi(@PathVariable UUID id) {
-//
-//
-//        return id;
-//    }
 
 
 }

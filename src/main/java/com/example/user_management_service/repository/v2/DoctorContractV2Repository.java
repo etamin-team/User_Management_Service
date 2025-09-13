@@ -1,9 +1,12 @@
 package com.example.user_management_service.repository.v2;
 
+import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.ContractType;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.v2.DoctorContractV2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,6 +26,11 @@ import java.util.UUID;
  */
 @Repository
 public interface DoctorContractV2Repository extends JpaRepository<DoctorContractV2, Long> {
+
+    @Query("SELECT c FROM DoctorContractV2 c WHERE c.status = :status ")
+    Page<DoctorContractV2> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
+
+
     @Query("SELECT d FROM DoctorContractV2 d WHERE d.doctor.userId = :doctorId " +
             "AND d.status = 'PENDING_REVIEW' " +
             "AND (d.endDate IS NULL OR d.endDate >= :currentDate)")
