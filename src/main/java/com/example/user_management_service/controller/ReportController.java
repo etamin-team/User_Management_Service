@@ -116,8 +116,9 @@ public class ReportController {
     }
 
     @PutMapping("/open-save")
-    public ResponseEntity<String> openSave(@RequestParam Long regionId,  @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
-        reportService.openSalesReportEdit(regionId, yearMonth);
+    public ResponseEntity<String> openSave(@RequestParam Long regionId,             @RequestParam(defaultValue = "false"  ) boolean isOpen ,
+                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+        reportService.openSalesReportEdit(regionId, isOpen, yearMonth);
         return ResponseEntity.ok("Sales report updated successfully");
     }
 
@@ -127,7 +128,7 @@ public class ReportController {
         return ResponseEntity.ok("MedicineQuantity correction updated successfully");
     }
     @GetMapping("/report-savings")
-    public List<ReportSavingDTO> getAllReportSavings() {
-        return reportService.getAllReportSavings();
+    public List<ReportSavingDTO> getAllReportSavings(@RequestParam Long regionId) {
+        return reportService.getAllReportSavings(regionId);
     }
 }

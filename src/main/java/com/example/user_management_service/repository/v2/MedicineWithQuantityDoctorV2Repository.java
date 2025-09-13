@@ -34,7 +34,29 @@ public interface MedicineWithQuantityDoctorV2Repository extends JpaRepository<Me
     @Transactional
     @Query(value = "DELETE FROM medicine_with_quantity_doctor_v2 WHERE contract_id = :contractId", nativeQuery = true)
     void deleteByContractIdNative(@Param("contractId") Long contractId);
-    
+    @Query("""
+            SELECT COALESCE(SUM(m.quote), 0) 
+            FROM MedicineWithQuantityDoctorV2 m 
+            JOIN m.contractMedicineDoctorAmountV2s cm
+            WHERE 
+            (:medicineId IS NULL OR m.medicine.id = :medicineId) 
+            AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) 
+            AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
+            AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
+            AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
+            AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
+            AND m.doctorContract.status = 'APPROVED'
+            AND (:yearMonth IS NULL OR cm.yearMonth = :yearMonth)
+    """)
+    Long findTotalAllowed(
+            @Param("medicineId") Long medicineId,
+            @Param("contractType") ContractType contractType,
+            @Param("regionId") Long regionId,
+            @Param("districtId") Long districtId,
+            @Param("workplaceId") Long workplaceId,
+            @Param("fieldName") Field fieldName,
+            @Param("yearMonth") YearMonth yearMonth
+    );
     @Query("""
                 SELECT new com.example.user_management_service.model.dto.TopProductsOnSellDTO(m.medicine, SUM(cma.amount)) 
                 FROM MedicineWithQuantityDoctorV2 m 
@@ -120,34 +142,7 @@ public interface MedicineWithQuantityDoctorV2Repository extends JpaRepository<Me
             @Param("endDate") LocalDate endDate
     );
     
-    @Query("""
-                SELECT COALESCE(SUM(m.quote), 0) 
-                FROM MedicineWithQuantityDoctorV2 m 
-                WHERE 
-                (:medicineId IS NULL OR m.medicine.id = :medicineId) 
-                AND (:contractType IS NULL OR m.doctorContract.contractType = :contractType) 
-                AND (:regionId IS NULL OR m.doctorContract.doctor.district.region.id = :regionId)
-                AND (:districtId IS NULL OR m.doctorContract.doctor.district.id = :districtId)
-                AND (:workplaceId IS NULL OR m.doctorContract.doctor.workplace.id = :workplaceId)
-                AND (:fieldName IS NULL OR m.doctorContract.doctor.fieldName = :fieldName)
-                AND m.doctorContract.status='APPROVED'
-                AND (CAST(:yearMonth AS date) IS NULL OR (
-                    EXTRACT(YEAR FROM m.doctorContract.startDate) * 100 + EXTRACT(MONTH FROM m.doctorContract.startDate) <= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date)) AND 
-                    (m.doctorContract.endDate IS NULL OR 
-                    EXTRACT(YEAR FROM m.doctorContract.endDate) * 100 + EXTRACT(MONTH FROM m.doctorContract.endDate) >= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date))
-                )))
-            """)
-    Long findTotalAllowed(
-            @Param("medicineId") Long medicineId,
-            @Param("contractType") ContractType contractType,
-            @Param("regionId") Long regionId,
-            @Param("districtId") Long districtId,
-            @Param("workplaceId") Long workplaceId,
-            @Param("fieldName") Field fieldName,
-            @Param("yearMonth") YearMonth yearMonth
-    );
+
     
     @Query("""
                 SELECT COALESCE(SUM(cma.amount), 0) 

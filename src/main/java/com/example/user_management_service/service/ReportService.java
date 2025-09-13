@@ -84,8 +84,8 @@ public class ReportService {
         return dto;
     }
 
-    public List<ReportSavingDTO> getAllReportSavings() {
-        return reportSavingRepository.findAll().stream()
+    public List<ReportSavingDTO> getAllReportSavings(Long regionId) {
+        return reportSavingRepository.findOneByRegionId(regionId).stream()
                 .map(rs -> new ReportSavingDTO(rs.getId(), rs.getYearMonth(), rs.isSaved(), rs.getRegion().getId()))
                 .collect(Collectors.toList());
     }
@@ -185,7 +185,6 @@ public class ReportService {
         List<SalesReport> report = salesReportRepository.findByRegionIdAndYearMonth(salesReportListDTO.getRegionId(), salesReportListDTO.getYearMonth());
         if (!reportSaving.isSaved()) {
             for (SalesReport dto : report) {
-
                 Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(dto.getMedicine().getId(), dto.getContractType(), dto.getRegion().getId(), null, null, null, dto.getYearMonth());
                 dto.setReportDate(LocalDate.now());
                 dto.setSold(sold);
@@ -196,10 +195,9 @@ public class ReportService {
         reportSavingRepository.save(reportSaving);
     }
 
-    public void openSalesReportEdit(Long regionId, YearMonth yearMonth) {
+    public void openSalesReportEdit(Long regionId,boolean isOpen, YearMonth yearMonth) {
         ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(regionId, yearMonth);
-
-        reportSaving.setSaved(true);
+        reportSaving.setSaved(isOpen);
         reportSavingRepository.save(reportSaving);
     }
 
