@@ -35,7 +35,7 @@ public class ReportController {
             @PathVariable Long medicineId,
             @RequestParam(required = false,defaultValue = "") String query,
             @RequestParam ContractType contractType,
-            @RequestParam(required = false) Long regionId,
+            @RequestParam Long regionId,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workplaceId,
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth,

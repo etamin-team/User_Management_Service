@@ -204,6 +204,7 @@ public class DoctorServiceV2 {
         return preparation;
     }
 
+    @Transactional
     public void saveContractMedicineAmount(UUID doctorId, List<Long> medicineIds) {
         DoctorContractV2 contract = doctorContractV2Repository.findByDoctorUserId(doctorId).orElse(null);
         List<OutOfContractMedicineAmountV2> outOfContractMedicines = outOfContractMedicineAmountV2Repository
@@ -223,13 +224,15 @@ public class DoctorServiceV2 {
 
             if (medicineEntry != null) {
                 updateContractMedicineAmounts(medicineEntry);
+                doctorContractV2Repository.save(contract);
             } else {
                 updateOrCreateOutOfContractMedicine(doctorId, medicineId, outOfContractMedicines, contract);
             }
         }
     }
 
-    private void updateContractMedicineAmounts(MedicineWithQuantityDoctorV2 medicineEntry) {
+    @Transactional
+    public void updateContractMedicineAmounts(MedicineWithQuantityDoctorV2 medicineEntry) {
         YearMonth currentMonth = YearMonth.now();
         List<ContractMedicineDoctorAmountV2> amounts = medicineEntry.getContractMedicineDoctorAmountV2s();
         Optional<ContractMedicineDoctorAmountV2> existingAmount = amounts.stream()
@@ -243,6 +246,7 @@ public class DoctorServiceV2 {
         } else {
             ContractMedicineDoctorAmountV2 newAmount = new ContractMedicineDoctorAmountV2();
             newAmount.setAmount(1L);
+            newAmount.setCorrection(1L);
             newAmount.setYearMonth(currentMonth);
             newAmount.setMedicineWithQuantityDoctor(medicineEntry);
             amounts.add(newAmount);
