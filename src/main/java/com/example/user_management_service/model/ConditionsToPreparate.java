@@ -59,5 +59,8 @@ public class ConditionsToPreparate {
     @Column(name = "kb")
     private Double kb;
 
+    @Column(name = "recipt")
+    private Double  recipt;
+
 
 }

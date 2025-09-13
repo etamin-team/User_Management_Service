@@ -45,6 +45,7 @@ public class ReportService {
     private final MedicineWithQuantityDoctorV2Repository medicineWithQuantityDoctorV2Repository;
     private final RegionRepository regionRepository;
     private final SalesService salesService;
+    private ConditionsToPreparateRepository conditionsToPreparateRepository;
     private final SalesRepository salesRepository;
     private final RecipeRepository recipeRepository;
     private final DistrictRegionService districtRegionService;
@@ -243,7 +244,7 @@ public class ReportService {
         Medicine medicine = sales.getMedicine();
         Long regionId = sales.getRegion().getId();
         YearMonth yearMonth = sales.getYearMonth();
-    
+
         // Delete existing sales reports for this medicine, region, and month
         List<SalesReport> existingReports = salesReportRepository.findByMedicineIdAndRegionIdAndYearMonth(
                 medicine.getId(), regionId, yearMonth);
@@ -255,7 +256,74 @@ public class ReportService {
             salesReportRepository.saveAll(existingReports);
             salesReportRepository.deleteAll(existingReports);
         }
-    
+
+        // Handle percentages
+        Integer kzPct = medicine.getKbPercentage() != null ? medicine.getKbPercentage().intValue() : 0;
+        Integer suPct = medicine.getSuPercentage() != null ? medicine.getSuPercentage().intValue() : 0;
+        Integer sbPct = medicine.getSbPercentage() != null ? medicine.getSbPercentage().intValue() : 0;
+        Integer gzPct = medicine.getGzPercentage() != null ? medicine.getGzPercentage().intValue() : 0;
+        Integer recipePct = medicine.getRecipePercentage() != null ? medicine.getRecipePercentage().intValue() : 0;
+
+        // Check if all percentages are empty (null or 0)
+        if (kzPct == 0 && suPct == 0 && sbPct == 0 && gzPct == 0 && recipePct == 0) {
+            // Fetch from ConditionsToPreparate
+            ConditionsToPreparate conditions = conditionsToPreparateRepository.findAll().stream()
+                    .filter(c -> (c.getStartDate() == null || !reportDate.isBefore(c.getStartDate())) &&
+                            (c.getEndDate() == null || !reportDate.isAfter(c.getEndDate())))
+                    .findFirst()
+                    .orElse(null);
+            if (conditions != null) {
+                kzPct = conditions.getKb() != null ? conditions.getKb().intValue() : 0;
+                suPct = conditions.getSu() != null ? conditions.getSu().intValue() : 0;
+                sbPct = conditions.getSb() != null ? conditions.getSb().intValue() : 0;
+                gzPct = conditions.getGz() != null ? conditions.getGz().intValue() : 0;
+                recipePct = conditions.getRecipt() != null ? conditions.getRecipt().intValue() : 0;
+            }
+        }
+
+        // Normalize percentages
+        int sum = kzPct + suPct + sbPct + gzPct + recipePct;
+        if (sum > 100) {
+            // Normalize to 100% if over
+            double factor = 100.0 / sum;
+            kzPct = (int) Math.round(kzPct * factor);
+            suPct = (int) Math.round(suPct * factor);
+            sbPct = (int) Math.round(sbPct * factor);
+            gzPct = (int) Math.round(gzPct * factor);
+            recipePct = (int) Math.round(recipePct * factor);
+            sum = kzPct + suPct + sbPct + gzPct + recipePct; // Recalculate sum after rounding
+        }
+
+        if (sum < 100) {
+            int remainder = 100 - sum;
+            int emptyCount = 0;
+            if (kzPct == 0) emptyCount++;
+            if (suPct == 0) emptyCount++;
+            if (sbPct == 0) emptyCount++;
+            if (gzPct == 0) emptyCount++;
+            if (recipePct == 0) emptyCount++;
+
+            if (emptyCount > 0) {
+                int addPerEmpty = remainder / emptyCount;
+                int extra = remainder % emptyCount;
+                if (kzPct == 0) {
+                    kzPct = addPerEmpty + (extra-- > 0 ? 1 : 0);
+                }
+                if (suPct == 0) {
+                    suPct = addPerEmpty + (extra-- > 0 ? 1 : 0);
+                }
+                if (sbPct == 0) {
+                    sbPct = addPerEmpty + (extra-- > 0 ? 1 : 0);
+                }
+                if (gzPct == 0) {
+                    gzPct = addPerEmpty + (extra-- > 0 ? 1 : 0);
+                }
+                if (recipePct == 0) {
+                    recipePct = addPerEmpty + (extra-- > 0 ? 1 : 0);
+                }
+            }
+        }
+
         // Create KZ report
         SalesReport kzReport = new SalesReport();
         kzReport.setMedicine(medicine);
@@ -263,11 +331,11 @@ public class ReportService {
         kzReport.setYearMonth(yearMonth);
         kzReport.setReportDate(reportDate);
         kzReport.setContractType(ContractType.KZ);
-        Long kzAllowed = calculateAllowed(sales.getQuote(), medicine.getKbPercentage());
+        Long kzAllowed = calculateAllowed(sales.getQuote(), kzPct);
         kzReport.setAllowed(kzAllowed);
-        kzReport.setWritten(calculateWritten(sales.getTotal(), medicine.getKbPercentage()));
+        kzReport.setWritten(calculateWritten(sales.getTotal(), kzPct));
         salesReportRepository.save(kzReport);
-    
+
         // Create SU report
         SalesReport suReport = new SalesReport();
         suReport.setMedicine(medicine);
@@ -275,11 +343,11 @@ public class ReportService {
         suReport.setYearMonth(yearMonth);
         suReport.setReportDate(reportDate);
         suReport.setContractType(ContractType.SU);
-        Long suAllowed = calculateAllowed(sales.getQuote(), medicine.getSuPercentage());
+        Long suAllowed = calculateAllowed(sales.getQuote(), suPct);
         suReport.setAllowed(suAllowed);
-        suReport.setWritten(calculateWritten(sales.getTotal(), medicine.getSuPercentage()));
+        suReport.setWritten(calculateWritten(sales.getTotal(), suPct));
         salesReportRepository.save(suReport);
-    
+
         // Create SB report
         SalesReport sbReport = new SalesReport();
         sbReport.setMedicine(medicine);
@@ -287,11 +355,11 @@ public class ReportService {
         sbReport.setYearMonth(yearMonth);
         sbReport.setReportDate(reportDate);
         sbReport.setContractType(ContractType.SB);
-        Long sbAllowed = calculateAllowed(sales.getQuote(), medicine.getSbPercentage());
+        Long sbAllowed = calculateAllowed(sales.getQuote(), sbPct);
         sbReport.setAllowed(sbAllowed);
-        sbReport.setWritten(calculateWritten(sales.getTotal(), medicine.getSbPercentage()));
+        sbReport.setWritten(calculateWritten(sales.getTotal(), sbPct));
         salesReportRepository.save(sbReport);
-    
+
         // Create GZ report
         SalesReport gzReport = new SalesReport();
         gzReport.setMedicine(medicine);
@@ -299,11 +367,11 @@ public class ReportService {
         gzReport.setYearMonth(yearMonth);
         gzReport.setReportDate(reportDate);
         gzReport.setContractType(ContractType.GZ);
-        Long gzAllowed = calculateAllowed(sales.getQuote(), medicine.getGzPercentage());
+        Long gzAllowed = calculateAllowed(sales.getQuote(), gzPct);
         gzReport.setAllowed(gzAllowed);
-        gzReport.setWritten(calculateWritten(sales.getTotal(), medicine.getGzPercentage()));
+        gzReport.setWritten(calculateWritten(sales.getTotal(), gzPct));
         salesReportRepository.save(gzReport);
-    
+
         // Create RECIPE report
         SalesReport recipeReport = new SalesReport();
         recipeReport.setMedicine(medicine);
@@ -311,12 +379,20 @@ public class ReportService {
         recipeReport.setYearMonth(yearMonth);
         recipeReport.setReportDate(reportDate);
         recipeReport.setContractType(ContractType.RECIPE);
-        Long recipeAllowed = calculateAllowed(sales.getQuote(), medicine.getRecipePercentage());
+        Long recipeAllowed = calculateAllowed(sales.getQuote(), recipePct);
         recipeReport.setAllowed(recipeAllowed);
-        recipeReport.setWritten(calculateWritten(sales.getTotal(), medicine.getRecipePercentage()));
+        recipeReport.setWritten(calculateWritten(sales.getTotal(), recipePct));
         lastSavedReport = salesReportRepository.save(recipeReport);
 
         return lastSavedReport;
+    }
+
+    private Long calculateAllowed(Long quote, Integer percentage) {
+        return quote * percentage / 100;
+    }
+
+    private Long calculateWritten(Long total, Integer percentage) {
+        return total * percentage / 100;
     }
 
     /**

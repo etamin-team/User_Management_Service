@@ -76,7 +76,8 @@ public class ConditionsToPreparateService {
                 entity.getSu(),
                 entity.getSb(),
                 entity.getGz(),
-                entity.getKb()
+                entity.getKb(),
+                entity.getRecipt()
         );
     }
 
@@ -98,6 +99,7 @@ public class ConditionsToPreparateService {
         entity.setSb(dto.getSb());
         entity.setGz(dto.getGz());
         entity.setKb(dto.getKb());
+        entity.setRecipt(dto.getRecipt());
         return entity;
     }
 }

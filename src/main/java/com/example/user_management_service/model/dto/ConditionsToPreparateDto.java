@@ -29,4 +29,5 @@ public class ConditionsToPreparateDto {
     private Double sb;
     private Double gz;
     private Double kb;
+    private Double recipt;
 }
