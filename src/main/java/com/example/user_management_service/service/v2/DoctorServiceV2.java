@@ -239,6 +239,7 @@ public class DoctorServiceV2 {
         if (existingAmount.isPresent()) {
             ContractMedicineDoctorAmountV2 amount = existingAmount.get();
             amount.setAmount(amount.getAmount() + 1);
+            amount.setCorrection(amount.getCorrection() + 1);
         } else {
             ContractMedicineDoctorAmountV2 newAmount = new ContractMedicineDoctorAmountV2();
             newAmount.setAmount(1L);
