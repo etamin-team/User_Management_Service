@@ -51,6 +51,7 @@ public class ReportService {
     private final DistrictRegionService districtRegionService;
     private final DoctorContractV2Repository doctorContractV2Repository;
     private final ReportSavingRepository reportSavingRepository;
+
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, YearMonth yearMonth) {
 
         SalesReportDTO dto = new SalesReportDTO();
@@ -82,11 +83,13 @@ public class ReportService {
 
         return dto;
     }
+
     public List<ReportSavingDTO> getAllReportSavings() {
         return reportSavingRepository.findAll().stream()
                 .map(rs -> new ReportSavingDTO(rs.getId(), rs.getYearMonth(), rs.isSaved(), rs.getRegion().getId()))
                 .collect(Collectors.toList());
     }
+
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, LocalDate startDate, LocalDate endDate) {
 
         SalesReportDTO dto = new SalesReportDTO();
@@ -138,7 +141,7 @@ public class ReportService {
         DoctorReportDTO doctorReportDTO = new DoctorReportDTO();
         SalesReport salesReport = salesReportRepository.findSalesReportByMedicineIdAndRegionIdAndYearMonth(medicineId, regionId, yearMonth);
         if (salesReport == null) {
-            salesReport=new SalesReport();
+            salesReport = new SalesReport();
         }
         Long inFact = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(medicineId, contractType, regionId, districtId, workplaceId, fieldName, yearMonth);
 
@@ -179,29 +182,27 @@ public class ReportService {
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(salesReportListDTO.getRegionId(), salesReportListDTO.getYearMonth());
+        List<SalesReport> report = salesReportRepository.findByRegionIdAndYearMonth(salesReportListDTO.getRegionId(), salesReportListDTO.getYearMonth());
+        if (!reportSaving.isSaved()) {
+            for (SalesReport dto : report) {
 
-        for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
-            SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(() -> new ReportException("SalesReport not found"));
-           if(!reportSaving.isSaved()){
-               Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(report.getMedicine().getId(), report.getContractType(), report.getRegion().getId(), null, null, null, report.getYearMonth());
-               report.setReportDate(LocalDate.now());
-               report.setWritten(report.getWritten());
-               report.setAllowed(report.getAllowed());
-               report.setSold(sold);
-               report.setYearMonth(salesReportListDTO.getYearMonth());
-               report.setContractType(dto.getContractType());
-               salesReportRepository.save(report);
-           }
+                Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(dto.getMedicine().getId(), dto.getContractType(), dto.getRegion().getId(), null, null, null, dto.getYearMonth());
+                dto.setReportDate(LocalDate.now());
+                dto.setSold(sold);
+                salesReportRepository.save(dto);
+            }
         }
         reportSaving.setSaved(true);
         reportSavingRepository.save(reportSaving);
     }
-    public void  openSalesReportEdit(Long regionId, YearMonth yearMonth){
+
+    public void openSalesReportEdit(Long regionId, YearMonth yearMonth) {
         ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(regionId, yearMonth);
 
-            reportSaving.setSaved(true);
-            reportSavingRepository.save(reportSaving);
+        reportSaving.setSaved(true);
+        reportSavingRepository.save(reportSaving);
     }
+
     public void editSalesReport(Long id, SalesReportDTO salesReportDTO) {
         SalesReport report = salesReportRepository.findById(id)
                 .orElseThrow(() -> new ReportException("Sales Report not found"));
@@ -442,6 +443,7 @@ public class ReportService {
      * Converts a DoctorContractV2 entity to a ContractDTOV2 data transfer object
      *
      * @param contract the DoctorContractV2 entity to convert
+     * @param contract the DoctorContractV2 entity to convert
      * @return a ContractDTOV2 object representing the contract
      */
     public ContractDTOV2 convertToContractDTOV2(DoctorContractV2 contract) {
@@ -625,7 +627,7 @@ public class ReportService {
             salesReportDTO.setId(salesReport.getId());
             salesReportDTO.setAllowed(salesReport.getAllowed());
             salesReportDTO.setWritten(salesReport.getWritten());
-            Long inFact = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(medicine.getId(), contractType, regionId, null,null,null, yearMonth);
+            Long inFact = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(medicine.getId(), contractType, regionId, null, null, null, yearMonth);
             salesReportDTO.setSold(inFact);
             salesReportDTO.setMedicineId(medicine.getId());
             salesReportDTO.setMedicine(medicine);
