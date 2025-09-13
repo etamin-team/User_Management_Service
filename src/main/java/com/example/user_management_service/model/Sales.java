@@ -26,7 +26,7 @@ public class Sales {
     @Column(name = "groups")
     private   String groups;
 
-    @Column(name = "year_month")
+    @Column(name = "year_month", nullable = false)
     private YearMonth yearMonth;
 
     @Column(name = "all_direct_sales")

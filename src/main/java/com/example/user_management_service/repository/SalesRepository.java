@@ -20,7 +20,7 @@ public interface SalesRepository extends JpaRepository<Sales, Long> {
     @Query("""
             SELECT s FROM Sales s 
             WHERE (:yearMonth IS NULL OR s.yearMonth = :yearMonth)
-            ORDER BY s.id ASC
+            ORDER BY s.medicine.name ASC
             """)
     List<Sales> findAllByYearMonth(
             @Param("yearMonth") YearMonth yearMonth

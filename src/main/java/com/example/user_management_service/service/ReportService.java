@@ -493,8 +493,7 @@ public class ReportService {
     public List<SalesReportDTO> getSalesReportDTOList(ContractType contractType, Long regionId, YearMonth yearMonth) {
         List<Medicine> medicines = medicineRepository.findAllSortByCreatedDate();
         List<SalesReportDTO> salesReportDTOS = new ArrayList<>();
-        YearMonth lastMonth = YearMonth.now().minusMonths(1);
-        salesRepository.findAllByYearMonth(lastMonth);
+        salesRepository.findAllByYearMonth(yearMonth);
 
         for (Medicine medicine : medicines) {
             SalesReportDTO salesReportDTO = new SalesReportDTO();
@@ -510,11 +509,14 @@ public class ReportService {
                     contractType,
                     yearMonth.minusMonths(1)
             ).orElse(null));
-
+            if (salesReport == null) {
+                continue;
+            }
             salesReportDTO.setId(salesReport.getId());
             salesReportDTO.setAllowed(salesReport.getAllowed());
             salesReportDTO.setWritten(salesReport.getWritten());
-            salesReportDTO.setSold(salesReport.getSold());
+            Long inFact = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(medicine.getId(), contractType, regionId, null,null,null, yearMonth);
+            salesReportDTO.setSold(inFact);
             salesReportDTO.setMedicineId(medicine.getId());
             salesReportDTO.setMedicine(medicine);
             salesReportDTO.setContractType(contractType);
