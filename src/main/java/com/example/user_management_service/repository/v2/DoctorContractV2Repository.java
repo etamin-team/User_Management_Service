@@ -13,7 +13,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
@@ -27,20 +26,19 @@ import java.util.UUID;
 @Repository
 public interface DoctorContractV2Repository extends JpaRepository<DoctorContractV2, Long> {
 
-    @Query("SELECT c FROM DoctorContractV2 c WHERE c.status = :status ")
+    @Query("SELECT c FROM DoctorContractV2 c WHERE c.status = :status")
     Page<DoctorContractV2> findByStatus(@Param("status") GoalStatus status, Pageable pageable);
-
 
     @Query("SELECT d FROM DoctorContractV2 d WHERE d.doctor.userId = :doctorId " +
             "AND d.status = 'PENDING_REVIEW' " +
-            "AND (d.endDate IS NULL OR d.endDate >= :currentDate)")
+            "AND EXISTS (SELECT m FROM d.medicineWithQuantityDoctorV2s mwq JOIN mwq.contractMedicineDoctorAmountV2s m " +
+            "WHERE m.yearMonth = :yearMonth)")
     Optional<DoctorContractV2> getContractsByDoctorId(@Param("doctorId") UUID doctorId,
-                                                      @Param("currentDate") LocalDate currentDate);
+                                                      @Param("yearMonth") YearMonth yearMonth);
 
     @Query("SELECT d FROM DoctorContractV2 d WHERE d.doctor.userId = :doctorId " +
             "AND d.status = 'APPROVED'")
     Optional<DoctorContractV2> findByDoctorUserId(@Param("doctorId") UUID doctorId);
-
 
     @Query("SELECT c FROM DoctorContractV2 c WHERE c.doctor.district.region.id = :regionId")
     List<DoctorContractV2> findByRegion(@Param("regionId") Long regionId);
@@ -48,24 +46,21 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
     @Query("SELECT c FROM DoctorContractV2 c WHERE c.createdBy.userId = :agentId AND c.doctor.district.id = :districtId")
     List<DoctorContractV2> findByCreatedByAndDistrict(@Param("agentId") UUID agentId, @Param("districtId") Long districtId);
 
-
-
     @Query("SELECT COUNT(c) FROM DoctorContractV2 c WHERE c.createdBy.userId = :createdBy AND c.doctor.district.id = :districtId")
     Long countByCreatedByAndDistrict(@Param("createdBy") UUID createdBy, @Param("districtId") Long districtId);
 
     @Query("SELECT COUNT(c) FROM DoctorContractV2 c WHERE c.createdBy.userId = :createdBy AND c.doctor.district.id = :districtId " +
-            "AND c.createdAt BETWEEN :startDate AND :endDate")
+            "AND c.createdAt BETWEEN :yearMonth AND :yearMonth")
     Long countByCreatedByAndDistrictAndCreatedBetween(@Param("createdBy") UUID createdBy, @Param("districtId") Long districtId,
-                                                      @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+                                                      @Param("yearMonth") YearMonth yearMonth);
 
+    @Query("SELECT dcv FROM DoctorContractV2 dcv WHERE dcv.createdAt BETWEEN :yearMonth AND :yearMonth")
+    List<DoctorContractV2> findByCreatedThisMonth(@Param("yearMonth") YearMonth yearMonth);
 
-
-    @Query("SELECT dcv FROM DoctorContractV2 dcv WHERE dcv.createdAt BETWEEN :startDate AND :endDate")
-    List<DoctorContractV2> findByCreatedThisMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-    
     @Query("""
             SELECT c FROM DoctorContractV2 c 
             JOIN c.medicineWithQuantityDoctorV2s m
+            JOIN m.contractMedicineDoctorAmountV2s cm
             WHERE 
             (:medicineId IS NULL OR m.medicine.id = :medicineId)
             AND (:contractType IS NULL OR c.contractType = :contractType)
@@ -76,13 +71,7 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
             AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
             AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
-            AND (CAST(:yearMonth AS date) IS NULL OR (
-                    EXTRACT(YEAR FROM c.startDate) * 100 + EXTRACT(MONTH FROM c.startDate) <= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date)) AND 
-                    (c.endDate IS NULL OR 
-                    EXTRACT(YEAR FROM c.endDate) * 100 + EXTRACT(MONTH FROM c.endDate) >= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date))
-                )))
+            AND (:yearMonth IS NULL OR cm.yearMonth = :yearMonth)
             GROUP BY c
     """)
     List<DoctorContractV2> findContractsByFilters(
@@ -95,10 +84,11 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             @Param("fieldName") Field fieldName,
             @Param("yearMonth") YearMonth yearMonth
     );
-    
+
     @Query("""
             SELECT c FROM DoctorContractV2 c 
             JOIN c.medicineWithQuantityDoctorV2s m
+            JOIN m.contractMedicineDoctorAmountV2s cm
             WHERE 
             (:medicineId IS NULL OR m.medicine.id = :medicineId)
             AND (:contractType IS NULL OR c.contractType = :contractType)
@@ -109,8 +99,7 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
             AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
             AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
-            AND (CAST(:startDate AS date) IS NULL OR c.startDate >= :startDate)
-            AND (CAST(:endDate AS date) IS NULL OR c.endDate <= :endDate)
+            AND (:yearMonth IS NULL OR cm.yearMonth = :yearMonth)
             GROUP BY c
     """)
     List<DoctorContractV2> findContractsByDateRangeFilters(
@@ -121,13 +110,13 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             @Param("districtId") Long districtId,
             @Param("workplaceId") Long workplaceId,
             @Param("fieldName") Field fieldName,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
+            @Param("yearMonth") YearMonth yearMonth
     );
-    
+
     @Query("""
             SELECT c FROM DoctorContractV2 c 
             JOIN c.medicineWithQuantityDoctorV2s m
+            JOIN m.contractMedicineDoctorAmountV2s cm
             WHERE 
             (:medicineId IS NULL OR m.medicine.id = :medicineId)
             AND (:contractType IS NULL OR c.contractType = :contractType)
@@ -139,13 +128,7 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
             AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
             AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
-            AND (CAST(:yearMonth AS date) IS NULL OR (
-                    EXTRACT(YEAR FROM c.startDate) * 100 + EXTRACT(MONTH FROM c.startDate) <= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date)) AND 
-                    (c.endDate IS NULL OR 
-                    EXTRACT(YEAR FROM c.endDate) * 100 + EXTRACT(MONTH FROM c.endDate) >= 
-                    EXTRACT(YEAR FROM CAST(:yearMonth AS date)) * 100 + EXTRACT(MONTH FROM CAST(:yearMonth AS date))
-                )))
+            AND (:yearMonth IS NULL OR cm.yearMonth = :yearMonth)
             GROUP BY c
     """)
     List<DoctorContractV2> findContractsByFilters(
@@ -159,10 +142,11 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             @Param("fieldName") Field fieldName,
             @Param("yearMonth") YearMonth yearMonth
     );
-    
+
     @Query("""
             SELECT c FROM DoctorContractV2 c 
             JOIN c.medicineWithQuantityDoctorV2s m
+            JOIN m.contractMedicineDoctorAmountV2s cm
             WHERE 
             (:medicineId IS NULL OR m.medicine.id = :medicineId)
             AND (:contractType IS NULL OR c.contractType = :contractType)
@@ -174,8 +158,7 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
             AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
             AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
-            AND (CAST(:startDate AS date) IS NULL OR c.startDate >= :startDate)
-            AND (CAST(:endDate AS date) IS NULL OR c.endDate <= :endDate)
+            AND (:yearMonth IS NULL OR cm.yearMonth = :yearMonth)
             GROUP BY c
     """)
     List<DoctorContractV2> findContractsByDateRangeFilters(
@@ -187,10 +170,9 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
             @Param("districtId") Long districtId,
             @Param("workplaceId") Long workplaceId,
             @Param("fieldName") Field fieldName,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
+            @Param("yearMonth") YearMonth yearMonth
     );
-    
+
     @Query("SELECT COUNT(c) FROM DoctorContractV2 c WHERE c.status = :status")
     Long countByStatus(@Param("status") GoalStatus status);
 }

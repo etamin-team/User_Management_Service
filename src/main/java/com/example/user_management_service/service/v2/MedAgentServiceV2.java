@@ -220,11 +220,11 @@ public class MedAgentServiceV2 {
 
         // Connected doctors this month
         long connectedDoctorsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
-                agentId, districtId, start, end);
+                agentId, districtId, currentMonth);
 
         // Connected contracts this month
         long connectedContractsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
-                agentId, districtId, start, end);
+                agentId, districtId, currentMonth);
 
         // Prescriptions issued this month
         long prescriptionsIssuedCurrentMonth = recipeRepository.countRecipesByDoctorsAssignedByMedAgentThisMonth(agentId);

@@ -58,7 +58,7 @@ public class SalesServiceV2 {
             salesRepository.saveAll(existingSales);
             salesRepository.deleteAll(existingSales);
         }
-        ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(existingSales.get(0).getRegion().getId(), yearMonth);
+        ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(salesDTOS.get(0).getSales().get(0).getRegionId(), yearMonth);
         if (reportSaving == null) {
             reportSaving = new ReportSaving();
             reportSaving.setRegion(existingSales.get(0).getRegion());
