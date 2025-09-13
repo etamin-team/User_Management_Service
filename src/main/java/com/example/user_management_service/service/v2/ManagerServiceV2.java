@@ -195,7 +195,7 @@ public class ManagerServiceV2 {
 
     public ManagerProfileDTOV2 getManagerProfileByManagerId(UUID managerId) {
         ManagerGoalV2 managerGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
-                .orElseThrow(() -> new NotFoundException("No active goal found for manager ID: " + managerId));
+                .orElse(null);
         ManagerProfileDTOV2 profileDTO = new ManagerProfileDTOV2();
         profileDTO.setManagerId(managerId);
         profileDTO.setManagerGoalDTOV2(convertToManagerGoalDTOV2(managerGoal));
@@ -205,6 +205,7 @@ public class ManagerServiceV2 {
     }
 
     private SalesQuoteDTO getSalesQuoteDTO(ManagerGoalV2 managerGoal) {
+        if (managerGoal == null) {return null;}
         YearMonth currentMonth = YearMonth.now();
         UUID managerId = managerGoal.getManagerId().getUserId();
         User manager = userRepository.findById(managerId)
@@ -281,6 +282,7 @@ public class ManagerServiceV2 {
     }
 
     private ManagerGoalDTOV2 convertToManagerGoalDTOV2(ManagerGoalV2 managerGoal) {
+        if (managerGoal == null) {return null;}
         ManagerGoalDTOV2 dto = new ManagerGoalDTOV2();
         dto.setId(managerGoal.getGoalId());
         dto.setManagerId(managerGoal.getManagerId().getUserId());

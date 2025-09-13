@@ -168,27 +168,17 @@ public class ReportService {
     }
 
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
-        System.out.println("1111111111111111111111111111111111111");
-        System.out.println("salesReportListDTO:" + salesReportListDTO.getSalesReportDTOS().size());
-        System.out.println("salesReportListDTO:" + salesReportListDTO.getYearMonth());
-
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
             SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(() -> new ReportException("SalesReport not found"));
-            System.out.println("22222222222222222222222222222222222222222222");
-
-            report.setReportDate(salesReportListDTO.getDate());
-            report.setWritten(dto.getWritten());
-            report.setAllowed(dto.getAllowed());
-            report.setSold(dto.getSold());
+            Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(report.getMedicine().getId(), report.getContractType(), report.getRegion().getId(), null, null, null, report.getYearMonth());
+            report.setReportDate(LocalDate.now());
+            report.setWritten(report.getWritten());
+            report.setAllowed(report.getAllowed());
+            report.setSold(sold);
             report.setYearMonth(salesReportListDTO.getYearMonth());
             report.setContractType(dto.getContractType());
             salesReportRepository.save(report);
-
-            System.out.println("Report saved successfully-----------------------------------------");
-            // Always save the sales DTO since we can't check isSaved anymore
-            salesService.saveSalesDTO(salesReportListDTO.getYearMonth(), dto, salesReportListDTO.getRegionId());
         }
-        System.out.println("Report save process finished successfully-----------------------------------------");
     }
 
     public void editSalesReport(Long id, SalesReportDTO salesReportDTO) {
