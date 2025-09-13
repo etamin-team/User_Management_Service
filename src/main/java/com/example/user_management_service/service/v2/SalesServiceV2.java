@@ -61,7 +61,10 @@ public class SalesServiceV2 {
         ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(salesDTOS.get(0).getSales().get(0).getRegionId(), yearMonth);
         if (reportSaving == null) {
             reportSaving = new ReportSaving();
-            reportSaving.setRegion(existingSales.get(0).getRegion());
+            Region region = regionRepository.findById(salesDTOS.get(0).getSales().get(0).getRegionId())
+                    .orElseThrow(() -> new SalesLoadException("Region not found with id:" + salesDTOS.get(0).getSales().get(0).getRegionId()));
+
+            reportSaving.setRegion(region);
             reportSaving.setYearMonth(yearMonth);
             reportSaving.setSaved(false);
             reportSavingRepository.save(reportSaving);
