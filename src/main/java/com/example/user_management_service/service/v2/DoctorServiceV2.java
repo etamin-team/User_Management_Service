@@ -330,7 +330,12 @@ public class DoctorServiceV2 {
                             .map(ContractMedicineDoctorAmountV2::getAmount)
                             .findFirst()
                             .orElse(0L);
-                    return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, currentMonth);
+                    Long correction = m.getContractMedicineDoctorAmountV2s().stream()
+                            .filter(a -> a.getYearMonth().equals(currentMonth))
+                            .map(ContractMedicineDoctorAmountV2::getCorrection)
+                            .findFirst()
+                            .orElse(0L);
+                    return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount,correction, currentMonth);
                 })
                 .collect(Collectors.toList());
 

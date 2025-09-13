@@ -23,5 +23,6 @@ public class MedicineQuoteDTOV2 {
     private Medicine medicine;
     private Long quote;
     private Long amount;
+    private Long correction;
     private YearMonth yearMonth;
 }

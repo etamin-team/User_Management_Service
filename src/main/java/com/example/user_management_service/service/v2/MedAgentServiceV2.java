@@ -174,7 +174,7 @@ public class MedAgentServiceV2 {
                             .filter(a -> a.getYearMonth().equals(currentMonth))
                             .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
                             .sum();
-                    return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, currentMonth);
+                    return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, null,currentMonth);
                 })
                 .collect(Collectors.toList());
 

@@ -470,6 +470,7 @@ public class ReportService {
 
                         // Get amount from the most recent amount record if available
                         Long amount = 0L;
+                        Long correction = 0L;
                         YearMonth latestYearMonth = YearMonth.now();
 
                         if (med.getContractMedicineDoctorAmountV2s() != null && !med.getContractMedicineDoctorAmountV2s().isEmpty()) {
@@ -480,11 +481,13 @@ public class ReportService {
 
                             if (latestAmount != null) {
                                 amount = latestAmount.getAmount();
+                                correction = latestAmount.getCorrection();
                                 latestYearMonth = latestAmount.getYearMonth();
                             }
                         }
 
                         medicineDto.setAmount(amount);
+                        medicineDto.setCorrection(correction);
                         medicineDto.setYearMonth(latestYearMonth);
 
                         return medicineDto;
