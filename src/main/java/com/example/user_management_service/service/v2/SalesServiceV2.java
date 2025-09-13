@@ -7,10 +7,12 @@ import com.example.user_management_service.model.Sales;
 import com.example.user_management_service.model.dto.SalesByRegionDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
 import com.example.user_management_service.model.dto.SalesRegionDTO;
+import com.example.user_management_service.model.v2.ReportSaving;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RegionRepository;
 import com.example.user_management_service.repository.SalesByRegionRepository;
 import com.example.user_management_service.repository.SalesRepository;
+import com.example.user_management_service.repository.v2.ReportSavingRepository;
 import com.example.user_management_service.service.DistrictRegionService;
 import com.example.user_management_service.service.ReportService;
 import jakarta.transaction.Transactional;
@@ -41,6 +43,7 @@ public class SalesServiceV2 {
     private final RegionRepository regionRepository;
     private final DistrictRegionService districtRegionService;
     private final ReportService reportService;
+    private final ReportSavingRepository reportSavingRepository;
 
 
     public void saveSalesDTOList(List<SalesDTO> salesDTOS) {
@@ -55,8 +58,14 @@ public class SalesServiceV2 {
             salesRepository.saveAll(existingSales);
             salesRepository.deleteAll(existingSales);
         }
-    
-        for (SalesDTO salesDTO : salesDTOS) {
+        ReportSaving reportSaving = reportSavingRepository.findOneByRegionIdAndYearMonth(existingSales.get(0).getRegion().getId(), yearMonth);
+        if (reportSaving == null) {
+            reportSaving = new ReportSaving();
+            reportSaving.setRegion(existingSales.get(0).getRegion());
+            reportSaving.setYearMonth(yearMonth);
+            reportSaving.setSaved(false);
+            reportSavingRepository.save(reportSaving);
+        }        for (SalesDTO salesDTO : salesDTOS) {
             Medicine medicine = medicineRepository.findById(salesDTO.getMedicineId())
                     .orElseThrow(() -> new SalesLoadException("Medicine not found with id:" + salesDTO.getMedicineId()));
     
@@ -93,6 +102,7 @@ public class SalesServiceV2 {
         sales.setQuote(salesRegionDTO.getQuote());
         sales.setTotal(salesRegionDTO.getTotal());
         reportService.updateSalesReport(sales);
+
         salesRepository.save(sales);
     }
 

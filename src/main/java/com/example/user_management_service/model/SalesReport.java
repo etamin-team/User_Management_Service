@@ -38,8 +38,6 @@ public class SalesReport {
     @Column(nullable = false)
     private ContractType contractType;
 
-    private boolean saved = false;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "medicine_id" , referencedColumnName = "id")
     private Medicine medicine;
