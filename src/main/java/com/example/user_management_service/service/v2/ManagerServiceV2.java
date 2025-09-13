@@ -179,9 +179,26 @@ public class ManagerServiceV2 {
         managerGoalV2Repository.save(managerGoal);
     }
 
+    @Transactional
     public boolean deleteManagerGoal(Long id) {
-        if (managerGoalV2Repository.existsById(id)) {
-            managerGoalV2Repository.deleteById(id);
+        ManagerGoalV2 managerGoal = managerGoalV2Repository.findById(id)
+                .orElse(null);
+        
+        if (managerGoal != null) {
+            // Clear all associated collections to ensure proper cascading
+            if (managerGoal.getMedicineQuoteV2s() != null) {
+                managerGoal.getMedicineQuoteV2s().clear();
+            }
+            
+            if (managerGoal.getFieldEnvQuoteV2s() != null) {
+                managerGoal.getFieldEnvQuoteV2s().clear();
+            }
+            
+            if (managerGoal.getMedAgentEnvs() != null) {
+                managerGoal.getMedAgentEnvs().clear();
+            }
+            
+            managerGoalV2Repository.delete(managerGoal);
             return true;
         }
         return false;

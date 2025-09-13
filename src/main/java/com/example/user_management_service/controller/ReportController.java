@@ -117,6 +117,12 @@ public class ReportController {
         return ResponseEntity.ok("Sales report updated successfully");
     }
 
+    @PutMapping("/open-save")
+    public ResponseEntity<String> openSave(@RequestParam Long regionId,  @RequestParam @DateTimeFormat(pattern = "yyyy-MM") YearMonth yearMonth) {
+        reportService.openSalesReportEdit(regionId, yearMonth);
+        return ResponseEntity.ok("Sales report updated successfully");
+    }
+
     @PutMapping("/correction/{quantityId}")
     public ResponseEntity<String> editMedicineQuantity(@PathVariable Long quantityId, @RequestParam Long correction) {
         reportService.editMedicineQuantity(quantityId, correction);

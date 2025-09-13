@@ -38,11 +38,11 @@ public class ManagerGoalV2 {
     @OneToMany(mappedBy = "managerGoalV2", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicineQuoteV2> medicineQuoteV2s = new ArrayList<>();
 
-    @OneToMany(mappedBy = "managerGoalV2", cascade = CascadeType.ALL)
-    private List<FieldEnvQuoteV2> fieldEnvQuoteV2s;
-
-    @OneToMany(mappedBy = "managerGoalV2", cascade = CascadeType.ALL)
-    private List<MedAgentEnvV2> medAgentEnvs;
+    @OneToMany(mappedBy = "managerGoalV2", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FieldEnvQuoteV2> fieldEnvQuoteV2s = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "managerGoalV2", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MedAgentEnvV2> medAgentEnvs = new ArrayList<>();
 
     @Column(name = "created_at")
     private LocalDate createdAt;

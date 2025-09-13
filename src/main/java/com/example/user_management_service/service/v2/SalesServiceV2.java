@@ -44,19 +44,31 @@ public class SalesServiceV2 {
 
 
     public void saveSalesDTOList(List<SalesDTO> salesDTOS) {
+        YearMonth yearMonth = salesDTOS.get(0).getYearMonth();
+        // Delete all existing sales for this month
+        List<Sales> existingSales = salesRepository.findAllByYearMonth(yearMonth);
+        if (!existingSales.isEmpty()) {
+            existingSales.forEach(sales -> {
+                sales.setRegion(null);
+                sales.setMedicine(null);
+            });
+            salesRepository.saveAll(existingSales);
+            salesRepository.deleteAll(existingSales);
+        }
+    
         for (SalesDTO salesDTO : salesDTOS) {
             Medicine medicine = medicineRepository.findById(salesDTO.getMedicineId())
                     .orElseThrow(() -> new SalesLoadException("Medicine not found with id:" + salesDTO.getMedicineId()));
-
+    
             for (SalesRegionDTO regionDTO : salesDTO.getSales()) {
                 Region region = regionRepository.findById(regionDTO.getRegionId())
                         .orElseThrow(() -> new SalesLoadException("Region not found with id:" + regionDTO.getRegionId()));
-
+    
                 Sales sales = new Sales();
                 sales.setMedicine(medicine);
                 sales.setRegion(region);
                 sales.setGroups(salesDTO.getGroup());
-                sales.setYearMonth(salesDTO.getYearMonth());
+                sales.setYearMonth(yearMonth);
                 sales.setAllDirectSales(regionDTO.getAllDirectSales());
                 sales.setAllSecondarySales(regionDTO.getAllSecondarySales());
                 sales.setQuote(regionDTO.getQuote());

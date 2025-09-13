@@ -170,17 +170,24 @@ public class ReportService {
     public void saveSalesReports(SalesReportListDTO salesReportListDTO) {
         for (SalesReportDTO dto : salesReportListDTO.getSalesReportDTOS()) {
             SalesReport report = salesReportRepository.findById(dto.getId()).orElseThrow(() -> new ReportException("SalesReport not found"));
-            Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(report.getMedicine().getId(), report.getContractType(), report.getRegion().getId(), null, null, null, report.getYearMonth());
-            report.setReportDate(LocalDate.now());
-            report.setWritten(report.getWritten());
-            report.setAllowed(report.getAllowed());
-            report.setSold(sold);
-            report.setYearMonth(salesReportListDTO.getYearMonth());
-            report.setContractType(dto.getContractType());
-            salesReportRepository.save(report);
+           if(!report.isSaved()){
+               Long sold = medicineWithQuantityDoctorV2Repository.findTotalWrittenInFact(report.getMedicine().getId(), report.getContractType(), report.getRegion().getId(), null, null, null, report.getYearMonth());
+               report.setReportDate(LocalDate.now());
+               report.setWritten(report.getWritten());
+               report.setAllowed(report.getAllowed());
+               report.setSold(sold);
+               report.setSaved(true);
+               report.setYearMonth(salesReportListDTO.getYearMonth());
+               report.setContractType(dto.getContractType());
+               salesReportRepository.save(report);
+           }
         }
     }
-
+    public void  openSalesReportEdit(Long regionId, YearMonth yearMonth){
+        List<SalesReport> report = salesReportRepository.findByRegionIdAndYearMonth(regionId, yearMonth);
+        report.forEach(r -> r.setSaved(false));
+        salesReportRepository.saveAll(report);
+    }
     public void editSalesReport(Long id, SalesReportDTO salesReportDTO) {
         SalesReport report = salesReportRepository.findById(id)
                 .orElseThrow(() -> new ReportException("Sales Report not found"));
@@ -221,60 +228,74 @@ public class ReportService {
         SalesReport lastSavedReport = null;
         LocalDate reportDate = LocalDate.now();
         Medicine medicine = sales.getMedicine();
-
+        Long regionId = sales.getRegion().getId();
+        YearMonth yearMonth = sales.getYearMonth();
+    
+        // Delete existing sales reports for this medicine, region, and month
+        List<SalesReport> existingReports = salesReportRepository.findByMedicineIdAndRegionIdAndYearMonth(
+                medicine.getId(), regionId, yearMonth);
+        if (!existingReports.isEmpty()) {
+            for (SalesReport report : existingReports) {
+                report.setRegion(null);
+                report.setMedicine(null);
+            }
+            salesReportRepository.saveAll(existingReports);
+            salesReportRepository.deleteAll(existingReports);
+        }
+    
         // Create KZ report
         SalesReport kzReport = new SalesReport();
         kzReport.setMedicine(medicine);
         kzReport.setRegion(sales.getRegion());
-        kzReport.setYearMonth(sales.getYearMonth());
+        kzReport.setYearMonth(yearMonth);
         kzReport.setReportDate(reportDate);
         kzReport.setContractType(ContractType.KZ);
         Long kzAllowed = calculateAllowed(sales.getQuote(), medicine.getKbPercentage());
         kzReport.setAllowed(kzAllowed);
         kzReport.setWritten(calculateWritten(sales.getTotal(), medicine.getKbPercentage()));
         salesReportRepository.save(kzReport);
-
+    
         // Create SU report
         SalesReport suReport = new SalesReport();
         suReport.setMedicine(medicine);
         suReport.setRegion(sales.getRegion());
-        suReport.setYearMonth(sales.getYearMonth());
+        suReport.setYearMonth(yearMonth);
         suReport.setReportDate(reportDate);
         suReport.setContractType(ContractType.SU);
         Long suAllowed = calculateAllowed(sales.getQuote(), medicine.getSuPercentage());
         suReport.setAllowed(suAllowed);
         suReport.setWritten(calculateWritten(sales.getTotal(), medicine.getSuPercentage()));
         salesReportRepository.save(suReport);
-
+    
         // Create SB report
         SalesReport sbReport = new SalesReport();
         sbReport.setMedicine(medicine);
         sbReport.setRegion(sales.getRegion());
-        sbReport.setYearMonth(sales.getYearMonth());
+        sbReport.setYearMonth(yearMonth);
         sbReport.setReportDate(reportDate);
         sbReport.setContractType(ContractType.SB);
         Long sbAllowed = calculateAllowed(sales.getQuote(), medicine.getSbPercentage());
         sbReport.setAllowed(sbAllowed);
         sbReport.setWritten(calculateWritten(sales.getTotal(), medicine.getSbPercentage()));
         salesReportRepository.save(sbReport);
-
+    
         // Create GZ report
         SalesReport gzReport = new SalesReport();
         gzReport.setMedicine(medicine);
         gzReport.setRegion(sales.getRegion());
-        gzReport.setYearMonth(sales.getYearMonth());
+        gzReport.setYearMonth(yearMonth);
         gzReport.setReportDate(reportDate);
         gzReport.setContractType(ContractType.GZ);
         Long gzAllowed = calculateAllowed(sales.getQuote(), medicine.getGzPercentage());
         gzReport.setAllowed(gzAllowed);
         gzReport.setWritten(calculateWritten(sales.getTotal(), medicine.getGzPercentage()));
         salesReportRepository.save(gzReport);
-
+    
         // Create RECIPE report
         SalesReport recipeReport = new SalesReport();
         recipeReport.setMedicine(medicine);
         recipeReport.setRegion(sales.getRegion());
-        recipeReport.setYearMonth(sales.getYearMonth());
+        recipeReport.setYearMonth(yearMonth);
         recipeReport.setReportDate(reportDate);
         recipeReport.setContractType(ContractType.RECIPE);
         Long recipeAllowed = calculateAllowed(sales.getQuote(), medicine.getRecipePercentage());
