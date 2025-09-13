@@ -541,7 +541,7 @@ public class ReportService {
             salesReportDTO.setMedicineId(medicine.getId());
             salesReportDTO.setMedicine(medicine);
             salesReportDTO.setContractType(contractType);
-
+            salesReportDTO.setSaved(salesReport.isSaved());
             salesReportDTOS.add(salesReportDTO);
         }
         return salesReportDTOS;
