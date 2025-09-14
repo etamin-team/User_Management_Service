@@ -362,7 +362,18 @@ public class DoctorServiceV2 {
         visibility.setContractVisible(isContractVisible);
         visibilityRepository.save(visibility);
     }
-
+    public void setAllContractsVisibility(boolean isContractVisible) {
+        List<User> doctors = userRepository.findDoctors();
+        for (User doctor : doctors) {
+            DoctorContractVisibility visibility = visibilityRepository.findByDoctorId(doctor.getUserId());
+            if (visibility == null) {
+                visibility = new DoctorContractVisibility();
+                visibility.setDoctorId(doctor.getUserId());
+            }
+            visibility.setContractVisible(isContractVisible);
+            visibilityRepository.save(visibility);
+        }
+    }
     public boolean getContractVisibility(UUID doctorId) {
         DoctorContractVisibility visibility = visibilityRepository.findByDoctorId(doctorId);
         return visibility != null ? visibility.isContractVisible() : true;

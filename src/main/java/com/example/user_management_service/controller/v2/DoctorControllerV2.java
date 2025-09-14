@@ -61,6 +61,11 @@ public class DoctorControllerV2 {
         doctorService2.setContractVisibility(doctorId, request.isVisible());
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
+    @PutMapping("/contract/all/visibility")
+    public ResponseEntity<Void> setAllContractsVisibility(@RequestBody VisibilityRequest request) {
+        doctorService2.setAllContractsVisibility(request.isVisible());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
     @GetMapping("/profile/{doctorId}")
     public ResponseEntity<DoctorProfileDTOV2> getDoctorProfileByDoctorId(@PathVariable UUID doctorId) {
         DoctorProfileDTOV2 doctorProfileDTO = doctorService2.getDoctorProfileByDoctorId(doctorId);
