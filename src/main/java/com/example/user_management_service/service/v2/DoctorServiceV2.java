@@ -19,6 +19,7 @@ import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
 import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
+import com.example.user_management_service.repository.v2.DoctorContractVisibilityRepository;
 import com.example.user_management_service.repository.v2.OutOfContractMedicineAmountV2Repository;
 import com.example.user_management_service.role.Role;
 import jakarta.persistence.EntityNotFoundException;
@@ -50,6 +51,7 @@ public class DoctorServiceV2 {
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
     private final OutOfContractMedicineAmountV2Repository outOfContractMedicineAmountV2Repository;
+    private final DoctorContractVisibilityRepository visibilityRepository;
 
     public void createContractByManager(DoctorContractCreateUpdatePayloadV2 payload) {
         if (doctorContractV2Repository.findByDoctorUserId(payload.getDoctorId()).isPresent()) {
@@ -296,19 +298,20 @@ public class DoctorServiceV2 {
     }
 
     public ContractDTOV2 getContractByDoctorId(UUID doctorId) {
-        DoctorContractV2 contract = doctorContractV2Repository.findByDoctorUserId(doctorId)
-                .orElseThrow(() -> new NotFoundException("Contract not found for doctor ID: " + doctorId));
-
-        return mapToContractDTOV2(contract);
+        boolean isVisible = getContractVisibility(doctorId);
+        if (!isVisible) {
+            return null;
+        }
+        return doctorContractV2Repository.findByDoctorUserId(doctorId)
+                .map(this::mapToContractDTOV2)
+                .orElse(null);
     }
 
     public DoctorProfileDTOV2 getDoctorProfileByDoctorId(UUID doctorId) {
         User doctor = userRepository.findById(doctorId)
                 .orElseThrow(() -> new NotFoundException("Doctor not found with ID: " + doctorId));
 
-        ContractDTOV2 contractDTO = doctorContractV2Repository.findByDoctorUserId(doctorId)
-                .map(this::mapToContractDTOV2)
-                .orElse(null);
+        ContractDTOV2 contractDTO = getContractByDoctorId(doctorId);
 
         List<OutOfContractMedicineAmountV2> outOfContractMedicines = outOfContractMedicineAmountV2Repository
                 .findAllForDoctorThisMonth(doctorId, YearMonth.now())
@@ -320,7 +323,6 @@ public class DoctorServiceV2 {
 
         return new DoctorProfileDTOV2(doctorId, contractDTO, outOfContractDTOs);
     }
-
     private ContractDTOV2 mapToContractDTOV2(DoctorContractV2 contract) {
         YearMonth currentMonth = YearMonth.now();
         List<MedicineQuoteDTOV2> medicineQuotes = contract.getMedicineWithQuantityDoctorV2s().stream()
@@ -351,7 +353,20 @@ public class DoctorServiceV2 {
                 medicineQuotes
         );
     }
+    public void setContractVisibility(UUID doctorId, boolean isContractVisible) {
+        DoctorContractVisibility visibility = visibilityRepository.findByDoctorId(doctorId);
+        if (visibility == null) {
+            visibility = new DoctorContractVisibility();
+            visibility.setDoctorId(doctorId);
+        }
+        visibility.setContractVisible(isContractVisible);
+        visibilityRepository.save(visibility);
+    }
 
+    public boolean getContractVisibility(UUID doctorId) {
+        DoctorContractVisibility visibility = visibilityRepository.findByDoctorId(doctorId);
+        return visibility != null ? visibility.isContractVisible() : true;
+    }
     public void enableContract(Long id) {
         DoctorContractV2 contract = doctorContractV2Repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Contract not found with id: " + id));

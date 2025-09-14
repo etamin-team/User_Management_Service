@@ -4,6 +4,7 @@ package com.example.user_management_service.controller.v2;
 import com.example.user_management_service.model.dto.RecipeDto;
 import com.example.user_management_service.model.v2.dto.ContractDTOV2;
 import com.example.user_management_service.model.v2.dto.DoctorProfileDTOV2;
+import com.example.user_management_service.model.v2.dto.VisibilityRequest;
 import com.example.user_management_service.model.v2.payload.DoctorContractCreateUpdatePayloadV2;
 import com.example.user_management_service.service.v2.DoctorServiceV2;
 import lombok.AllArgsConstructor;
@@ -55,7 +56,11 @@ public class DoctorControllerV2 {
         ContractDTOV2 contract = doctorService2.getContractByDoctorId(doctorId);
         return ResponseEntity.ok(contract);
     }
-
+    @PutMapping("/contract/{doctorId}/visibility")
+    public ResponseEntity<Void> setContractVisibility(@PathVariable UUID doctorId, @RequestBody VisibilityRequest request) {
+        doctorService2.setContractVisibility(doctorId, request.isVisible());
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
     @GetMapping("/profile/{doctorId}")
     public ResponseEntity<DoctorProfileDTOV2> getDoctorProfileByDoctorId(@PathVariable UUID doctorId) {
         DoctorProfileDTOV2 doctorProfileDTO = doctorService2.getDoctorProfileByDoctorId(doctorId);
