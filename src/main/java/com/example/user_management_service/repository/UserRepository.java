@@ -29,6 +29,7 @@ import java.util.UUID;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+    long countByRole(Role role);
     @Query("SELECT u FROM User u WHERE u.role = 'MEDAGENT' " +
             "AND u.district.id = :districtId " +
             "AND u.createdDate BETWEEN :startDate AND :endDate")

@@ -1,15 +1,18 @@
 package com.example.user_management_service.controller.v2;
 
-import com.example.user_management_service.model.dto.ManagerGoalDTO;
+import com.example.user_management_service.model.dto.ManagerGoalDTO; // Not used in this snippet, but kept for context
 import com.example.user_management_service.model.v2.dto.ManagerGoalDTOV2;
 import com.example.user_management_service.model.v2.dto.ManagerProfileDTOV2;
 import com.example.user_management_service.model.v2.payload.ManagerGoalCreateUpdatePayloadV2;
 import com.example.user_management_service.service.v2.ManagerServiceV2;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat; // Import this
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.YearMonth;
+import java.util.Optional; // Import this
 import java.util.UUID;
 
 @RestController
@@ -45,20 +48,35 @@ public class ManagerControllerV2 {
     }
 
     @GetMapping("/manager/goal/{goalId}")
-    public ResponseEntity<ManagerGoalDTOV2> getManagerGoalById(@PathVariable Long goalId) {
-        ManagerGoalDTOV2 managerGoalDTO = managerServiceV2.getManagerGoalById(goalId);
+    public ResponseEntity<ManagerGoalDTOV2> getManagerGoalById(
+            @PathVariable Long goalId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        // If yearMonth is provided, use it; otherwise, default to current month
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        ManagerGoalDTOV2 managerGoalDTO = managerServiceV2.getManagerGoalById(goalId, targetMonth);
         return ResponseEntity.ok(managerGoalDTO);
     }
 
     @GetMapping("/manager/profile/{managerId}")
-    public ResponseEntity<ManagerProfileDTOV2> getManagerProfileByManagerId(@PathVariable UUID managerId) {
-        ManagerProfileDTOV2 managerProfile = managerServiceV2.getManagerProfileByManagerId(managerId);
+    public ResponseEntity<ManagerProfileDTOV2> getManagerProfileByManagerId(
+            @PathVariable UUID managerId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        // If yearMonth is provided, use it; otherwise, default to current month
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        ManagerProfileDTOV2 managerProfile = managerServiceV2.getManagerProfileByManagerId(managerId, targetMonth);
         return ResponseEntity.ok(managerProfile);
     }
 
     @GetMapping("/manager/{managerId}/goal")
-    public ResponseEntity<ManagerGoalDTOV2> getManagerGoalByManagerId(@PathVariable UUID managerId) {
-        ManagerGoalDTOV2 managerGoal = managerServiceV2.getManagerGoalByManagerId(managerId);
+    public ResponseEntity<ManagerGoalDTOV2> getManagerGoalByManagerId(
+            @PathVariable UUID managerId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        // If yearMonth is provided, use it; otherwise, default to current month
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        ManagerGoalDTOV2 managerGoal = managerServiceV2.getManagerGoalByManagerId(managerId, targetMonth);
         return managerGoal != null ? ResponseEntity.ok(managerGoal) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

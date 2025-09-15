@@ -1,6 +1,5 @@
 package com.example.user_management_service.model.v2;
 
-import com.example.user_management_service.model.MedicineWithQuantityDoctor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,12 +13,6 @@ import java.time.YearMonth;
  * Time-2:50 AM (GMT+5)
  */
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.YearMonth;
 
 @Entity
 @Table(name = "contract_medicine_doctor_amounts_v2")

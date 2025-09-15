@@ -5,10 +5,13 @@ import com.example.user_management_service.model.v2.dto.MedAgentProfileDTOV2;
 import com.example.user_management_service.model.v2.payload.MedAgentGoalCreateUpdatePayloadV2;
 import com.example.user_management_service.service.v2.MedAgentServiceV2;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat; // Import this
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.YearMonth; // Import this
+import java.util.Optional; // Import this
 import java.util.UUID;
 
 /**
@@ -36,15 +39,42 @@ public class MedAgentControllerV2 {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping("/goal/{goalId}")
-    public ResponseEntity<MedAgentGoalDTOV2> getGoalById(@PathVariable Long goalId) {
-        MedAgentGoalDTOV2 goal = medAgentServiceV2.getGoalById(goalId);
+    @DeleteMapping("/goal/{goalId}") // New: Delete Goal by ID
+    public ResponseEntity<Void> deleteGoal(@PathVariable Long goalId) {
+        if (medAgentServiceV2.deleteGoal(goalId)) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/goal/{goalId}") // Updated: Get Goal by ID with optional YearMonth
+    public ResponseEntity<MedAgentGoalDTOV2> getGoalById(
+            @PathVariable Long goalId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        MedAgentGoalDTOV2 goal = medAgentServiceV2.getGoalById(goalId, targetMonth);
         return ResponseEntity.ok(goal);
     }
 
-    @GetMapping("/profile/{agentId}")
-    public ResponseEntity<MedAgentProfileDTOV2> getProfileByAgentId(@PathVariable UUID agentId) {
-        MedAgentProfileDTOV2 profile = medAgentServiceV2.getProfileByAgentId(agentId);
+    @GetMapping("/{agentId}/goal") // New: Get Active Goal by MedAgent ID with optional YearMonth
+    public ResponseEntity<MedAgentGoalDTOV2> getActiveGoalByMedAgentId(
+            @PathVariable UUID agentId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        MedAgentGoalDTOV2 goal = medAgentServiceV2.getActiveGoalByMedAgentId(agentId, targetMonth);
+        return ResponseEntity.ok(goal);
+    }
+
+    @GetMapping("/profile/{agentId}") // Updated: Get Profile by MedAgent ID with optional YearMonth
+    public ResponseEntity<MedAgentProfileDTOV2> getProfileByAgentId(
+            @PathVariable UUID agentId,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        MedAgentProfileDTOV2 profile = medAgentServiceV2.getProfileByAgentId(agentId, targetMonth);
         return ResponseEntity.ok(profile);
     }
 }

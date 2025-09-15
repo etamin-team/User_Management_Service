@@ -16,12 +16,7 @@ import com.example.user_management_service.repository.DistrictRepository;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
-import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
-import com.example.user_management_service.repository.v2.FieldEnvQuoteV2Repository;
-import com.example.user_management_service.repository.v2.ManagerGoalV2Repository;
-import com.example.user_management_service.repository.v2.MedAgentEnvV2Repository;
-import com.example.user_management_service.repository.v2.MedAgentGoalV2Repository;
-import com.example.user_management_service.repository.v2.MedicineQuoteV2Repository;
+import com.example.user_management_service.repository.v2.*;
 import com.example.user_management_service.role.Role;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +38,7 @@ public class ManagerServiceV2 {
     private final ManagerGoalV2Repository managerGoalV2Repository;
     private final UserRepository userRepository;
     private final MedicineRepository medicineRepository;
+    private final ContractMedicineDoctorAmountV2Repository contractMedicineDoctorAmountV2Repository;
     private final MedicineQuoteV2Repository medicineQuoteV2Repository;
     private final FieldEnvQuoteV2Repository fieldEnvQuoteV2Repository;
     private final MedAgentEnvV2Repository medAgentEnvV2Repository;
@@ -51,12 +47,34 @@ public class ManagerServiceV2 {
     private final RecipeRepository recipeRepository;
     private final MedAgentGoalV2Repository medAgentGoalV2Repository;
 
-    public ManagerGoalDTOV2 getManagerGoalByManagerId(UUID managerId) {
+    // --- Public methods receiving YearMonth ---
+    public ManagerGoalDTOV2 getManagerGoalByManagerId(UUID managerId, YearMonth targetMonth) {
+        // Note: The getGoalsByManagerId repository method still uses LocalDate.now().
+        // This means it fetches the goal that is currently active.
+        // The `targetMonth` parameter is then used to calculate metrics *within* that active goal for a specific month.
         ManagerGoalV2 managerGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
                 .orElseThrow(() -> new NotFoundException("Manager goal not found for manager ID: " + managerId));
-        return convertToManagerGoalDTOV2(managerGoal);
+        return convertToManagerGoalDTOV2(managerGoal, targetMonth); // Pass targetMonth
     }
 
+    public ManagerGoalDTOV2 getManagerGoalById(Long goalId, YearMonth targetMonth) {
+        ManagerGoalV2 managerGoal = managerGoalV2Repository.findById(goalId)
+                .orElseThrow(() -> new NotFoundException("Manager goal not found with ID: " + goalId));
+        return convertToManagerGoalDTOV2(managerGoal, targetMonth); // Pass targetMonth
+    }
+
+    public ManagerProfileDTOV2 getManagerProfileByManagerId(UUID managerId, YearMonth targetMonth) {
+        ManagerGoalV2 managerGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
+                .orElse(null);
+        ManagerProfileDTOV2 profileDTO = new ManagerProfileDTOV2();
+        profileDTO.setManagerId(managerId);
+        profileDTO.setManagerGoalDTOV2(convertToManagerGoalDTOV2(managerGoal, targetMonth)); // Pass targetMonth
+        profileDTO.setSalesQuoteDTO(getSalesQuoteDTO(managerGoal, targetMonth)); // Pass targetMonth
+        profileDTO.setManagerProfileKPIDTOV2(getManagerProfileKPIDTOV2(managerId, targetMonth)); // Pass targetMonth
+        return profileDTO;
+    }
+
+    // --- Other existing public methods (no change) ---
     public void createManagerGoal(ManagerGoalCreateUpdatePayloadV2 payload) {
         if (managerGoalV2Repository.getGoalsByManagerId(payload.getManagerId(), LocalDate.now()).isPresent()) {
             throw new ManagerGoalException("Manager has already assigned goal for ID: " + payload.getManagerId());
@@ -197,26 +215,13 @@ public class ManagerServiceV2 {
         return false;
     }
 
-    public ManagerGoalDTOV2 getManagerGoalById(Long goalId) {
-        ManagerGoalV2 managerGoal = managerGoalV2Repository.findById(goalId)
-                .orElseThrow(() -> new NotFoundException("Manager goal not found with ID: " + goalId));
-        return convertToManagerGoalDTOV2(managerGoal);
-    }
 
-    public ManagerProfileDTOV2 getManagerProfileByManagerId(UUID managerId) {
-        ManagerGoalV2 managerGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
-                .orElse(null);
-        ManagerProfileDTOV2 profileDTO = new ManagerProfileDTOV2();
-        profileDTO.setManagerId(managerId);
-        profileDTO.setManagerGoalDTOV2(convertToManagerGoalDTOV2(managerGoal));
-        profileDTO.setSalesQuoteDTO(getSalesQuoteDTO(managerGoal));
-        profileDTO.setManagerProfileKPIDTOV2(getManagerProfileKPIDTOV2(managerId));
-        return profileDTO;
-    }
+    // --- Private helper methods now accepting YearMonth ---
 
-    private SalesQuoteDTO getSalesQuoteDTO(ManagerGoalV2 managerGoal) {
-        if (managerGoal == null) {return null;}
-        YearMonth currentMonth = YearMonth.now();
+    private SalesQuoteDTO getSalesQuoteDTO(ManagerGoalV2 managerGoal, YearMonth targetMonth) { // Added targetMonth
+        if (managerGoal == null) {
+            return null;
+        }
         UUID managerId = managerGoal.getManagerId().getUserId();
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
@@ -228,7 +233,7 @@ public class ManagerServiceV2 {
         long totalSales = doctorContractV2Repository.findByRegion(regionId).stream()
                 .flatMap(contract -> contract.getMedicineWithQuantityDoctorV2s().stream())
                 .flatMap(medicine -> medicine.getContractMedicineDoctorAmountV2s().stream())
-                .filter(amount -> amount.getYearMonth().equals(currentMonth))
+                .filter(amount -> amount.getYearMonth().equals(targetMonth)) // Use targetMonth
                 .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
                 .sum();
 
@@ -239,14 +244,13 @@ public class ManagerServiceV2 {
         return new SalesQuoteDTO(totalSales, targetSales);
     }
 
-    private ManagerProfileKPIDTOV2 getManagerProfileKPIDTOV2(UUID managerId) {
+    private ManagerProfileKPIDTOV2 getManagerProfileKPIDTOV2(UUID managerId, YearMonth targetMonth) { // Added targetMonth
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
         Long regionId = manager.getDistrict().getRegion().getId();
 
-        YearMonth currentMonth = YearMonth.now();
-        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+        LocalDateTime startDate = targetMonth.atDay(1).atStartOfDay(); // Use targetMonth
+        LocalDateTime endDate = targetMonth.atEndOfMonth().atTime(23, 59, 59); // Use targetMonth
 
         long doctorsInDatabase = userRepository.findByRoleAndRegionId(regionId, Role.DOCTOR);
         long totalPrescriptions = recipeRepository.countByRegionId(regionId);
@@ -272,8 +276,10 @@ public class ManagerServiceV2 {
         );
     }
 
-    private ManagerGoalDTOV2 convertToManagerGoalDTOV2(ManagerGoalV2 managerGoal) {
-        if (managerGoal == null) {return null;}
+    private ManagerGoalDTOV2 convertToManagerGoalDTOV2(ManagerGoalV2 managerGoal, YearMonth targetMonth) { // Added targetMonth
+        if (managerGoal == null) {
+            return null;
+        }
         ManagerGoalDTOV2 dto = new ManagerGoalDTOV2();
         dto.setId(managerGoal.getGoalId());
         dto.setManagerId(managerGoal.getManagerId().getUserId());
@@ -282,9 +288,9 @@ public class ManagerServiceV2 {
         dto.setEndDate(managerGoal.getEndDate());
         dto.setStatus(managerGoal.getStatus());
 
-        YearMonth currentMonth = YearMonth.now();
-        LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+        // Use targetMonth instead of YearMonth.now()
+        LocalDateTime startDate = targetMonth.atDay(1).atStartOfDay();
+        LocalDateTime endDate = targetMonth.atEndOfMonth().atTime(23, 59, 59);
         UUID managerId = managerGoal.getManagerId().getUserId();
         User manager = userRepository.findById(managerId)
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
@@ -299,15 +305,15 @@ public class ManagerServiceV2 {
                 quoteDTO.setId(quote.getId());
                 quoteDTO.setMedicine(quote.getMedicine());
                 quoteDTO.setQuote(quote.getQuote());
-                Long amount = doctorContractV2Repository.findByRegion(regionId).stream()
-                        .flatMap(contract -> contract.getMedicineWithQuantityDoctorV2s().stream())
-                        .filter(medicine -> medicine.getMedicine().getId().equals(quote.getMedicine().getId()))
-                        .flatMap(medicine -> medicine.getContractMedicineDoctorAmountV2s().stream())
-                        .filter(a -> a.getYearMonth().equals(currentMonth))
-                        .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
-                        .sum();
+
+                Long amount = contractMedicineDoctorAmountV2Repository.sumMedicineAmountsByRegionMedicineAndMonth(
+                        regionId,
+                        quote.getMedicine().getId(),
+                        targetMonth // Use targetMonth
+                ).orElse(0L);
+
                 quoteDTO.setAmount(amount);
-                quoteDTO.setYearMonth(currentMonth);
+                quoteDTO.setYearMonth(targetMonth); // Use targetMonth
                 return quoteDTO;
             }).collect(Collectors.toList());
             dto.setMedicineQuoteDTOV2List(medicineQuoteDTOs);
@@ -322,11 +328,11 @@ public class ManagerServiceV2 {
                 Long amount = (long) userRepository.findCreatedDoctorsThisMonthByRegionAndMonth(
                         regionId,
                         fieldDTO.getField(),
-                        startDate,
-                        endDate
+                        startDate, // derived from targetMonth
+                        endDate    // derived from targetMonth
                 ).size();
                 fieldDTO.setAmount(amount);
-                fieldDTO.setYearMonth(currentMonth);
+                fieldDTO.setYearMonth(targetMonth); // Use targetMonth
                 return fieldDTO;
             }).collect(Collectors.toList());
             dto.setFieldEnvDTOV2List(fieldEnvDTOs);
@@ -347,11 +353,11 @@ public class ManagerServiceV2 {
                 ));
                 Long amount = (long) userRepository.findMedicalAgentsByDistrictAndMonth(
                         agentEnv.getDistrict().getId(),
-                        startDate,
-                        endDate
+                        startDate, // derived from targetMonth
+                        endDate    // derived from targetMonth
                 ).size();
                 agentDTO.setAmount(amount);
-                agentDTO.setYearMonth(currentMonth);
+                agentDTO.setYearMonth(targetMonth); // Use targetMonth
                 return agentDTO;
             }).collect(Collectors.toList());
             dto.setMedAgentEnvDTOV2List(medAgentEnvDTOs);

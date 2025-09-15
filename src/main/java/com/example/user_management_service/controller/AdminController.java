@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -160,8 +162,11 @@ public class AdminController {
     public ResponseEntity<Page<ContractDTOV2>> getContractsByStatus(
             @RequestParam GoalStatus goalStatus,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTOV2> contracts = doctorServiceV2.getContractsByStatus(goalStatus, page, size);
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+            ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        Page<ContractDTOV2> contracts = doctorServiceV2.getContractsByStatus(goalStatus, page, size,targetMonth);
         return ResponseEntity.ok(contracts);
     }
 
