@@ -35,11 +35,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-/**
- * Date-9/11/2025
- * By Sardor Tokhirov
- * Time-4:01 AM (GMT+5)
- */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -56,6 +51,12 @@ public class ManagerServiceV2 {
     private final RecipeRepository recipeRepository;
     private final MedAgentGoalV2Repository medAgentGoalV2Repository;
 
+    public ManagerGoalDTOV2 getManagerGoalByManagerId(UUID managerId) {
+        ManagerGoalV2 managerGoal = managerGoalV2Repository.getGoalsByManagerId(managerId, LocalDate.now())
+                .orElseThrow(() -> new NotFoundException("Manager goal not found for manager ID: " + managerId));
+        return convertToManagerGoalDTOV2(managerGoal);
+    }
+
     public void createManagerGoal(ManagerGoalCreateUpdatePayloadV2 payload) {
         if (managerGoalV2Repository.getGoalsByManagerId(payload.getManagerId(), LocalDate.now()).isPresent()) {
             throw new ManagerGoalException("Manager has already assigned goal for ID: " + payload.getManagerId());
@@ -68,7 +69,6 @@ public class ManagerServiceV2 {
         managerGoal.setEndDate(payload.getEndDate());
         managerGoal.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : GoalStatus.APPROVED);
 
-        // Save Medicine Quotes
         if (payload.getMedicineQuotes() != null && !payload.getMedicineQuotes().isEmpty()) {
             List<MedicineQuoteV2> medicineQuotes = payload.getMedicineQuotes().stream().map(quotePayload -> {
                 MedicineQuoteV2 medicineQuote = new MedicineQuoteV2();
@@ -81,7 +81,6 @@ public class ManagerServiceV2 {
             managerGoal.setMedicineQuoteV2s(medicineQuotes);
         }
 
-        // Save Field Environment Quotes
         if (payload.getFieldEnvQuotes() != null && !payload.getFieldEnvQuotes().isEmpty()) {
             List<FieldEnvQuoteV2> fieldEnvQuotes = payload.getFieldEnvQuotes().stream().map(fieldPayload -> {
                 FieldEnvQuoteV2 fieldEnvQuote = new FieldEnvQuoteV2();
@@ -93,7 +92,6 @@ public class ManagerServiceV2 {
             managerGoal.setFieldEnvQuoteV2s(fieldEnvQuotes);
         }
 
-        // Save Medical Agent Environments
         if (payload.getMedAgenEnvQuotes() != null && !payload.getMedAgenEnvQuotes().isEmpty()) {
             List<MedAgentEnvV2> medAgentEnvs = payload.getMedAgenEnvQuotes().stream().map(agentPayload -> {
                 MedAgentEnvV2 medAgentEnv = new MedAgentEnvV2();
@@ -113,12 +111,10 @@ public class ManagerServiceV2 {
         ManagerGoalV2 managerGoal = managerGoalV2Repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Manager goal not found with ID: " + id));
 
-        // Update basic fields
         managerGoal.setStartDate(payload.getStartDate());
         managerGoal.setEndDate(payload.getEndDate());
         managerGoal.setStatus(payload.getGoalStatus() != null ? payload.getGoalStatus() : managerGoal.getStatus());
 
-        // Update or Append Medicine Quotes
         if (payload.getMedicineQuotes() != null && !payload.getMedicineQuotes().isEmpty()) {
             for (MedicineQuotePayloadV2 quotePayload : payload.getMedicineQuotes()) {
                 Medicine medicine = medicineRepository.findById(quotePayload.getMedicineId())
@@ -138,7 +134,6 @@ public class ManagerServiceV2 {
             }
         }
 
-        // Update or Append Field Environment Quotes
         if (payload.getFieldEnvQuotes() != null && !payload.getFieldEnvQuotes().isEmpty()) {
             for (FieldEnvQuotePayloadV2 fieldPayload : payload.getFieldEnvQuotes()) {
                 Optional<FieldEnvQuoteV2> existingField = managerGoal.getFieldEnvQuoteV2s().stream()
@@ -156,7 +151,6 @@ public class ManagerServiceV2 {
             }
         }
 
-        // Update or Append Medical Agent Environments
         if (payload.getMedAgenEnvQuotes() != null && !payload.getMedAgenEnvQuotes().isEmpty()) {
             for (MedAgentQuoteEnvPayloadV2 agentPayload : payload.getMedAgenEnvQuotes()) {
                 District district = districtRepository.findById(agentPayload.getDistrictId())
@@ -183,21 +177,20 @@ public class ManagerServiceV2 {
     public boolean deleteManagerGoal(Long id) {
         ManagerGoalV2 managerGoal = managerGoalV2Repository.findById(id)
                 .orElse(null);
-        
+
         if (managerGoal != null) {
-            // Clear all associated collections to ensure proper cascading
             if (managerGoal.getMedicineQuoteV2s() != null) {
                 managerGoal.getMedicineQuoteV2s().clear();
             }
-            
+
             if (managerGoal.getFieldEnvQuoteV2s() != null) {
                 managerGoal.getFieldEnvQuoteV2s().clear();
             }
-            
+
             if (managerGoal.getMedAgentEnvs() != null) {
                 managerGoal.getMedAgentEnvs().clear();
             }
-            
+
             managerGoalV2Repository.delete(managerGoal);
             return true;
         }
@@ -232,16 +225,13 @@ public class ManagerServiceV2 {
             throw new IllegalStateException("Region ID is null for manager ID: " + managerId);
         }
 
-        // Aggregate amounts from DoctorContractV2 in the region
-        long totalSales = doctorContractV2Repository.
-                findByRegion(regionId).stream()
+        long totalSales = doctorContractV2Repository.findByRegion(regionId).stream()
                 .flatMap(contract -> contract.getMedicineWithQuantityDoctorV2s().stream())
                 .flatMap(medicine -> medicine.getContractMedicineDoctorAmountV2s().stream())
                 .filter(amount -> amount.getYearMonth().equals(currentMonth))
                 .mapToLong(ContractMedicineDoctorAmountV2::getAmount)
                 .sum();
 
-        // Target sales from ManagerGoalV2 quotes
         long targetSales = managerGoal.getMedicineQuoteV2s().stream()
                 .mapToLong(MedicineQuoteV2::getQuote)
                 .sum();
@@ -254,33 +244,17 @@ public class ManagerServiceV2 {
                 .orElseThrow(() -> new NotFoundException("Manager not found with ID: " + managerId));
         Long regionId = manager.getDistrict().getRegion().getId();
 
-        // Get medical agent IDs from MedAgentGoalV2 in the region
-
         YearMonth currentMonth = YearMonth.now();
         LocalDateTime startDate = currentMonth.atDay(1).atStartOfDay();
         LocalDateTime endDate = currentMonth.atEndOfMonth().atTime(23, 59, 59);
-        // KPI Calculations
-        //
-        long doctorsInDatabase = userRepository.findByRoleAndRegionId(regionId,Role.DOCTOR);
 
-        //
+        long doctorsInDatabase = userRepository.findByRoleAndRegionId(regionId, Role.DOCTOR);
         long totalPrescriptions = recipeRepository.countByRegionId(regionId);
-
-        //
-        long prescriptionsNewDoctors =  recipeRepository.countByRegionIdAndDoctorIdsAndMonth(regionId,startDate,endDate);
-
-        //
-        long totalWorking = userRepository.findByRoleAndRegionId(regionId,Role.MEDAGENT);
-
-        //
-        long totalMedicines =  recipeRepository.countMedicationsByDoctorIds(regionId);
-
-        //
-        long medicineNewDoctors =recipeRepository.countMedicationsByDoctorIdsAndMonth(  regionId ,startDate,endDate );
-
-        //
-        long newDoctorsThisMonth =  userRepository.findCreatedDoctorsThisMonthByRegionAndMonth(regionId,null,startDate,endDate).size();
-
+        long prescriptionsNewDoctors = recipeRepository.countByRegionIdAndDoctorIdsAndMonth(regionId, startDate, endDate);
+        long totalWorking = userRepository.findByRoleAndRegionId(regionId, Role.MEDAGENT);
+        long totalMedicines = recipeRepository.countMedicationsByDoctorIds(regionId);
+        long medicineNewDoctors = recipeRepository.countMedicationsByDoctorIdsAndMonth(regionId, startDate, endDate);
+        long newDoctorsThisMonth = userRepository.findCreatedDoctorsThisMonthByRegionAndMonth(regionId, null, startDate, endDate).size();
         long coveredDistricts = 0;
         long coveredWorkPlaces = 0;
 
@@ -319,14 +293,12 @@ public class ManagerServiceV2 {
             throw new IllegalStateException("Region ID is null for manager ID: " + managerId);
         }
 
-        // Convert Medicine Quotes (aggregate amounts from DoctorContractV2 in the region)
         if (managerGoal.getMedicineQuoteV2s() != null) {
             List<MedicineQuoteDTOV2> medicineQuoteDTOs = managerGoal.getMedicineQuoteV2s().stream().map(quote -> {
                 MedicineQuoteDTOV2 quoteDTO = new MedicineQuoteDTOV2();
                 quoteDTO.setId(quote.getId());
                 quoteDTO.setMedicine(quote.getMedicine());
                 quoteDTO.setQuote(quote.getQuote());
-                // Aggregate amounts from DoctorContractV2 in the region
                 Long amount = doctorContractV2Repository.findByRegion(regionId).stream()
                         .flatMap(contract -> contract.getMedicineWithQuantityDoctorV2s().stream())
                         .filter(medicine -> medicine.getMedicine().getId().equals(quote.getMedicine().getId()))
@@ -341,7 +313,6 @@ public class ManagerServiceV2 {
             dto.setMedicineQuoteDTOV2List(medicineQuoteDTOs);
         }
 
-        // Convert Field Environment Quotes
         if (managerGoal.getFieldEnvQuoteV2s() != null) {
             List<FieldEnvDTOV2> fieldEnvDTOs = managerGoal.getFieldEnvQuoteV2s().stream().map(fieldEnv -> {
                 FieldEnvDTOV2 fieldDTO = new FieldEnvDTOV2();
@@ -361,7 +332,6 @@ public class ManagerServiceV2 {
             dto.setFieldEnvDTOV2List(fieldEnvDTOs);
         }
 
-        // Convert Medical Agent Environments
         if (managerGoal.getMedAgentEnvs() != null) {
             List<MedAgentEnvDTOV2> medAgentEnvDTOs = managerGoal.getMedAgentEnvs().stream().map(agentEnv -> {
                 MedAgentEnvDTOV2 agentDTO = new MedAgentEnvDTOV2();

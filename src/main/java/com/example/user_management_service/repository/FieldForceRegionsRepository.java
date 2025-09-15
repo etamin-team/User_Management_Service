@@ -22,7 +22,7 @@ public interface FieldForceRegionsRepository extends JpaRepository<FieldForceReg
     @Query("SELECT f FROM FieldForceRegions f WHERE  f.user.userId = :userId")
     Optional<FieldForceRegions> findByUserId(@Param("userId") UUID userId);
 
-    @Query("SELECT f FROM FieldForceRegions f WHERE :regionId IN f.regionIds")
-    List<FieldForceRegions> findByRegionId(@Param("regionId") Long regionId);
+    @Query("SELECT f FROM FieldForceRegions f JOIN f.regionIds r WHERE r = :regionId")
+    List<FieldForceRegions> findFieldForceRegionsByRegionId(@Param("regionId") Long regionId);
 
 }

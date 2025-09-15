@@ -202,7 +202,7 @@ public class ReportService {
         reportSavingRepository.save(reportSaving);
         String regionId = salesReportListDTO.getRegionId().toString();
         List<User> admins = userRepository.findByRole(Role.ADMIN);
-        List<FieldForceRegions> fieldforce =fieldForceRegionsRepository.findByRegionId(salesReportListDTO.getRegionId()) ;
+        List<FieldForceRegions> fieldforce =fieldForceRegionsRepository.findFieldForceRegionsByRegionId(salesReportListDTO.getRegionId()) ;
         String managerId = userRepository.findManagerByRoleAndRegionId(salesReportListDTO.getRegionId(),Role.MANAGER).orElseThrow(()->new NotFoundException("User not found")).getUserId().toString(); // Assuming SalesReportListDTO has managerId
         for (User admin : admins) {
             notificationService.createNotification(

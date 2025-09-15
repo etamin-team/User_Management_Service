@@ -12,11 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-/**
- * Date-8/21/2025
- * By Sardor Tokhirov
- * Time-2:44 PM (GMT+5)
- */
 @RestController
 @RequestMapping("/api/v2/manager")
 @CrossOrigin(origins = "*")
@@ -27,7 +22,7 @@ public class ManagerControllerV2 {
 
     @PostMapping("/manager/new-goal")
     public ResponseEntity<Void> createManagerGoal(@RequestBody ManagerGoalCreateUpdatePayloadV2 managerGoalCreateUpdatePayloadV2) {
-         managerServiceV2.createManagerGoal(managerGoalCreateUpdatePayloadV2);
+        managerServiceV2.createManagerGoal(managerGoalCreateUpdatePayloadV2);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
@@ -38,7 +33,6 @@ public class ManagerControllerV2 {
     ) {
         managerServiceV2.updateManagerGoal(id, managerGoalCreateUpdatePayloadV2);
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-
     }
 
     @DeleteMapping("/manager/goal/{id}")
@@ -62,4 +56,9 @@ public class ManagerControllerV2 {
         return ResponseEntity.ok(managerProfile);
     }
 
+    @GetMapping("/manager/{managerId}/goal")
+    public ResponseEntity<ManagerGoalDTOV2> getManagerGoalByManagerId(@PathVariable UUID managerId) {
+        ManagerGoalDTOV2 managerGoal = managerServiceV2.getManagerGoalByManagerId(managerId);
+        return managerGoal != null ? ResponseEntity.ok(managerGoal) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
