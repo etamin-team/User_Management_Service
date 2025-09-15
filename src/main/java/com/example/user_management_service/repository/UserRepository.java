@@ -233,6 +233,14 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     Long findByRoleAndRegionId(@Param("regionId") Long regionId,Role role);
 
+    @Query("""
+                SELECT u FROM User u 
+                WHERE u.role = :role
+                AND (:regionId IS NULL OR u.district.region.id = :regionId)
+                AND u.status = 'ENABLED'
+            """)
+    Optional<User> findManagerByRoleAndRegionId(@Param("regionId") Long regionId,Role role);
+
 
     // Get all doctors
     default List<User> findDoctors() {

@@ -4,15 +4,14 @@ import com.example.user_management_service.exception.SalesLoadException;
 import com.example.user_management_service.model.Medicine;
 import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.Sales;
+import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.SalesByRegionDTO;
 import com.example.user_management_service.model.dto.SalesDTO;
 import com.example.user_management_service.model.dto.SalesRegionDTO;
 import com.example.user_management_service.model.v2.ReportSaving;
-import com.example.user_management_service.repository.MedicineRepository;
-import com.example.user_management_service.repository.RegionRepository;
-import com.example.user_management_service.repository.SalesByRegionRepository;
-import com.example.user_management_service.repository.SalesRepository;
+import com.example.user_management_service.repository.*;
 import com.example.user_management_service.repository.v2.ReportSavingRepository;
+import com.example.user_management_service.role.Role;
 import com.example.user_management_service.service.DistrictRegionService;
 import com.example.user_management_service.service.ReportService;
 import jakarta.transaction.Transactional;
@@ -44,7 +43,8 @@ public class SalesServiceV2 {
     private final DistrictRegionService districtRegionService;
     private final ReportService reportService;
     private final ReportSavingRepository reportSavingRepository;
-
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public void saveSalesDTOList(List<SalesDTO> salesDTOS) {
         YearMonth yearMonth = salesDTOS.get(0).getYearMonth();
@@ -88,6 +88,22 @@ public class SalesServiceV2 {
                 reportService.saveSalesReport(sales);
                 salesRepository.save(sales);
             }
+        }
+
+        List<User> managers = userRepository.findManagers();
+        for (User manager : managers) {
+            notificationService.createNotification(
+                    manager.getUserId(),
+                    "New sales data uploaded for " + yearMonth
+            );
+            notificationService.createNotification(
+                    manager.getUserId(),
+                    "Новые данные о продажах загружены за " + yearMonth
+            );
+            notificationService.createNotification(
+                    manager.getUserId(),
+                    "Yangi savdo ma'lumotlari " + yearMonth + " uchun yuklandi"
+            );
         }
     }
     

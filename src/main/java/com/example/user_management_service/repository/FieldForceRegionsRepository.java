@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,5 +21,8 @@ public interface FieldForceRegionsRepository extends JpaRepository<FieldForceReg
 
     @Query("SELECT f FROM FieldForceRegions f WHERE  f.user.userId = :userId")
     Optional<FieldForceRegions> findByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT f FROM FieldForceRegions f WHERE :regionId IN f.regionIds")
+    List<FieldForceRegions> findByRegionId(@Param("regionId") Long regionId);
 
 }

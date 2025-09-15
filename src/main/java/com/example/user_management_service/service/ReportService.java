@@ -1,6 +1,7 @@
 package com.example.user_management_service.service;
 
 import com.example.user_management_service.exception.DataNotFoundException;
+import com.example.user_management_service.exception.NotFoundException;
 import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
@@ -13,6 +14,8 @@ import com.example.user_management_service.repository.*;
 import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import com.example.user_management_service.repository.v2.MedicineWithQuantityDoctorV2Repository;
 import com.example.user_management_service.repository.v2.ReportSavingRepository;
+import com.example.user_management_service.role.Role;
+import com.example.user_management_service.service.v2.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,6 +54,10 @@ public class ReportService {
     private final DistrictRegionService districtRegionService;
     private final DoctorContractV2Repository doctorContractV2Repository;
     private final ReportSavingRepository reportSavingRepository;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+    private final FieldForceRegionsRepository fieldForceRegionsRepository;
+
 
     public SalesReportDTO getSalesReportsByFilters(Long medicineId, ContractType contractType, String query, Long regionId, Long districtId, Long workplaceId, Field fieldName, YearMonth yearMonth) {
 
@@ -193,6 +200,39 @@ public class ReportService {
         }
         reportSaving.setSaved(true);
         reportSavingRepository.save(reportSaving);
+        String regionId = salesReportListDTO.getRegionId().toString();
+        List<User> admins = userRepository.findByRole(Role.ADMIN);
+        List<FieldForceRegions> fieldforce =fieldForceRegionsRepository.findByRegionId(salesReportListDTO.getRegionId()) ;
+        String managerId = userRepository.findManagerByRoleAndRegionId(salesReportListDTO.getRegionId(),Role.MANAGER).orElseThrow(()->new NotFoundException("User not found")).getUserId().toString(); // Assuming SalesReportListDTO has managerId
+        for (User admin : admins) {
+            notificationService.createNotification(
+                    admin.getUserId(),
+                    "Reports saved by manager " + managerId + " for region " + regionId + " for " + salesReportListDTO.getYearMonth()
+            );
+            notificationService.createNotification(
+                    admin.getUserId(),
+                    "Отчеты сохранены менеджером " + managerId + " для региона " + regionId + " за " + salesReportListDTO.getYearMonth()
+            );
+            notificationService.createNotification(
+                    admin.getUserId(),
+                    "Hisobotlar " + managerId + " tomonidan " + regionId + " regioni uchun " + salesReportListDTO.getYearMonth() + " uchun saqlandi"
+            );
+        }
+
+        for (FieldForceRegions fieldForce : fieldforce) {
+            notificationService.createNotification(
+                    fieldForce.getUser().getUserId(),
+                    "Reports saved by manager " + managerId + " for region " + regionId + " for " + salesReportListDTO.getYearMonth()
+            );
+            notificationService.createNotification(
+                    fieldForce.getUser().getUserId(),
+                    "Отчеты сохранены менеджером " + managerId + " для региона " + regionId + " за " + salesReportListDTO.getYearMonth()
+            );
+            notificationService.createNotification(
+                    fieldForce.getUser().getUserId(),
+                    "Hisobotlar " + managerId + " tomonidan " + regionId + " regioni uchun " + salesReportListDTO.getYearMonth() + " uchun saqlandi"
+            );
+        }
     }
 
     public void openSalesReportEdit(Long regionId,boolean isOpen, YearMonth yearMonth) {
