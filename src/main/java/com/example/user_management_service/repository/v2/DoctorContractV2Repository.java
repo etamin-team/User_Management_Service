@@ -298,29 +298,29 @@ public interface DoctorContractV2Repository extends JpaRepository<DoctorContract
     @Query("SELECT COUNT(c) FROM DoctorContractV2 c WHERE c.status = :status")
     Long countByStatus(@Param("status") GoalStatus status);
 
-    @Query("""
-                SELECT COUNT(DISTINCT c.doctor.userId) FROM DoctorContractV2 c
+        @Query("""
+                SELECT COUNT(DISTINCT c.doctor) FROM DoctorContractV2 c
                 WHERE c.status = 'APPROVED'
-                AND (:creatorId IS NULL OR c.createdBy.userId = CAST(:creatorId AS uuid))
+                AND (:creatorId IS NULL OR c.doctor.creatorId = :creatorId)
                 AND (:regionId IS NULL OR c.doctor.district.region.id = :regionId)
                 AND (:districtId IS NULL OR c.doctor.district.id = :districtId)
                 AND (:workplaceId IS NULL OR c.doctor.workplace.id = :workplaceId)
                 AND (
-                       (:name1 IS NULL OR :name1 = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :name1, '%')) OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :name1, '%')) OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :name1, '%')))
-                       AND (:name2 IS NULL OR :name2 = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :name2, '%')) OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :name2, '%')) OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :name2, '%')))
-                       AND (:name3 IS NULL OR :name3 = '' OR LOWER(c.doctor.firstName) LIKE LOWER(CONCAT('%', :name3, '%')) OR LOWER(c.doctor.lastName) LIKE LOWER(CONCAT('%', :name3, '%')) OR LOWER(c.doctor.middleName) LIKE LOWER(CONCAT('%', :name3, '%')))
+                       (LOWER(c.doctor.firstName) LIKE LOWER(CONCAT(:firstName, '%')))
+                       OR (LOWER(c.doctor.lastName) LIKE LOWER(CONCAT(:lastName, '%')))
+                       OR (LOWER(c.doctor.middleName) LIKE LOWER(CONCAT(:middleName, '%')))
                 )
                 AND (:fieldName IS NULL OR c.doctor.fieldName = :fieldName)
-                AND c.doctor.status = 'ACTIVE'
+                AND c.doctor.status = 'ENABLED'
             """)
     Long countDoctorsWithApprovedContracts(
             @Param("creatorId") String creatorId,
             @Param("regionId") Long regionId,
             @Param("districtId") Long districtId,
             @Param("workplaceId") Long workplaceId,
-            @Param("name1") String name1,
-            @Param("name2") String name2,
-            @Param("name3") String name3,
+            @Param("firstName") String firstName,
+            @Param("lastName") String lastName,
+            @Param("middleName") String middleName,
             @Param("fieldName") Field fieldName
     );
 

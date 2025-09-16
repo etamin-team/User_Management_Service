@@ -464,7 +464,7 @@ public class UserService {
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
         return doctorContractV2Repository.countDoctorsWithApprovedContracts(
-                creatorId != null ? String.valueOf(creatorId) : null,
+                String.valueOf(creatorId),
                 regionId, districtId, workplaceId,
                 name1, name2, name3, fieldName
         );
