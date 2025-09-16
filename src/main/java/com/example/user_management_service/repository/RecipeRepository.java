@@ -93,7 +93,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
 
     @Query("SELECT COUNT(r) FROM Recipe r " +
             "WHERE r.doctorId IN (" +
-            "   SELECT c.doctor FROM Contract c WHERE c.medAgent.userId = :medAgentId" +
+            "   SELECT c.doctor FROM DoctorContractV2 c WHERE c.createdBy.userId = :medAgentId" +
             ") " +
             "AND EXTRACT(YEAR FROM r.dateCreation) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")
@@ -103,7 +103,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, UUID> {
     @Query("SELECT COUNT(r) FROM Recipe r " +
             "JOIN r.preparations p " +
             "WHERE r.doctorId IN (" +
-            "   SELECT c.doctor FROM Contract c WHERE c.medAgent.userId = :medAgentId" +
+            "   SELECT c.doctor FROM DoctorContractV2 c WHERE c.createdBy.userId = :medAgentId" +
             ") "+
             "AND EXTRACT(YEAR FROM r.dateCreation) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND EXTRACT(MONTH FROM r.dateCreation) = EXTRACT(MONTH FROM CURRENT_DATE)")

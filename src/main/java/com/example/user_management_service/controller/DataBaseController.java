@@ -2,8 +2,9 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.role.Role;
+import com.example.user_management_service.model.v2.dto.ContractDTOV2; // Import V2 Contract DTO
 import com.example.user_management_service.service.*;
+import com.example.user_management_service.service.v2.DoctorServiceV2; // Import V2 Doctor Service
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
@@ -14,11 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.data.domain.Pageable;
+// import org.springframework.data.domain.Pageable; // Already imported above
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth; // Import YearMonth
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,15 +38,15 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DataBaseController {
     private final DistrictRegionService districtRegionService;
-
     private final DataBaseService dataBaseService;
     private final SalesService salesService;
     private final RecipeService recipeService;
     private final ConditionsToPreparateService conditionsToPreparateService;
-    private final ContractService contractService;
+    private final ContractService contractService; // V1 ContractService, which now handles V2 contracts (ContractDTOV2)
+    private final DoctorServiceV2 doctorServiceV2; // V2 Doctor Service for contract management (delete, get by ID)
 
 
-    // medicine
+    // --- Medicine Endpoints ---
     @PostMapping("/medicine")
     public ResponseEntity<Medicine> createOrUpdateMedicine(@RequestBody MedicineDTO medicine) {
         Medicine savedMedicine = dataBaseService.saveOrUpdateMedicine(dataBaseService.convertToMedicineEntity(medicine));
@@ -97,16 +99,23 @@ public class DataBaseController {
         return ResponseEntity.ok(list);
     }
 
-    // contracts
-//    @GetMapping("/contracts/{contractId}")
-//    public ResponseEntity<Contract> getContractById(@PathVariable Long contractId) {
-//        Contract contract = dataBaseService.getContractById(contractId);
-//        return ResponseEntity.ok(contract);
-//    }
+    // --- Contracts Endpoints (Now for V2 Contracts: DoctorContractV2) ---
+    // The commented-out V1 `getContractById` is no longer needed here.
+    // Use `DoctorServiceV2` for fetching specific V2 contracts.
 
-    @GetMapping("/contracts")
-    public ResponseEntity<Page<ContractDTO>> getAllContracts(
+    @GetMapping("/contracts/{contractId}")
+    public ResponseEntity<ContractDTOV2> getContractById(@PathVariable Long contractId,
+                                                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        ContractDTOV2 contract = doctorServiceV2.getContractById(contractId, targetMonth); // Use V2 DoctorService
+        return ResponseEntity.ok(contract);
+    }
+
+
+    @GetMapping("/contracts") // Now returns Page<ContractDTOV2> using V2 ContractService method
+    public ResponseEntity<Page<ContractDTOV2>> getAllContracts(
             @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) List<Long> regionIds,
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long workPlaceId,
             @RequestParam(required = false) String nameQuery,
@@ -115,20 +124,27 @@ public class DataBaseController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
     ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
 
-        Page<ContractDTO> contracts = contractService.getFilteredContracts(
-                regionId, districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size);
-
+        Page<ContractDTOV2> contracts;
+        if (regionIds != null && !regionIds.isEmpty()) {
+            contracts = contractService.getFilteredContractsV2(regionIds,
+                    regionId, districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size, targetMonth);
+        } else {
+            contracts = contractService.getFilteredContractsV2(regionId,
+                    districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size, targetMonth);
+        }
         return ResponseEntity.ok(contracts);
     }
 
 
     @DeleteMapping("/contracts/{contractId}")
     public ResponseEntity<Void> deleteContract(@PathVariable Long contractId) {
-        dataBaseService.deleteContract(contractId);
-        return ResponseEntity.noContent().build();
+        boolean deleted = doctorServiceV2.deleteContract(contractId); // Use V2 DoctorService for deleting contracts
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 
@@ -325,22 +341,12 @@ public class DataBaseController {
         return ResponseEntity.ok(mnn1);
     }
 
-//    @PostMapping("/mnn/add-bulk")
-//    public ResponseEntity<Void> saveMNNList(@RequestBody List<MNN> mnn) {
-//        dataBaseService.saveMNNList(mnn);
-//        return ResponseEntity.ok().build();
-//    }
-
-
     @PostMapping(value = "/mnn/add-bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Map<Long, MNN>> uploadMNN(@RequestParam("file") MultipartFile file) throws IOException {
         List<MNN> mnnList=dataBaseService.parseFileMNN(file);
         Map<Long, MNN> err=dataBaseService.saveMNNList(mnnList);
         return ResponseEntity.ok(err);
     }
-
-
-
 
     @DeleteMapping("/mnn/delete/{mnn}")
     public void deleteMNN(@PathVariable Long mnn) {

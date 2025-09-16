@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class ReportService {
 
-    private final ContractRepository contractRepository;
     private final UserService userService;
     private final ContractService contractService;
     private final SalesReportRepository salesReportRepository;

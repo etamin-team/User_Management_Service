@@ -1,7 +1,5 @@
 package com.example.user_management_service.repository;
 
-import com.example.user_management_service.model.AgentGoal;
-import com.example.user_management_service.model.District;
 import com.example.user_management_service.model.MedAgentGroup;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,5 @@
 package com.example.user_management_service.repository;
 
-import com.example.user_management_service.model.Contract;
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.MNN;
 import org.springframework.data.domain.Page;

@@ -1,7 +1,5 @@
 package com.example.user_management_service.repository.v2;
 
-import com.example.user_management_service.model.AgentGoal;
-import com.example.user_management_service.model.ManagerGoal;
 import com.example.user_management_service.model.v2.ManagerGoalV2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

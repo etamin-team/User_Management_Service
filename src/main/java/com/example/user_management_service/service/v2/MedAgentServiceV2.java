@@ -13,11 +13,15 @@ import com.example.user_management_service.model.v2.payload.MedicineQuotePayload
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
-import com.example.user_management_service.repository.v2.ContractMedicineDoctorAmountV2Repository; // Ensure this is imported
+import com.example.user_management_service.repository.v2.ContractMedicineDoctorAmountV2Repository;
 import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import com.example.user_management_service.repository.v2.MedAgentGoalV2Repository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -44,7 +48,7 @@ public class MedAgentServiceV2 {
     private final MedicineRepository medicineRepository;
     private final DoctorContractV2Repository doctorContractV2Repository;
     private final RecipeRepository recipeRepository;
-    private final ContractMedicineDoctorAmountV2Repository contractMedicineDoctorAmountV2Repository; // Inject this
+    private final ContractMedicineDoctorAmountV2Repository contractMedicineDoctorAmountV2Repository;
 
     public void createGoal(MedAgentGoalCreateUpdatePayloadV2 payload) {
         MedAgentGoalV2 goal = new MedAgentGoalV2();
@@ -132,60 +136,40 @@ public class MedAgentServiceV2 {
         medAgentGoalV2Repository.save(goal);
     }
 
-    // --- New/Updated Public methods for fetching goals/profile with YearMonth ---
-
     public MedAgentGoalDTOV2 getGoalById(Long goalId, YearMonth targetMonth) {
         MedAgentGoalV2 goal = medAgentGoalV2Repository.findById(goalId)
                 .orElseThrow(() -> new NotFoundException("Goal not found with ID: " + goalId));
 
-        return mapToGoalDTOV2(goal, targetMonth); // Pass targetMonth
+        return mapToGoalDTOV2(goal, targetMonth);
     }
 
-    /**
-     * Retrieves the active goal for a given medical agent and maps it to a DTO,
-     * calculating amounts for a specific target month.
-     * @param agentId The ID of the medical agent.
-     * @param targetMonth The month for which to calculate current amounts.
-     * @return The DTO representation of the active goal.
-     * @throws NotFoundException if no active goal is found for the agent.
-     */
     public MedAgentGoalDTOV2 getActiveGoalByMedAgentId(UUID agentId, YearMonth targetMonth) {
-        // Note: findActiveByAgentId still uses LocalDate.now() to find the *currently active goal*.
-        // The targetMonth is then used to calculate the *actual amounts for that specific month* within that goal.
         MedAgentGoalV2 activeGoal = medAgentGoalV2Repository.findActiveByAgentId(agentId, LocalDate.now())
                 .orElseThrow(() -> new NotFoundException("Active goal not found for medical agent with ID: " + agentId));
         return mapToGoalDTOV2(activeGoal, targetMonth);
     }
 
-    public MedAgentProfileDTOV2 getProfileByAgentId(UUID agentId, YearMonth targetMonth) { // Added YearMonth
+    public MedAgentProfileDTOV2 getProfileByAgentId(UUID agentId, YearMonth targetMonth) {
         User agent = userRepository.findById(agentId)
                 .orElseThrow(() -> new NotFoundException("Medical agent not found with ID: " + agentId));
 
         MedAgentGoalV2 activeGoal = medAgentGoalV2Repository.findActiveByAgentId(agentId, LocalDate.now())
                 .orElse(null);
 
-        // Calculate Sales Quote - Now uses targetMonth
         SalesQuoteDTO salesQuoteDTO = getSalesQuoteDTO(activeGoal, targetMonth);
 
-        // Calculate KPI - Now uses targetMonth
         MedAgentProfileKPIDTOV2 kpiDTO = calculateKPI(agentId, targetMonth);
 
-        MedAgentGoalDTOV2 goalDTO = activeGoal != null ? mapToGoalDTOV2(activeGoal, targetMonth) : null; // Pass targetMonth
+        MedAgentGoalDTOV2 goalDTO = activeGoal != null ? mapToGoalDTOV2(activeGoal, targetMonth) : null;
 
         return new MedAgentProfileDTOV2(agentId, goalDTO, salesQuoteDTO, kpiDTO);
     }
 
-    /**
-     * Deletes a medical agent goal by its ID.
-     * @param goalId The ID of the goal to delete.
-     * @return true if the goal was found and deleted, false otherwise.
-     */
     public boolean deleteGoal(Long goalId) {
         MedAgentGoalV2 goal = medAgentGoalV2Repository.findById(goalId)
                 .orElse(null);
 
         if (goal != null) {
-           
             if (goal.getMedicineQuoteV2s() != null) {
                 goal.getMedicineQuoteV2s().clear();
             }
@@ -198,43 +182,64 @@ public class MedAgentServiceV2 {
         return false;
     }
 
+    // --- New `getAllContractsByAgent` method with filters ---
+    public Page<ContractDTOV2> getAllContractsByAgent(
+            UUID agentId,
+            Long regionId,
+            Long districtId,
+            Long workPlaceId,
+            String firstName,
+            String lastName,
+            String middleName,
+            Field fieldName,
+            int page,
+            int size,
+            YearMonth targetMonth
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-    // --- Private helper methods now accepting YearMonth ---
+        // Call the repository method with all filter parameters
+        return doctorContractV2Repository.findAllContractsByAgent(
+                agentId,
+                regionId,
+                districtId,
+                workPlaceId,
+                firstName,
+                lastName,
+                middleName,
+                fieldName,
+                pageable
+        ).map(contract -> mapToContractDTOV2(contract, targetMonth)); // Apply targetMonth when mapping
+    }
 
-    private MedAgentGoalDTOV2 mapToGoalDTOV2(MedAgentGoalV2 goal, YearMonth targetMonth) { // Added targetMonth
+    private MedAgentGoalDTOV2 mapToGoalDTOV2(MedAgentGoalV2 goal, YearMonth targetMonth) {
         if (goal == null) {
             return null;
         }
-        // Re-calculate startDate/endDate based on targetMonth for current amounts
         LocalDateTime startDateTime = targetMonth.atDay(1).atStartOfDay();
         LocalDateTime endDateTime = targetMonth.atEndOfMonth().atTime(23, 59, 59);
         UUID agentId = goal.getMedAgent().getUserId();
         Long districtId = goal.getMedAgent().getDistrict().getId();
 
-        // Medicine Quotes
         List<MedicineQuoteDTOV2> medicineQuotes = goal.getMedicineQuoteV2s().stream()
                 .map(m -> {
-                    // Use the new repository method with agentId and districtId filter
                     Long amount = contractMedicineDoctorAmountV2Repository.sumMedicineAmountsByAgentDistrictMedicineAndMonth(
                             agentId,
                             m.getMedicine().getId(),
-                            targetMonth // Use targetMonth
-                    ).orElse(0L); // Default to 0 if sum is null
+                            targetMonth
+                    ).orElse(0L);
 
                     return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, null, targetMonth);
                 })
                 .collect(Collectors.toList());
 
-        // Field Environment Quotes
         List<FieldEnvQuoteDTOV2> fieldEnvQuotes = goal.getFieldEnvV2s().stream()
                 .map(f -> {
-                    // This method needs to be updated in UserRepository if it doesn't take YearMonth / LocalDateTime range
-                    // Assuming userRepository.findCreatedDoctorsThisMonthByDistrictAndMonth correctly uses the LocalDateTime range
                     Long amount = (long) userRepository.findCreatedDoctorsThisMonthByDistrictAndMonth(
                             districtId,
                             f.getField(),
-                            startDateTime, // derived from targetMonth
-                            endDateTime    // derived from targetMonth
+                            startDateTime,
+                            endDateTime
                     ).size();
                     return new FieldEnvQuoteDTOV2(f.getId(), f.getField(), f.getQuote(), amount, targetMonth);
                 })
@@ -254,7 +259,7 @@ public class MedAgentServiceV2 {
 
     private SalesQuoteDTO getSalesQuoteDTO(MedAgentGoalV2 medAgentGoal, YearMonth targetMonth) {
         if (medAgentGoal == null) {
-            return new SalesQuoteDTO(0L, 0L); // Return default if no goal
+            return new SalesQuoteDTO(0L, 0L);
         }
 
         UUID agentId = medAgentGoal.getMedAgent().getUserId();
@@ -263,7 +268,6 @@ public class MedAgentServiceV2 {
             throw new IllegalStateException("District ID is null for medical agent ID: " + agentId);
         }
 
-        // Calculate total sales by summing up amounts for each medicine quote within the goal
         long totalSales = medAgentGoal.getMedicineQuoteV2s().stream()
                 .mapToLong(quote -> contractMedicineDoctorAmountV2Repository.sumMedicineAmountsByAgentDistrictMedicineAndMonth(
                         agentId,
@@ -279,7 +283,7 @@ public class MedAgentServiceV2 {
         return new SalesQuoteDTO(totalSales, targetSales);
     }
 
-    private MedAgentProfileKPIDTOV2 calculateKPI(UUID agentId, YearMonth targetMonth) { // Added YearMonth
+    private MedAgentProfileKPIDTOV2 calculateKPI(UUID agentId, YearMonth targetMonth) {
         User agent = userRepository.findById(agentId)
                 .orElseThrow(() -> new NotFoundException("Agent not found with ID: " + agentId));
         Long districtId = agent.getDistrict().getId();
@@ -287,29 +291,18 @@ public class MedAgentServiceV2 {
             throw new IllegalStateException("District ID is null for agent ID: " + agentId);
         }
 
-        LocalDateTime startDate = targetMonth.atDay(1).atStartOfDay();
-        LocalDateTime endDate = targetMonth.atEndOfMonth().atTime(23, 59, 59);
-
-        // Total connected doctors (all time)
         long totalConnectedDoctors = doctorContractV2Repository.countByCreatedByAndDistrict(agentId, districtId);
 
-        // Total connected contracts (all time) - Often these are the same count if one contract per doctor is assumed
         long totalConnectedContracts = doctorContractV2Repository.countByCreatedByAndDistrict(agentId, districtId);
 
-        // Connected doctors this month
-        // doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween currently takes YearMonth
         long connectedDoctorsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
-                agentId, districtId, targetMonth); // Use targetMonth
+                agentId, districtId, targetMonth);
 
-        // Connected contracts this month
         long connectedContractsCurrentMonth = doctorContractV2Repository.countByCreatedByAndDistrictAndCreatedBetween(
-                agentId, districtId, targetMonth); // Use targetMonth
+                agentId, districtId, targetMonth);
 
-        // Prescriptions issued this month
-        // TODO: These RecipeRepository methods likely need to be updated to accept YearMonth or LocalDateTime range.
-        // Assuming they will be updated or already implicitly handle the targetMonth if passed.
-        // For example, you might need: recipeRepository.countRecipesByDoctorsAssignedByMedAgentAndMonth(agentId, targetMonth)
-        // For now, they will calculate for the current *actual* month unless updated.
+        // Note: These RecipeRepository methods likely need to be updated to accept YearMonth or LocalDateTime range
+        // if you want them to respect `targetMonth`. Currently, their names suggest "ThisMonth" (i.e., YearMonth.now()).
         long prescriptionsIssuedCurrentMonth = recipeRepository.countRecipesByDoctorsAssignedByMedAgentThisMonth(agentId);
         long medicationsPrescribedCurrentMonth = recipeRepository.totalMedicineAmountByMedAgentThisMonth(agentId);
 
@@ -321,6 +314,35 @@ public class MedAgentServiceV2 {
                 connectedContractsCurrentMonth,
                 prescriptionsIssuedCurrentMonth,
                 medicationsPrescribedCurrentMonth
+        );
+    }
+
+    // This `mapToContractDTOV2` is specifically for mapping `DoctorContractV2` to `ContractDTOV2`
+    // and is used by `getAllContractsByAgent`.
+    private ContractDTOV2 mapToContractDTOV2(DoctorContractV2 contract, YearMonth targetMonth) {
+        List<MedicineQuoteDTOV2> medicineQuotes = contract.getMedicineWithQuantityDoctorV2s().stream()
+                .map(m -> {
+                    Optional<ContractMedicineDoctorAmountV2> amountEntry = m.getContractMedicineDoctorAmountV2s().stream()
+                            .filter(a -> a.getYearMonth().equals(targetMonth))
+                            .findFirst();
+
+                    Long amount = amountEntry.map(ContractMedicineDoctorAmountV2::getAmount).orElse(0L);
+                    Long correction = amountEntry.map(ContractMedicineDoctorAmountV2::getCorrection).orElse(0L);
+
+                    return new MedicineQuoteDTOV2(m.getId(), m.getMedicine(), m.getQuote(), amount, correction, targetMonth);
+                })
+                .collect(Collectors.toList());
+
+        return new ContractDTOV2(
+                contract.getId(),
+                contract.getCreatedBy() != null ? contract.getCreatedBy().getUserId() : null,
+                contract.getDoctor().getUserId(),
+                contract.getCreatedAt(),
+                contract.getStartDate(),
+                contract.getEndDate(),
+                contract.getStatus(),
+                contract.getContractType(),
+                medicineQuotes
         );
     }
 }

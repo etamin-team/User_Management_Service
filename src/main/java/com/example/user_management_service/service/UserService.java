@@ -5,6 +5,7 @@ import com.example.user_management_service.exception.NotFoundException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
+import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import com.example.user_management_service.role.Role;
 import com.example.user_management_service.role.UserStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +44,7 @@ public class UserService {
     private final FieldForceRegionsRepository fieldForceRegionsRepository;
     private final RegionRepository regionRepository;
     private final MedAgentGroupRepository medAgentGroupRepository;
-    private final ContractRepository contractRepository;
+    private final DoctorContractV2Repository doctorContractV2Repository;
 
     public UserDTO getUserById(UUID userId) {
         return convertToDTO(userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("User not found by ID " + userId)));
@@ -95,7 +96,7 @@ public class UserService {
     }
 
     public UserDTO convertToDTOWithContract(User user) {
-        boolean isContractPresent = contractRepository.findActiveOrPendingContractByDoctorId(user.getUserId()).isEmpty();
+        boolean isContractPresent = doctorContractV2Repository.findActiveOrPendingContractByDoctorId(user.getUserId()).isEmpty();
         if (user == null) return null;
         return new UserDTO(
                 user.getUserId(),
@@ -462,7 +463,7 @@ public class UserService {
         String name2 = filteredParts.length > 1 ? filteredParts[1].toLowerCase() : name1;
         String name3 = filteredParts.length > 2 ? filteredParts[2].toLowerCase() : name1;
 
-        return contractRepository.countDoctorsWithApprovedContracts(
+        return doctorContractV2Repository.countDoctorsWithApprovedContracts(
                 creatorId != null ? String.valueOf(creatorId) : null,
                 regionId, districtId, workplaceId,
                 name1, name2, name3, fieldName

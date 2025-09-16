@@ -1,9 +1,10 @@
-package com.example.user_management_service.controller;
+package com.example.user_management_service.controller; // Note: This controller is still in V1 package.
 
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.MedicalInstitutionType;
 import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.model.v2.dto.ContractDTOV2; // Corrected import
 import com.example.user_management_service.service.ContractService;
 import com.example.user_management_service.service.DataBaseService;
 import com.example.user_management_service.service.RecipeService;
@@ -15,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -24,7 +27,7 @@ import java.util.UUID;
  * Time-3:59 AM (GMT+5)
  */
 @RestController
-@RequestMapping("/api/v1/field-force")
+@RequestMapping("/api/v1/field-force") // Path still indicates V1, but methods are V2
 @CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class FieldForceController {
@@ -37,9 +40,9 @@ public class FieldForceController {
 
     @GetMapping("/workplaces")
     public ResponseEntity<List<WorkPlaceListDTO>> getAllWorkPlaces(@RequestParam(required = false) List<Long> regionIds,
-                                                               @RequestParam(required = false) Long districtId,
-                                                               @RequestParam(required = false) Long regionId,
-                                                               @RequestParam(required = false) MedicalInstitutionType medicalInstitutionType) {
+                                                                   @RequestParam(required = false) Long districtId,
+                                                                   @RequestParam(required = false) Long regionId,
+                                                                   @RequestParam(required = false) MedicalInstitutionType medicalInstitutionType) {
         List<WorkPlaceListDTO> workPlaceList = dataBaseService.getWorkPlacesByIds(regionIds,regionId,districtId,medicalInstitutionType);
         return ResponseEntity.ok(workPlaceList);
     }
@@ -104,8 +107,8 @@ public class FieldForceController {
     }
 
 
-    @GetMapping("/contracts")
-    public ResponseEntity<Page<ContractDTO>> getAllContracts(
+    @GetMapping("/contracts") // Now returns Page<ContractDTOV2>
+    public ResponseEntity<Page<ContractDTOV2>> getAllContracts(
             @RequestParam(required = false) Long regionId,
             @RequestParam(required = false) List<Long> regionIds,
             @RequestParam(required = false) Long districtId,
@@ -116,12 +119,19 @@ public class FieldForceController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) Long medicineId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth // Add YearMonth
     ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
 
-        Page<ContractDTO> contracts = contractService.getFilteredContracts(regionIds,
-                regionId, districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size);
-
+        Page<ContractDTOV2> contracts;
+        if (regionIds != null && !regionIds.isEmpty()) {
+            contracts = contractService.getFilteredContractsV2(regionIds,
+                    regionId, districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size, targetMonth);
+        } else {
+            contracts = contractService.getFilteredContractsV2(regionId,
+                    districtId, workPlaceId, nameQuery, fieldName, startDate, endDate, medicineId, page, size, targetMonth);
+        }
         return ResponseEntity.ok(contracts);
     }
 
@@ -162,12 +172,15 @@ public class FieldForceController {
     }
 
     @GetMapping("/doctor/contracts/status")
-    public ResponseEntity<Page<ContractDTO>> getContractsByStatus(
+    public ResponseEntity<Page<ContractDTOV2>> getContractsByStatus(
             @RequestParam GoalStatus goalStatus,
             @RequestParam(required = false) List<Long> regionIds,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<ContractDTO> contracts = contractService.getContractsByStatus(regionIds,goalStatus, page, size);
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        Page<ContractDTOV2> contracts = contractService.getContractsByStatus(regionIds,goalStatus,targetMonth, page, size);
         return ResponseEntity.ok(contracts);
     }
 

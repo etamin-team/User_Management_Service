@@ -1,6 +1,5 @@
 package com.example.user_management_service.model.v2;
 
-import com.example.user_management_service.model.FieldWithQuantity;
 import com.example.user_management_service.model.GoalStatus;
 import com.example.user_management_service.model.User;
 import jakarta.persistence.*;

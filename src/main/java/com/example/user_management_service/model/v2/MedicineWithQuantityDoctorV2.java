@@ -1,7 +1,5 @@
 package com.example.user_management_service.model.v2;
 
-import com.example.user_management_service.model.ContractMedicineDoctorAmount;
-import com.example.user_management_service.model.ContractMedicineManagerAmount;
 import com.example.user_management_service.model.Medicine;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

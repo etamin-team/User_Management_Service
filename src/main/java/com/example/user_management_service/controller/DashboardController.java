@@ -2,14 +2,18 @@ package com.example.user_management_service.controller;
 
 import com.example.user_management_service.model.Field;
 import com.example.user_management_service.model.dto.*;
+import com.example.user_management_service.model.v2.dto.ContractDTOV2; // Import V2 Contract DTO
 import com.example.user_management_service.service.DashboardService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page; // Import Page for the new endpoint
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth; // Import YearMonth for new endpoint
 import java.util.List;
+import java.util.Optional; // Import Optional for new endpoint
 import java.util.UUID;
 
 /**

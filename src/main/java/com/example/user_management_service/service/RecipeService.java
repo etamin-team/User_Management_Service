@@ -4,10 +4,11 @@ import com.example.user_management_service.exception.ContractNotFoundException;
 import com.example.user_management_service.exception.DoctorContractException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
-import com.example.user_management_service.repository.ContractRepository;
+import com.example.user_management_service.model.v2.DoctorContractV2;
 import com.example.user_management_service.repository.MedicineRepository;
 import com.example.user_management_service.repository.RecipeRepository;
 import com.example.user_management_service.repository.UserRepository;
+import com.example.user_management_service.repository.v2.DoctorContractV2Repository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -37,67 +38,13 @@ public class RecipeService {
     private final MedicineRepository medicineRepository;
     private final RecipeRepository recipeRepository;
     private final ContractService contractService;
-    ;
+    private final DoctorContractV2Repository contractV2Repository;
     private final UserRepository userRepository;
     private final UserService userService;
-    private final ContractRepository contractRepository;
     private RegistrationService registrationService;
 
 
-    public void saveRecipe(RecipeDto recipeDto) {
-        Recipe recipe = new Recipe();
-        recipe.setFirstName(recipeDto.getFirstName());
-        recipe.setLastName(recipeDto.getLastName());
-        recipe.setDateOfBirth(recipeDto.getDateOfBirth());
-        recipe.setPhoneNumber(recipeDto.getPhoneNumber());
-        recipe.setPhoneNumberPrefix(recipeDto.getPhoneNumberPrefix());
-        recipe.setDiagnosis(recipeDto.getDiagnosis());
-        recipe.setComment(recipeDto.getComment());
 
-        List<Preparation> preparations = recipeDto.getPreparations().stream()
-                .map(this::mapPreparationDtoToEntity)
-                .collect(Collectors.toList());
-
-        recipe.setPreparations(preparations);
-        recipe.setDateCreation(LocalDate.now());
-        User doctor = userRepository.findById(recipeDto.getDoctorId()).orElseThrow(() -> new DoctorContractException("Doctor not found"));
-        recipe.setDoctorId(doctor);
-        System.out.println("111111111---------------------------------------");
-        ContractType contractType = contractRepository.findActiveContractByDoctorId(doctor.getUserId()).orElse(new Contract()).getContractType();
-        recipe.setContractType(contractType==null?ContractType.RECIPE:contractType);
-        recipeRepository.save(recipe);
-        System.out.println("22222222222222222222222222222222---------------------------------------");
-
-        if (preparations!=null && preparations.size()>0) {
-            List<Long> medicineIds = preparations.stream()
-                    .map(Preparation::getMedicine)
-                    .filter(Objects::nonNull)  // Ensure no null medicines
-                    .map(Medicine::getId)
-                    .collect(Collectors.toList());
-            System.out.println("333333333333333---------------------------------------");
-
-
-            contractService.saveContractMedicineAmount(recipe.getDoctorId().getUserId(), medicineIds);
-        }
-    }
-
-    private Preparation mapPreparationDtoToEntity(PreparationDto preparationDto) {
-        if (preparationDto==null){return null;}
-        Preparation preparation = new Preparation();
-        preparation.setName(preparationDto.getName());
-        preparation.setAmount(preparationDto.getAmount());
-        preparation.setQuantity(preparationDto.getQuantity());
-        preparation.setTimesInDay(preparationDto.getTimesInDay());
-        preparation.setDays(preparationDto.getDays());
-        preparation.setType(preparationDto.getType());
-
-
-        Medicine medicine = medicineRepository.findById(preparationDto.getMedicineId())
-                .orElseThrow(() -> new DoctorContractException("Medicine with ID " + preparationDto.getMedicineId() + " not found"));
-        preparation.setMedicine(medicine);
-
-        return preparation;
-    }
 
     public List<LastRecipeDTO> getRecipes(
             String nameQuery, Long district, Field category,

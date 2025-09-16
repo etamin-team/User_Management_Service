@@ -7,6 +7,8 @@ import com.example.user_management_service.model.Region;
 import com.example.user_management_service.model.User;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
+import com.example.user_management_service.repository.v2.DoctorContractV2Repository; // Import V2 Contract Repository
+import com.example.user_management_service.repository.v2.MedicineWithQuantityDoctorV2Repository; // Import V2 MedicineWithQuantityDoctor Repository
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +32,20 @@ public class DashboardService {
     private final WorkPlaceRepository workPlaceRepository;
     private final DistrictRepository districtRepository;
     private final RecipeRepository recipeRepository;
-    private final ContractRepository contractRepository;
+
+    // --- V2 Repositories ---
+    private final DoctorContractV2Repository doctorContractV2Repository; // V2 Contract Repository
+    private final MedicineWithQuantityDoctorV2Repository medicineWithQuantityDoctorV2Repository; // V2 MedicineWithQuantityDoctor Repository
+
+    // Removed V1: private final ContractRepository contractRepository;
+    // Removed V1: private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+    // Removed V1: private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
+
     private final UserService userService;
-    private MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
-    private ContractMedicineDoctorAmountRepository contractMedicineDoctorAmountRepository;
-    private UserRepository userRepository;
-    private SalesRepository salesRepository;
-    private MedAgentGroupRepository medAgentGroupRepository;
+    private final UserRepository userRepository;
+    private final SalesRepository salesRepository;
+    private final MedAgentGroupRepository medAgentGroupRepository;
+
 
     public RecordDTO getFilteredRecords(Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate) {
         RecordDTO recordDTO = new RecordDTO();
@@ -64,6 +73,8 @@ public class DashboardService {
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS = new ArrayList<>();
 
         for (RegionFieldDTO row : results) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, regionId, districtId, workplaceId, null, row.getField());
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
@@ -84,6 +95,8 @@ public class DashboardService {
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS = new ArrayList<>();
         for (RegionFieldDTO row : results) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, null, null, workplaceId, null, row.getField());
 
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
@@ -104,6 +117,8 @@ public class DashboardService {
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS = new ArrayList<>();
         for (RegionFieldDTO row : results) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, null, districtId, null, null, row.getField());
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
@@ -129,6 +144,8 @@ public class DashboardService {
 
         List<RecordWorkPlaceStatsDTO> workPlaceStatsDTOS = new ArrayList<>();
         for (RegionFieldDTO row : results) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, regionId, null, null, null, row.getField());
             RecordWorkPlaceStatsDTO workPlaceStatsDTO = new RecordWorkPlaceStatsDTO();
             workPlaceStatsDTO.setField(row.getField());
@@ -145,6 +162,8 @@ public class DashboardService {
         List<RecordStatsEmployeeFactDTO> list = new ArrayList<>();
         List<Region> regions = regionRepository.findAll();
         for (Region region : regions) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, region.getId(), null, null, null, null);
             RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
             recordStatsEmployeeFactDTO.setId(String.valueOf(region.getId()));
@@ -155,11 +174,9 @@ public class DashboardService {
             recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByRegionId(region.getId()));
             recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByRegionId(region.getId()));
             recordStatsEmployeeFactDTO.setDoctorsInFact(inFact);
-            recordStatsEmployeeFactDTO.setPopulation(0);
+            recordStatsEmployeeFactDTO.setPopulation(0); // Population is often a separate data point
             list.add(recordStatsEmployeeFactDTO);
         }
-
-
         return list;
     }
 
@@ -167,6 +184,8 @@ public class DashboardService {
         List<RecordStatsEmployeeFactDTO> list = new ArrayList<>();
         List<District> districts = districtRepository.findByRegionId(regionId);
         for (District district : districts) {
+            // Note: `userService.getDoctorsWithApprovedContractsCount` likely still uses a V1 query in UserRepository
+            // or requires refactoring to use DoctorContractV2Repository for V2 contracts.
             Long inFact = userService.getDoctorsWithApprovedContractsCount(null, null, district.getId(), null, null, null);
             RecordStatsEmployeeFactDTO recordStatsEmployeeFactDTO = new RecordStatsEmployeeFactDTO();
             recordStatsEmployeeFactDTO.setId(String.valueOf(district.getId()));
@@ -177,10 +196,9 @@ public class DashboardService {
             recordStatsEmployeeFactDTO.setLpuAmount(workPlaceRepository.countByDistrictId(district.getId()));
             recordStatsEmployeeFactDTO.setDoctorsByDB(userRepository.countByDistrictId(district.getId()));
             recordStatsEmployeeFactDTO.setDoctorsInFact(inFact);
-            recordStatsEmployeeFactDTO.setPopulation(0);
+            recordStatsEmployeeFactDTO.setPopulation(0); // Population is often a separate data point
             list.add(recordStatsEmployeeFactDTO);
         }
-
         return list;
     }
 
@@ -220,7 +238,8 @@ public class DashboardService {
             LocalDate from = startDate.plusDays(i * interval);
             LocalDate to = (i == numberOfParts - 1) ? endDate : from.plusDays(interval - 1);
 
-            Long totalPrice = contractRepository.getTotalContractQuotesBetweenDates(from, to);
+            // This now uses DoctorContractV2Repository for V2 Contracts
+            Long totalPrice = doctorContractV2Repository.getTotalContractQuotesBetweenDates(from, to);
             if (totalPrice == null) totalPrice = 0L;
 
             chart.add(new LineChart(from, to, totalPrice));
@@ -230,7 +249,8 @@ public class DashboardService {
     }
 
     public List<TopProductsOnSellDTO> getTop6Medicine(Long regionId, Long districtId, Long workplaceId, LocalDate startDate, LocalDate endDate) {
-        return medicineWithQuantityDoctorRepository.findTop6MostSoldMedicinesWithFilters(districtId, regionId, workplaceId, startDate, endDate);
+        // This now uses MedicineWithQuantityDoctorV2Repository for V2 Contracts' medicine quantities
+        return medicineWithQuantityDoctorV2Repository.findTop6MostSoldMedicinesWithFilters(districtId, regionId, workplaceId, startDate, endDate);
     }
 
     public SalesQuoteDTO getSalesQuote(Long regionId, LocalDate startDate, LocalDate endDate) {
@@ -249,13 +269,16 @@ public class DashboardService {
     }
 
     public List<DashboardDoctorsCoverage> getDashboardDoctorsCoverages() {
-        return contractRepository.getDoctorsCoverage();
+        // This now uses DoctorContractV2Repository for V2 Contracts
+        return doctorContractV2Repository.getDoctorsCoverage();
     }
 
     public GroupDashboardDTO getGroupByRegion(Long regionId) {
         GroupDashboardDTO groupDashboardDTO = new GroupDashboardDTO();
         User user = userRepository.getManagerByRegionId(regionId).orElse(null);
         groupDashboardDTO.setUser(userService.convertToDTO(user));
+        // Note: MedAgentGroupRepository and GroupDTO are assumed V1/Common.
+        // If these are also part of the V2 migration, they need their own updates.
         List<GroupDTO> groupDTOS = medAgentGroupRepository.findByRegionId(regionId).stream().map(entity -> {
                     GroupDTO groupDTO = new GroupDTO();
                     groupDTO.setUsers(userService.convertToDTO(entity.getUser()));

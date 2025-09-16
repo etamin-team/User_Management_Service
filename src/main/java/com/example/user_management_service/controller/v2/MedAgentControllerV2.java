@@ -1,17 +1,20 @@
 package com.example.user_management_service.controller.v2;
 
+import com.example.user_management_service.model.Field; // Import Field enum
+import com.example.user_management_service.model.v2.dto.ContractDTOV2; // Import ContractDTOV2
 import com.example.user_management_service.model.v2.dto.MedAgentGoalDTOV2;
 import com.example.user_management_service.model.v2.dto.MedAgentProfileDTOV2;
 import com.example.user_management_service.model.v2.payload.MedAgentGoalCreateUpdatePayloadV2;
 import com.example.user_management_service.service.v2.MedAgentServiceV2;
 import lombok.AllArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat; // Import this
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.YearMonth; // Import this
-import java.util.Optional; // Import this
+import java.time.YearMonth;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -39,7 +42,7 @@ public class MedAgentControllerV2 {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @DeleteMapping("/goal/{goalId}") // New: Delete Goal by ID
+    @DeleteMapping("/goal/{goalId}")
     public ResponseEntity<Void> deleteGoal(@PathVariable Long goalId) {
         if (medAgentServiceV2.deleteGoal(goalId)) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
@@ -48,7 +51,7 @@ public class MedAgentControllerV2 {
         }
     }
 
-    @GetMapping("/goal/{goalId}") // Updated: Get Goal by ID with optional YearMonth
+    @GetMapping("/goal/{goalId}")
     public ResponseEntity<MedAgentGoalDTOV2> getGoalById(
             @PathVariable Long goalId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
@@ -58,7 +61,7 @@ public class MedAgentControllerV2 {
         return ResponseEntity.ok(goal);
     }
 
-    @GetMapping("/{agentId}/goal") // New: Get Active Goal by MedAgent ID with optional YearMonth
+    @GetMapping("/{agentId}/goal")
     public ResponseEntity<MedAgentGoalDTOV2> getActiveGoalByMedAgentId(
             @PathVariable UUID agentId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
@@ -68,7 +71,7 @@ public class MedAgentControllerV2 {
         return ResponseEntity.ok(goal);
     }
 
-    @GetMapping("/profile/{agentId}") // Updated: Get Profile by MedAgent ID with optional YearMonth
+    @GetMapping("/profile/{agentId}")
     public ResponseEntity<MedAgentProfileDTOV2> getProfileByAgentId(
             @PathVariable UUID agentId,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
@@ -76,5 +79,36 @@ public class MedAgentControllerV2 {
         YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
         MedAgentProfileDTOV2 profile = medAgentServiceV2.getProfileByAgentId(agentId, targetMonth);
         return ResponseEntity.ok(profile);
+    }
+
+    @GetMapping("/{agentId}/contracts")
+    public ResponseEntity<Page<ContractDTOV2>> getAllContractsForAgent(
+            @PathVariable UUID agentId,
+            @RequestParam(required = false) Long regionId,
+            @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long workPlaceId,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String middleName,
+            @RequestParam(required = false) Field fieldName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM") Optional<YearMonth> yearMonth
+    ) {
+        YearMonth targetMonth = yearMonth.orElse(YearMonth.now());
+        Page<ContractDTOV2> contracts = medAgentServiceV2.getAllContractsByAgent(
+                agentId,
+                regionId,
+                districtId,
+                workPlaceId,
+                firstName,
+                lastName,
+                middleName,
+                fieldName,
+                page,
+                size,
+                targetMonth
+        );
+        return ResponseEntity.ok(contracts);
     }
 }

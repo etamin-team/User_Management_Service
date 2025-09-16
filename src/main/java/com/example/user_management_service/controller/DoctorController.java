@@ -71,36 +71,9 @@ public class DoctorController {
         return new ResponseEntity<>(medicines, HttpStatus.OK);
     }
 
-    @PostMapping("/save-recipe")
-    public ResponseEntity<Boolean> saveRecipe(@RequestBody RecipeDto recipe) {
-        recipeService.saveRecipe(recipe);
-        return ResponseEntity.ok(true);
-    }
-
-    @GetMapping("/contract/contract-id/{contractId}")
-    public ResponseEntity<ContractAmountDTO> getContractById(@PathVariable Long contractId) {
-        ContractAmountDTO contractAmountDTO = contractService.getContractById(contractId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
-
-    @GetMapping("/contract/doctor-id/{doctorId}")
-    public ResponseEntity<ContractAmountDTO> getContractByDoctorId(@PathVariable UUID doctorId) {
-        ContractAmountDTO contractAmountDTO = contractService.getActiveContractByDoctorId(doctorId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
 
 
-    @GetMapping("/contract/doctor-id/{doctorId}/history")
-    public ResponseEntity<List<ContractAmountDTO>> getHistoryContractByDoctorId(@PathVariable UUID doctorId) {
-        List<ContractAmountDTO> history = contractService.getHistoryContractByDoctorId(doctorId);
-        return ResponseEntity.ok(history);
-    }
 
-    @GetMapping("/out-contract/doctor-id/{doctorId}")
-    public ResponseEntity<OutOfContractAmountDTO> getOutOfContractByDoctorId(@PathVariable UUID doctorId) {
-        OutOfContractAmountDTO contractAmountDTO = contractService.getOutOfContractsByDoctorId(doctorId);
-        return ResponseEntity.ok(contractAmountDTO);
-    }
 
     @GetMapping("/statistics/{doctorId}")
     public ResponseEntity<DoctorRecipeStatsDTO> getDoctorRecipeStatsDTOByDoctorId(@PathVariable UUID doctorId) {

@@ -1,6 +1,5 @@
 package com.example.user_management_service.controller.v2;
 
-import com.example.user_management_service.model.dto.ManagerGoalDTO; // Not used in this snippet, but kept for context
 import com.example.user_management_service.model.v2.dto.ManagerGoalDTOV2;
 import com.example.user_management_service.model.v2.dto.ManagerProfileDTOV2;
 import com.example.user_management_service.model.v2.payload.ManagerGoalCreateUpdatePayloadV2;

@@ -1,9 +1,9 @@
 package com.example.user_management_service.service.v2;
 
-import com.example.user_management_service.exception.ReportException;
 import com.example.user_management_service.model.*;
 import com.example.user_management_service.model.dto.*;
 import com.example.user_management_service.repository.*;
+import com.example.user_management_service.repository.v2.MedicineWithQuantityDoctorV2Repository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ import java.util.List;
 @Transactional
 public class AdminServiceV2 {
 
-    private final MedicineWithQuantityDoctorRepository medicineWithQuantityDoctorRepository;
+    private final MedicineWithQuantityDoctorV2Repository medicineWithQuantityDoctorRepository;
     private final MedicineRepository medicineRepository;
 
     private final UserRepository userRepository;
